@@ -1,6 +1,6 @@
 <?php
 class ControllerFactory implements IControllerFactory {
-	public function createController(Request $request, $controllerName) {
-		return "asd";
+	public function createController($controllerName) {
+		return new HomeController();
 	}
 }

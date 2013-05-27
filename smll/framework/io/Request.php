@@ -1,17 +1,76 @@
 <?php
 class Request implements IRequest {
 	
-	protected $requestArr = array();
+	private $requestArr = array();
+	private $get;
+	private $post;
+	private $path;
+	private $requestMethod = Request::METHOD_GET;
 	
-	public function __construct($requestArr) {
+	public function __construct($requestArr, $get, $post) {
 		$this->requestArr = $requestArr;
+		
+		$this->parseRequestArr($requestArr);
+		
+		$this->get = $get;
+		$this->post = $post;
 	}
 	
-	public function getPath($index = null) {
-		print_r($this->requestArr);
+	public function init() {
+		$path = "";
+		if(isset($this->get['q'])) {
+			$path = $this->get['q'];
+		}
+		$this->path = explode("/",$path);
+
+		unset($_GET);
+		unset($_POST);
+	}
+	
+	public function getPath() {
+		return $this->path;
 	}
 	
 	public function getAccept() {
 		return "/";
 	}
+	
+	public function get($var) {
+		if(isset($this->get[$var])) {
+			return $this->get[$var];
+		} else {
+			return null;
+		}
+	}
+	
+	public function getRequestMethod() {
+		return $this->requestMethod;
+	}
+	
+	public function setRequestMethod($method) {
+		$this->requestMethod = $method;
+	}
+	
+	private function parseRequestArr($requestArr) {
+		$this->parseRequestMethod($requestArr['REQUEST_METHOD']);
+	}
+	
+	private function parseRequestMethod ($method) {
+		if($method == "POST") {
+			$this->requestMethod = self::METHOD_POST;
+		} else if($method == "PUT") {
+			$this->requestMethod = self::METHOD_PUT;
+		} else if($method == "DELETE") {
+			$this->requestMethod = self::METHOD_DELETE;
+		} else {
+			$this->requestMethod = self::METHOD_GET;
+		}
+		
+	}
+	
+	const METHOD_GET = 0;
+	const METHOD_POST = 1;
+	const METHOD_PUT = 2;
+	const METHOD_DELETE = 3;
+	
 }

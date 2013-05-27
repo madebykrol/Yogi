@@ -5,8 +5,6 @@ class XmlSettingsLoader implements ISettingsLoader {
 		$this->file = $file;
 	}
 	
-	
-	
 	public function getSettings() {
 		return array();
 	}

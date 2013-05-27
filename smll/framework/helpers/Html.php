@@ -1,13 +1,17 @@
 <?php
 class Html {
 	
-	public function renderAction($controller, $action) {
-		// $controller->setRequest(new Request()); /** @Todo Get container instance */
-		// $action = $controller->call($action);
-		return "";
+	public static function renderAction($action, $controller = null, $extras = null) {
+		global $application;
+		if($controller == null) {
+			$controller = $application->getCurrentExecutingController();
+		}
+		$request = new Request(null, array('q' => $controller."/".$action), null);
+		$request->init();
+		return $application->run($request);
 	}
 	
-	public function renderPartial($view) {
+	public function renderPartial($view, $model) {
 		
 	}
 	

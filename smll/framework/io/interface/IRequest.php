@@ -1,5 +1,6 @@
 <?php
 interface IRequest {
-	public function getPath($index = null);
+	public function getPath();
 	public function getAccept();
+	public function get($var);
 }

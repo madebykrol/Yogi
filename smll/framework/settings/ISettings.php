@@ -10,5 +10,6 @@ interface ISettings {
 	 * @return HashMap
 	 */
 	public function getAppSettings();
-	public function load(ISettingsLoader $loader);
+	public function __construct(ISettingsLoader $loader);
+	public function load();
 }

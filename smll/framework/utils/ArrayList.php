@@ -4,8 +4,8 @@ class ArrayList implements IList {
 	protected $t = "IData";
 	protected $listData = array();
 	
-	public function construct() {
-		
+	public function __construct($data = array()) {
+		$this->listData = $data;
 	}
 	
 	public function add($data) {
@@ -28,7 +28,7 @@ class ArrayList implements IList {
 	}
 	
 	public function getIterator() {
-		$iterator = new ArrayIterator($listData);
+		$iterator = new ArrayIterator($this->listData);
 		return $iterator;
 	}
 	

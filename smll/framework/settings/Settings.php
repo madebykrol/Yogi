@@ -1,7 +1,14 @@
 <?php
 class Settings implements ISettings {
-	public function load(ISettingsLoader $loader) {
-		$this->settings = $loader->getSettings();
+	
+	protected $loader;
+	
+	public function __construct(ISettingsLoader $loader) {
+		$this->loader = $loader;
+	}
+	
+	public function load() {
+		
 	}
 	
 	public function getAppSetting($setting) {
