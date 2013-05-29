@@ -22,6 +22,10 @@ class Action {
 		return $this->parameters->get($param);
 	}
 	
+	public function getParameters() {
+		return $this->parameters;
+	}
+	
 	public function getController() {
 		return $this->controller;
 	}

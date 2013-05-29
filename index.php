@@ -10,6 +10,8 @@ $dic->register('XmlSettingsLoader', 'ISettingsLoader')
 
 $dic->register('ControllerFactory', 'IControllerFactory');
 $dic->register('ViewFactory', 'IViewFactory');
+$dic->register('ActionFilterConfig', 'IActionFilterConfig')
+	->inRequestScope();
 
 $dic->register('Request', 'IRequest')
 	->addArgument($_SERVER)

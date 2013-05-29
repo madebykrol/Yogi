@@ -21,15 +21,26 @@ class AutoLoader {
 			
 		// Helpers
 		'Html' 		=> 'framework/helpers/',
+		'Styles'	=> 'framework/helpers/',
+		'Scripts'	=> 'framework/helpers/',
 
 		// IO
-		'Request' => 'framework/io/',
-		'Dir'			=> 'framework/io/file/',
+		'Request' 	=> 'framework/io/',
+		'Dir'				=> 'framework/io/file/',
+		'DB'				=> 'framework/io/db/',
+		'DBField'		=> 'framework/io/db/',
+		'DBResult'	=> 'framework/io/db/',
 			
 		// MVC 
 		'Controller' 	=> 'framework/mvc/',
 		'Action'			=> 'framework/mvc/',
 		'ViewResult'	=> 'framework/mvc/',
+		'IActionFilterRepository' => 'framework/mvc/filter/',
+		'ActionFilterRepository' 	=> 'framework/mvc/filter/',
+		'ActionFilterConfig'			=> 'framework/mvc/filter/',
+		'IActionFilterConfig'			=> 'framework/mvc/filter/',
+		'DefaultActionFilter'			=> 'framework/mvc/filter/',
+		'IActionFilter'						=> 'framework/mvc/filter/',
 			
 		// Controllers
 		'MapController' => 'controllers/',
@@ -49,6 +60,7 @@ class AutoLoader {
 		'ISettings'							=> 'framework/settings/',
 		'IControllerFactory'		=> 'framework/utils/interface/',
 		'ISettingsLoader'				=> 'framework/settings/',
+		'IAnnotationHandler'		=> 'framework/utils/interface/',
 		
 		
 		// Utils
@@ -56,7 +68,9 @@ class AutoLoader {
 		'HashMap'				=> 'framework/utils/',
 		'Regexp'				=> 'framework/utils/',
 		'String' 				=> 'framework/utils/',
+		'Boolean'				=> 'framework/utils/',
 		'JsonConverter' => 'framework/utils/',
+		'AnnotationHandler'	=> 'framework/utils/',
 		
 		// IOC 
 		'ContainerBuilder' 	=> 'framework/di/',
@@ -75,6 +89,11 @@ class AutoLoader {
 		'ClassNotFoundException' => 'framework/exceptions/',
 		'IndexNotInMapException' => 'framework/exceptions/',
 		'CannotSerializeServiceException' => 'framework/exceptions/',
+			
+		// HTTP
+		'ISession'				=> 'framework/http/interface/',
+		'Session'					=> 'framework/http/',
+		
 		
 	);
 

@@ -1,12 +1,23 @@
+<!DOCTYPE HTML>
 <html>
 <head>
-	<title><?php print $viewBag->title?></title>
+	<title><?php print $viewBag['title']?></title>
+	<link href="/Smll/src/assets/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link href="/Smll/src/assets/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+	<link href="/Smll/src/assets/prettify.css" rel="stylesheet">
+	<link href="/Smll/src/assets/main.css" rel="stylesheet">
 </head>
 <body>
-	<?php
-	
-		print $content;
-	
-	?>
+	<div class="container" id="main-wrapper">
+		<?php print Html::renderAction("topNav", "Nav"); ?>
+		<?php
+		
+			print $content;
+		
+		?>
+	</div>
+<script src="/Smll/src/scripts/jquery.js"></script>
+<script src="/Smll/src/scripts/bootstrap/js/bootstrap.js"></script>
+<script src="/Smll/src/scripts/prettify.js"></script>
 </body>
 </html>

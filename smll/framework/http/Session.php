@@ -2,7 +2,30 @@
 class Session implements ISession {
 	
 	protected $token = "smll_";
-	protected $defaults = array();
+	protected $defaults = array(
+			'authenticated' => false,
+			'membershipkey' => null);
+	
+	public function __construct($defaults) {
+		$this->init();
+		if($_SESSION[$this->token.'USER_LOOSE_IP'] != long2ip(ip2long($_SERVER['REMOTE_ADDR'])
+				& ip2long("255.255.0.0"))
+				|| $_SESSION[$this->token.'USER_AGENT'] != $_SERVER['HTTP_USER_AGENT']
+		) {
+	
+			// flag for possible session hijack.
+			$this->status = SESSION::STATUS_POSSIBLE_HIJACK;
+			$this->regenerateSession();
+		}
+	
+		if(isset($defaults)){
+			foreach($defaults as $var => $val) {
+				if($this->get($var) === FALSE){
+					$this->set($var, $val);
+				}
+			}
+		}
+	}
 	
 	public function getSessionID() {
 		return session_id();
@@ -73,27 +96,6 @@ class Session implements ISession {
 		session_start();
 		session_regenerate_id(true);
 		$this->init();
-	}
-	
-	protected function __construct($defaults) {
-		$this->init();
-		if($_SESSION[$this->token.'USER_LOOSE_IP'] != long2ip(ip2long($_SERVER['REMOTE_ADDR']) 
-                                           & ip2long("255.255.0.0"))
-			|| $_SESSION[$this->token.'USER_AGENT'] != $_SERVER['HTTP_USER_AGENT']
-		) {
-				
-			// flag for possible session hijack.
-			$this->status = SESSION::STATUS_POSSIBLE_HIJACK;
-			$this->regenerateSession();
-		}
-		
-		if(isset($defaults)){
-			foreach($defaults as $var => $val) {
-				if($this->get($var) === FALSE){
-					$this->set($var, $val);
-				}
-			}
-		}
 	}
 
 	

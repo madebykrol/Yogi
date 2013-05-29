@@ -3,18 +3,30 @@ class Application extends HttpApplication {
 	
 	protected function applicationStart() {	
 		
+		$this->container->register('ContentRepository', 'IContentRepository');
+		$this->container->register('Session', 'ISession')
+		->addArgument(array());
+		
+		$this->container->register('AnnotationHandler', 'IAnnotationHandler');
+		$this->container->register('DefaultActionFilter', 'DefaultActionFilter');
+		
 		
 		$this->routerConfig->mapRoute(
 				new Route("Default", "{controller}/{action}/{id}", 
-						array("controller" => "Home", "action" => "index", "id" => Route::URLPARAMETER_OPTIONAL)));
+						array(
+								"controller" => "Home", 
+								"action" => "index", 
+								"id" => Route::URLPARAMETER_OPTIONAL)));
 		
 		$this->routerConfig->mapRoute(
-				new Route("Test", "Test/{controller}/{action}/{id}",
-						array("controller" => "Derp", "action" => "index", "id" => Route::URLPARAMETER_OPTIONAL)));
+				new Route("About", "About",
+						array(
+								"controller" => "Home",
+								"action" => "about",
+								"id" => Route::URLPARAMETER_OPTIONAL)));
 		
+		$this->filterConfig->addFilter($this->container->get('DefaultActionFilter'));
 		
-		$this->container->register('ContentRepository', 'IContentRepository');
 		
 	}
-	
 }

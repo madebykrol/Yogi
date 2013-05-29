@@ -1,0 +1,15 @@
+Entries
+<ul>
+<?php 
+	foreach($model->getEntries() as $entry) {
+		?>
+		<li>
+		<p>
+			<?php print $entry->message;?>
+		</p>
+		<strong><?php print $entry->firstname;?></strong>
+		</li>
+		<?php 
+	}
+?>
+</ul>

@@ -2,14 +2,14 @@
 // $Id;
 /**
  * 
- * This is an implementation of the Active Directory pattern.
+ * This is an implementation of the ORM pattern.
  * @author Kristoffer "krol" Olsson - kristoffer.olsson@madebykrol.com
  * @version 1.0 - Stable
  * @license new bsd-license
  * @example  
  *
  */
-class DB extends DataStore {
+class DB {
 	
 	protected /* PDO */ $pdo = null;
 	protected /* String */ $driver = "";
@@ -26,7 +26,6 @@ class DB extends DataStore {
 	
 	protected /* array */ $insertFields = array();
 	protected /* array */ $insertValues = array();
-	
 	protected /* int */ 	$bindFieldCounter = 1;
 	protected /* array */ $whereBindValues = array();
 	protected /* array */ $insertBindValues = array();
@@ -266,7 +265,7 @@ class DB extends DataStore {
 	 * Insert multiple rows into the table.
 	 * @param [string $table]
 	 * @param array $dataSet
-	 * 	@example array(array('title' => 'New Title', 'body' => 'My booodyyy'), array('title' => 'Second ny title', 'body' => 'myBody 2')
+	 * 	@example array(array('title' => 'New Title', 'body' => 'My body'), array('title' => 'Second ny title', 'body' => 'myBody 2')
 	 * 
 	 * @return boolean
 	 * @throws Exception

@@ -6,6 +6,7 @@ class XmlSettingsLoader implements ISettingsLoader {
 	}
 	
 	public function getSettings() {
-		return array();
+		
+		return new ArrayList(array("application-root" => '/Smll'));
 	}
 }

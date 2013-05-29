@@ -24,7 +24,7 @@ class Router implements IRouter {
 	public function lookup(IRequest $request) {
 		$path = $request->getPath();
 		$action = new Action();
-		
+		$parameters = array();
 		/**
 		 * @Todo This needs so much rewriting
 		 */
@@ -35,7 +35,7 @@ class Router implements IRouter {
 			
 			$controller = $defaults['controller'];
 			$actionString = $defaults['action'];
-			$parameters = array();
+			
 			foreach($defaults as $param => $value) {
 				if($param != 'controller' && $param != 'action') {
 					$parameters[$param] =  $value;
@@ -65,8 +65,8 @@ class Router implements IRouter {
 						$value = $defaults[$parameter];
 						if(isset($path[$index]) && $path[$index] != null) {
 							$value = $path[$index];
-						} else if ($request->get($parameter) != null) {
-							$value = $request->get($parameter);
+						} else if ($request->getQueryString($parameter) != null) {
+							$value = $request->getQueryString($parameter);
 						}
 						
 						$parameters[$parameter] = $value;
@@ -78,28 +78,24 @@ class Router implements IRouter {
 					}
 				}
 				
-				if($request->getRequestMethod() == Request::METHOD_POST) {
-					$actionString = "post_".$actionString;
-				}
-				
 				$action->setAction($actionString);
 				$action->setController($controller);
 				foreach($parameters as $param => $value) {
 					$action->addParameter($param, $value);
 				}
-				
-				if($action->getController() != null && $action->getAction() != null && strtolower($route->getName()) != "default") {
-					break 2;
-				} else {
-					
-				}
 			}
 			
 		}
-		//$action->setController($defaults["controller"]);
-		//$action->setName($defaults['action']);
 	
-		
+		foreach($request->getGetData() as $ident => $val) {
+			if($ident != "q") {
+				$action->addParameter($ident,$val);
+			}
+		}
+			
+		foreach($request->getPostData() as $ident => $val) {
+			$action->addParameter($ident,$val);
+		}
 		return $action;
 	}
 	

@@ -12,8 +12,12 @@ class Regexp {
 		$this->pattern = $pattern;
 	}
 	
-	public function find($haystack) {
+	public function find($heystack) {
+		$matches = array();
 		
+		preg_match_all('/'.$this->pattern.'/', $heystack, $matches);
+		
+		return $matches;
 	}
 	
 	public function match($heystack) {

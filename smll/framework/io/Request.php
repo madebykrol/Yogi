@@ -3,7 +3,7 @@ class Request implements IRequest {
 	
 	private $requestArr = array();
 	private $get;
-	private $post;
+	private $post = array();
 	private $path;
 	private $requestMethod = Request::METHOD_GET;
 	
@@ -13,14 +13,19 @@ class Request implements IRequest {
 		$this->parseRequestArr($requestArr);
 		
 		$this->get = $get;
-		$this->post = $post;
+		
+		if($post != null) {
+			$this->post = $post;
+		}
 	}
 	
 	public function init() {
 		$path = "";
+		
 		if(isset($this->get['q'])) {
 			$path = $this->get['q'];
 		}
+		
 		$this->path = explode("/",$path);
 
 		unset($_GET);
@@ -35,12 +40,20 @@ class Request implements IRequest {
 		return "/";
 	}
 	
-	public function get($var) {
+	public function getQueryString($var) {
 		if(isset($this->get[$var])) {
 			return $this->get[$var];
 		} else {
 			return null;
 		}
+	}
+	
+	public function getPostData() {
+		return $this->post;
+	}
+	
+	public function getGetData() {
+		return $this->get;
 	}
 	
 	public function getRequestMethod() {

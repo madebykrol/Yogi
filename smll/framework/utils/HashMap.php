@@ -16,7 +16,7 @@ class HashMap implements IList {
 		if(isset($this->dataList[$ident])) {
 			return $this->dataList[$ident];
 		} else {
-			throw new IndexNotInMapException("Could not find index \"".$ident."\" in map");
+			return null;
 		}
 	}
 }

@@ -3,6 +3,7 @@ class ViewResult implements IViewResult {
 	
 	private $viewFile;
 	private $model;
+	private $viewBag;
 	
 	public function setModel($model) {
 		$this->model = $model;
@@ -14,8 +15,13 @@ class ViewResult implements IViewResult {
 	public function setViewFile($file){
 		$this->viewFile = $file;
 	}
+	
 	public function getViewFile(){
 		return $this->viewFile;
+	}
+	
+	public function setViewBag($viewBag) {
+		$this->viewBag = $viewBag;
 	}
 	
 	public function render() {
@@ -23,6 +29,7 @@ class ViewResult implements IViewResult {
 		
 		$model 		= $this->model;
 		$layout 	= null;
+		$viewBag = $this->viewBag;
 		
 		ob_start();
 		include($this->viewFile);

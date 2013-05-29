@@ -1,7 +1,9 @@
 <?php
 class Controller implements IController {
 	
-	protected $viewBag = array();
+	protected $viewBag = array(
+		'title' => '',		
+	);
 	
 	/**
 	 * @return ViewResult
@@ -18,6 +20,8 @@ class Controller implements IController {
 		if($view != null) {
 			$result->setView($view);
 		}
+		
+		$result->setViewBag($this->viewBag);
 		
 		return $result;
 		
@@ -36,6 +40,10 @@ class Controller implements IController {
 	 */
 	public function httpRedirect($action, $controller = null, $parameters = array()) {
 		
+	}
+	
+	public function onActionError() {
+		return "";
 	}
 	
 }

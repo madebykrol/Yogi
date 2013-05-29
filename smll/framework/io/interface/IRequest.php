@@ -2,5 +2,7 @@
 interface IRequest {
 	public function getPath();
 	public function getAccept();
-	public function get($var);
+	public function getQueryString($var);
+	public function getPostData();
+	public function getGetData();
 }

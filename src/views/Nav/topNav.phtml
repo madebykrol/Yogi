@@ -1,11 +1,18 @@
-<ul>
-	<li>
-		Hem
-	</li>
-	<li>
-		Bort
-	</li>
-	<li>
-		Tillbaka
-	</li>
-</ul>
+<div class="navbar navbar-fixed-top navbar-inverse" style="position: absolute;">
+	<div class="navbar-inner">
+		<div class="container">
+			<span class="brand">Smll MVC</span>
+			<ul class="nav">
+				<li>
+				<?php print Html::actionLink("Home", "index", "Home");?>
+				</li>
+				<li>
+				<?php print Html::actionLink("About", "index", "About");?>
+				</li>
+				<li>
+				<?php print Html::actionLink("Guestbook", "index", "Guestbook");?>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>

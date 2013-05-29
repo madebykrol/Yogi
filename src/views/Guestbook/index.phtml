@@ -1,0 +1,10 @@
+<?php 
+$layout = "src/views/Share/_layout.phtml";
+?>
+
+<?php print Html::renderAction("entries", "Guestbook");?>
+
+<?php print Html::beginFormFor($model);?>
+	
+	<input type="submit" class="btn" value="submit" />
+<?php print Html::closeForm();?>
