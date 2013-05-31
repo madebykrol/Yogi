@@ -47,7 +47,32 @@
     </div>
     <div class="row">
      <div class="span12">
-       
+<pre class="prettyprint lang-php">
+<?php
+class HomeController extends Controller {
+  
+	private $repository;
+	
+	public function __construct(IContentRepository $repo) {
+		$this->repository = $repo;
+	}
+	
+	/**
+	 * @return ViewResult
+	 */
+	public function index() {
+		$this->viewBag['title'] = "My smll site";
+		return $this->view();
+	}
+	
+	
+	public function about() {
+		$this->viewBag['title'] = "About | My smll site";
+		return $this->view();
+	}
+	
+}
+</pre>
      </div>
     </div>
   </div>
