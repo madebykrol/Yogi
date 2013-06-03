@@ -9,7 +9,9 @@ class Application extends HttpApplication {
 		$this->container->register('AnnotationHandler', 'IAnnotationHandler');
 		$this->container->register('DefaultActionFilter', 'DefaultActionFilter');
 		
-		
+		/**
+		 * Default route
+		 */
 		$this->routerConfig->mapRoute(
 				new Route("Default", "{controller}/{action}/{id}", 
 						array(
