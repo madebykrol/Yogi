@@ -46,6 +46,7 @@
       </div>
     </div>
     <div class="row">
+<<<<<<< HEAD
      <div class="span4">
 			<div class="well">
 			   <ul class="nav nav-list">
@@ -110,6 +111,35 @@
         <p>
           MVC Views
         </p>
+=======
+     <div class="span12">
+<pre class="prettyprint lang-php">
+<?php
+class HomeController extends Controller {
+  
+	private $repository;
+	
+	public function __construct(IContentRepository $repo) {
+		$this->repository = $repo;
+	}
+	
+	/**
+	 * @return ViewResult
+	 */
+	public function index() {
+		$this->viewBag['title'] = "My smll site";
+		return $this->view();
+	}
+	
+	
+	public function about() {
+		$this->viewBag['title'] = "About | My smll site";
+		return $this->view();
+	}
+	
+}
+</pre>
+>>>>>>> c93e7dbc0d3a3658b96a8313a2bba9a18c267bd5
      </div>
     </div>
   </div>
@@ -120,8 +150,14 @@
     <p><a href="http://www.freebsd.org/copyright/freebsd-license.html">bsd license</a></p>
   </div>
 </footer>
+<<<<<<< HEAD
 <script src="/smll_docsite/scripts/jquery.js"></script>
 <script src="/smll_docsite/scripts/bootstrap/js/bootstrap.js"></script>
 <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+=======
+<script src="/Smll/scripts/jquery.js"></script>
+<script src="/Smll/bootstrap/js/bootstrap.js"></script>
+<script src="/Smll/scripts/prettify.js"></script>
+>>>>>>> c93e7dbc0d3a3658b96a8313a2bba9a18c267bd5
 </body>
 </html>
