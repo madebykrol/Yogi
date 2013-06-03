@@ -50,10 +50,10 @@
 			<div class="well">
 			   <ul class="nav nav-list">
 			     <li class="nav-header">Chapters</li>
-			     <li class="active"><a href="#">1. Getting started</a>
+			     <li class="active"><a href="./getting-started.html">1. Getting started</a>
 			       <ul class="nav nav-list">
-			         <li class="active"><a href="#">1.0 Get to know the source</a></li>
-			         <li><a href="./getting-started-a-guestbook.html">1.1 Example 1 - A Guestbook</a></li>
+			         <li><a href="./getting-started.html">1.0 Get to know the source</a></li>
+			         <li class="active"><a href="./getting-started-a-guestbook.html">1.1 Example 1 - A Guestbook</a></li>
 			       </ul>
 			     </li>
 			     
@@ -68,48 +68,39 @@
 			 </div>
      </div>
      <div class="span8">
-      <h1>Getting Started</h1>
+      <h1>Example 1 - A Guestbook</h1>
       <p>
-	      When first getting familiar with Smll you are faced with a predefined directory structure
-	      starting at <span class="label">src/</span>.
-	      <br />
-	      Smll is designed with conventions which bluntly forces you into a common
-	      way of structuring your source code.
-	    </p>
-      <h2>Source structure</h2>
-        <h3><span class="label">assets/</span></h3>
-	      <p>
-	        Common collection of all your layout material such as images and stylesheets
-	      </p>
-	      <h3><span class="label">business/</span></h3>
-        <p>
-          All your buisness objects!
-        </p>
-        <h3><span class="label">controllers/</span></h3>
-        <p>
-          Your Controllers by convention controller are namned &lt;MyPage&gt;Controller.php and with the same class name
-          controllers must by convention either implement interface IController or extend abstract class Controller
-        </p>
-        <h3><span class="label">helpers/</span></h3>
-        <p>
-          Static helper classes.
-        </p>
-        <h3><span class="label">models/</span></h3>
-        <p>
-          Your MVC models.
-        </p>
-        <h3><span class="label">modules/</span></h3>
-        <p>
-          Your or thirdparty plugins for Smll.
-        </p>
-        <h3><span class="label">scripts/</span></h3>
-        <p>
-          Your scripts, commonly javascript files.
-        </p>
-        <h3><span class="label">Views/</span></h3>
-        <p>
-          MVC Views
-        </p>
+	     Our first example is the old classic, a simple guestbook. Nothing fancy!
+      </p>
+      <h2>Step one.</h2> <h3>Download and install Smll MVC.</h3>
+      <p>
+      Download the zip or tarball from the links in the header of this page and unpack it in a folder of choice.
+      <br />
+      Create a new project in your favorite IDE! Eclipse with PDT is recommended.
+      </p>
+      
+      <h2>Step two</h2> <h3>Create the database table.</h3>
+<pre class="prettyprint lang-sql">
+CREATE TABLE `guestbook` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  `message` longtext,
+  UNIQUE KEY `id` (`id`) 
+);
+</pre>
+      <h2>Step three</h2> <h3>The controlller</h3>
+<pre class="prettyprint lang-php">
+class HomeController extends Controller {
+  /**
+   * @return ViewResult
+   */
+  public function index() {
+    $this->viewBag['title'] = "Guestbook | My smll site";
+    $model = new GuestbookFormModel();
+    return $this->view($model);
+  }
+}
+</pre>
      </div>
     </div>
   </div>
