@@ -46,115 +46,127 @@
       </div>
     </div>
     <div class="row">
-     <div class="span12"><div class="pull-left"><a class="btn" href="./getting-started.html">Back to index</a></div><div class="pull-right"><a class="btn" href="./getting-started-a-guestbook-post.html">Next - Handelling form post</a></div></div> 
+     <div class="span12"><div class="pull-left"><a class="btn" href="./getting-started-a-guestbook.html">Back</a></div><div class="pull-right"></div></div> 
     </div>
     <div class="row">
-     <div class="span9">
-      <h1>Example 1 - A Guestbook</h1>
-      <p>
-	     Our first example is the old classic, a simple guestbook. Nothing fancy!
-      </p>
-      <h2>Step one.</h2> <h3>Download and install Smll MVC.</h3>
-      <p>
-      Download the zip or tarball from the links in the header of this page and unpack it in a folder of choice.
-      <br />
-      Create a new project in your favorite IDE! Eclipse with PDT is recommended.
-      </p>
-      
-      <h2>Step two</h2> <h3>Create the database table.</h3>
-<pre class="prettyprint lang-sql">
-CREATE TABLE `guestbook` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) DEFAULT NULL,
-  `message` longtext,
-  UNIQUE KEY `id` (`id`) 
-);
-</pre>
-      <h2>Step three</h2> <h3>The controlller</h3>
-      <p>
-        Open up and edit a file namned HomeController.php. Smll is setup by default 
-        to recognize this as the default controller, and requests to your site root will be routed to this.
-        
-        Edit the file to look something like this:
-        p.s: We won't be using the About action in this example.
-      </p>
+      <div class="span9">
+        <h1>Handelling post</h1>
+        <p>By convention Smll is posting the form to an action prefixed with <span class="label">post_</span>
+        So we are going to create a new Action in our HomeController called <span class="label">post_index</span></p>
 <pre class="prettyprint lang-php linenums">
-class HomeController extends Controller {
-  /**
-   * @return ViewResult
-   */
-  public function index() {
-    $this->viewBag['title'] = "Guestbook | My smll site";
-    $model = new GuestbookFormModel();
-    return $this->view($model);
-  }
+public function post_index(GuestbookFormModel $model) {  
+	if($this->modelState->isValid()) {
+	  try {
+	  
+	    $this->db->insert('guestbook',
+	        array(
+	            'name'  => $model->name,
+	            'message'     => $model->message));
+	  
+	  } catch(Exception $e) {
+	    print $e->getMessage();
+	  }
+	  $model = new GuestbookFormModel();
+	}
+	
+	return $this->View($model);
 }
 </pre>
-      <h2>Step four</h2> <h3>Views!</h3>
+      <h3>Connect to a database</h3>
+      <p>Add the following code to your HomeController.</p>
+<pre class="prettyprint lang-php linenums">
+private $db = null;
+  
+public function __construct() {
+    $this->db = new DB('mysql', 'localhost', 'smll_example', 
+        array('user' => 'user', 'password' => 'password'));
+}
+</pre>
       <p>
-       Go to and edit a the index.phtml file in your Views directory for the Home Controller <span class="label">views/Home/</span>
-       to look something similar to this:
+        
+      </p>
+      <p>
+        There is alot of magic going on in the background here in your <span class="label">post_index</span> that I will try to explain.
+      </p>
+      <ul class="nav nav-list">
+        <li>
+       
+        </li>
+        <li>
+        <strong>Line 1 </strong>
+        <p>Smll's default <span class="label">ModelBinder</span> is responsible for mapping the posted data to your action into your model!</p>
+        </li>
+        <li>
+        <strong>Line 2 </strong>
+        <p>Checking the current model state.</p>
+        </li>
+        <li>
+        <strong>Line 5 - 8 </strong>
+        <p>Persist our guestbook post</p>
+        </li>
+        <li>
+        <strong>Line 13 </strong>
+        <p>Clear the model</p>
+        </li>
+        <li>
+        <strong>Line 16 </strong>
+        <p>Return the model in the view</p>
+        </li>
+      </ul>
+      <h2>Displaying entries in our guestbook.</h2>
+      <p>
+        create a new action called entries
+      </p>
+<pre class="prettyprint lang-php linenums">
+public function entries() {
+  $result = null;
+  if($this->db->get('guestbook')) {
+    $result = $this->db->getResult();
+  }
+  
+  return $this->view($result);
+}
+</pre>
+      <p>
+        Create a view for our action in the views/Home/ folder called <span class="label">entries.phtml</span>
       </p>
 <pre class="prettyprint lang-html linenums">
+&lt;h2&gt;Guestbook Entries&lt;/h2&gt;
+&lt;ul&gt;
 &lt;?php 
-$layout = "src/views/Share/_layout.phtml";
+  foreach($model as $entry) {
+    ?&gt;
+    &lt;li&gt;
+    &lt;p&gt;
+      &lt;?php print $entry->message;?&gt;
+    &lt;/p&gt;
+    &lt;strong&gt;&lt;?php print $entry-&gt;firstname;?&gt;&lt;/strong&gt;
+    &lt;/li&gt;
+    &lt;?php 
+  }
 ?&gt;
-&lt;div class="row"&gt;
-  &lt;div class="guestbook form"&gt;
-    &lt;h2>Write in my guestbook&lt;/h2&gt;
-    &lt;?php print Html::beginFormFor($model);?&gt;
-    
-    &lt;input type="submit" class="btn" value="submit" /&gt;
-    &lt;?php print Html::closeForm();?&gt;
-  &lt;/div&gt;
-&lt;/div&gt;
+&lt;/ul&gt;
 </pre>
+<h2>Final step.</h2>
+<h3>Render entries on our index page.</h3>
+<p>
+Alter your <span class="label">views/Home/entries.phtml</span> with the following line
+</p>
+<pre class="prettyprint html-php linenums">
+&lt;?php print Html::renderAction('entries', 'Home'); ?&gt;
+</pre>
+<h2>Summary</h2>
+<p>
+We have now created one really basic Smll MVC application which uses quite alot of Smlls MVC
+functions.
 
-      <h2>Step 5.</h2> <h3> Our first model.</h3>
-      <p>
-        Next up, we'll create the foundation for our model, for now just copy this code and 
-        we will cover how it works in another chapter.
-      </p>
-<pre class="prettyprint lang-php linenums">
-class GuestbookFormModel {
-  
-  /**
-   * [FormField]
-   * [Label=Name]
-   * [InputType=text]
-   * [Placeholder=Name]
-   * @var string
-   */
-  public $name;
-  
-  /**
-   * [FormField]
-   * [Label=Message]
-   * [InputType=textarea]
-   * @var unknown
-   */
-  public $message;
-  
-}
-</pre>
-     <h2>Summary </h2>
-     <p>
-      Now, if you browse your new site you will see something like this.
-     </p>
-     <img src="./assets/images/first_look.png" alt="first look">
-     <p>
-      Now we have created our first form using Smll MVC, right now our form does not do anything.
-      <br /> 
-      Commonly when writing a Guestbook or any other webapplication you wish to have sort of persistance
-      in the next part, we will use tie the pieces together and handle the postback and store records in the database.
-     </p> 
-     </div>
-     <div class="span3">
-     
-     </div>
+There are some improvements we can do thou. for instance, take a look at <span class="label">internal redirects</span> and
+<span class="label">validation annotations</span>
+</p>
+      </div>
     </div>
     <div class="row">
-     <div class="span12"><div class="pull-left"><a class="btn" href="./getting-started.html">Back to index</a></div><div class="pull-right"><a class="btn" href="./getting-started-a-guestbook-post.html">Next - Handelling form post</a></div></div> 
+     <div class="span12"><div class="pull-left"><a class="btn" href="./getting-started-a-guestbook.html">Back</a></div><div class="pull-right"></div></div> 
     </div>
   </div>
 <footer class="footer">
