@@ -5,10 +5,20 @@ abstract class HttpApplication Implements IApplication {
 	private $router;
 	private $settings;
 	
+	/**
+	 * 
+	 * @var IModelBinder
+	 */
+	private $modelBinder;
+	
 	protected $bundleConfig;
 	protected $filterConfig;
 	protected $routerConfig;
 	
+	/**
+	 * 
+	 * @var IController
+	 */
 	protected $currentExecutingController;
 	
 	/**
@@ -32,12 +42,26 @@ abstract class HttpApplication Implements IApplication {
 		$this->filterConfig = $actionFilters;
 	}
 	
+	public function setModelBinder(IModelBinder $binder) {
+		if($this->modelBinder == null) {
+			$this->modelBinder = $binder;
+		} else {
+			throw new Exception("Cannot change modelbinder after initialization");
+		}
+	}
+	
+	/**
+	 * @return IModelBinder
+	 */
+	public function getModelBinder() {
+		return $this->modelBinder;
+	}
+	
 	public function run($request = null) {
 		
 		if($request == null) {
 			$request = $this->request;
 		}
-		$this->init();
 		$this->applicationStart();
 		// Verify request
 		$this->verifyRequest($request);
@@ -45,7 +69,6 @@ abstract class HttpApplication Implements IApplication {
 		$action = $this->router->lookup($request);
 		
 		$controller = $action->getController()."Controller";
-		$this->currentExecutingController = $action->getController();
 		$actionName = $action->getAction();
 		
 		$output = $this->processAction($controller, $actionName, $action->getParameters());
@@ -56,7 +79,18 @@ abstract class HttpApplication Implements IApplication {
 		$this->applicationFinish();
 	}
 	
-	public function getCurrentExecutingController() {
+	/**
+	 * @return IDependencyContainer
+	 */
+	public function getContainer() {
+		return $this->container;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see IApplication::getCurrentExecutingController()
+	 */
+	public function &getCurrentExecutingController() {
 		return $this->currentExecutingController;
 	}
 	
@@ -64,20 +98,21 @@ abstract class HttpApplication Implements IApplication {
 		return $this->settings->getAppSetting('application-root');
 	}
 	
-	public function getContainer() {
-		return $this->container;
-	}
-	
-	private function init() {
+	public function init() {
 		
 		$this->container = new ContainerBuilder();
 		
+		$this->container->register('ModelState', 'IModelState');
 		$handle = opendir('src/controllers/');
+		
 		while (false !== ($entry = readdir($handle))) {
 			if(strpos($entry, "Controller") !== FALSE) {
 				$entry = explode(".", $entry);
 				$controllerName = $entry[0];
-				$this->container->register($controllerName, $controllerName);
+				$this->container->register($controllerName, $controllerName)
+					->set('application', $this)
+					->set('modelState', new Service('IModelState'))
+					->inRequestScope();
 			}
 		}
 	}
@@ -96,12 +131,15 @@ abstract class HttpApplication Implements IApplication {
 		// Perform some verification and first hint of tinkered requests.
 	}
 	
-	private function processAction($controller, $actionName, HashMap $parameters) {
+	public function processAction($controller, $actionName, HashMap $parameters = null) {
 	
 		$controller = $this->container->get($controller);
 		
 		if($controller instanceof IController) {
 			$class = get_class($controller);
+			
+			$this->currentExecutingController = $controller;
+			
 			$class = new ReflectionClass($class);
 			
 			$passed = false;
@@ -114,13 +152,16 @@ abstract class HttpApplication Implements IApplication {
 			} else {
 				$method = $class->getMethod($actionName);
 			}
+			
 			try {
+				
 				$passed = $this->filter($method);
 				if($passed) {
 					$result = $this->callAction($method, $controller, $parameters);
 				} else {
 					$result = $controller->onActionError();
 				}
+				
 			} catch(Exception $e) {
 				$result = $controller->onActionError();
 			}
@@ -130,6 +171,12 @@ abstract class HttpApplication Implements IApplication {
 			if($result instanceof IViewResult) {
 				$viewFileExists = false;
 				$triedViewFiles = new ArrayList();
+				
+				
+				foreach($result->getHeaders()->getIterator() as $field => $value) {
+					header($field.": ".$value);
+				}
+				
 				if($result->getViewFile() != null) {
 					if(is_file($result->getViewFile())) {
 						$viewFileExists = true;
@@ -150,7 +197,7 @@ abstract class HttpApplication Implements IApplication {
 					);
 		
 					foreach($possibleViewFiles->getIterator() as $file) {
-		
+						
 						if(is_file("src/views/".$file)) {
 							$viewFileExists = true;
 							$result->setViewFile("src/views/".$file);
@@ -162,7 +209,10 @@ abstract class HttpApplication Implements IApplication {
 				}
 		
 				if($viewFileExists) {
+					
 					$output = $result->render();
+					
+					
 				} else {
 					foreach($triedViewFiles->getIterator() as $file) {
 						print $file."\n";
@@ -178,6 +228,7 @@ abstract class HttpApplication Implements IApplication {
 		} else {
 			throw new Exception();
 		}
+		
 		return $output;
 	}
 	
@@ -193,42 +244,25 @@ abstract class HttpApplication Implements IApplication {
 		return $passed;
 	}
 	
-	
-	abstract protected function applicationStart();
-	
-	private function callAction(ReflectionMethod $method, IController $controller, HashMap $parameters) {
+	private function callAction(ReflectionMethod $method, IController &$controller, HashMap $parameters = null) {
 		$args = array();
-		foreach($method->getParameters() as $parameter) {
-			$name = $parameter->getName();
-			$class = $parameter->getClass();
-			
-			if($class != null && $class instanceof ReflectionClass) {
-				$obj = $class->newInstance();
+		if(isset($parameters)) {
+			foreach($method->getParameters() as $parameter) {
+				$name = $parameter->getName();
+				$class = $parameter->getClass();
 				
-				foreach($parameters->getIterator() as $name => $value) {
-					if($class->hasProperty($name)) {
-					 $prop = $class->getProperty($name);
-					 if($prop->isPublic()) {
-					 
-					 	$prop->setValue($obj, $value);
-					 } else {
-					 	if($class->hasMethod("set".ucfirst($name))) {
-					 		$setter = $class->getMethod("set".ucfirst($name));
-					 		$setter->invokeArgs($obj, array($value));
-					 	}
-					 }
-					}
+				if($class != null && $class instanceof ReflectionClass) {
+					$args[] = $this->modelBinder->bindModel($class, $controller, $parameters);
+				} else {
+					$args[] = $parameters->get($name);
 				}
 				
-				$args[] = $obj;
-				
-			} else {
-				$args[] = $parameters->get($name);
 			}
 		}
-		
 		return $method->invokeArgs($controller, $args);
 	}
+
+	abstract protected function applicationStart();
 	
 	protected function applicationFinish() {}
 	/**

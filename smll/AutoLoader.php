@@ -23,6 +23,9 @@ class AutoLoader {
 		'Html' 		=> 'framework/helpers/',
 		'Styles'	=> 'framework/helpers/',
 		'Scripts'	=> 'framework/helpers/',
+			
+		// Html
+		'FormField' => 'framework/html/',
 
 		// IO
 		'Request' 	=> 'framework/io/',
@@ -41,6 +44,12 @@ class AutoLoader {
 		'IActionFilterConfig'			=> 'framework/mvc/filter/',
 		'DefaultActionFilter'			=> 'framework/mvc/filter/',
 		'IActionFilter'						=> 'framework/mvc/filter/',
+			
+		'IModelState'							=> 'framework/mvc/interface/',
+		'ModelState'							=> 'framework/mvc/',
+			
+		'IModelBinder'						=> 'framework/mvc/interface/',
+		'ModelBinder'							=> 'framework/mvc/',
 			
 		// Controllers
 		'MapController' => 'controllers/',

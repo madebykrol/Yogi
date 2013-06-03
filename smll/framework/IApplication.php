@@ -1,6 +1,16 @@
 <?php
 interface IApplication {
 	public function run();
-	public function getCurrentExecutingController();
 	
+	
+	/**
+	 * @return IController
+	 */
+	public function &getCurrentExecutingController();
+	public function getApplicationRoot();
+	
+	/**
+	 * @return IDependencyContainer
+	 */
+	public function getContainer();
 }

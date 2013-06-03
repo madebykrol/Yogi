@@ -5,6 +5,33 @@ class Controller implements IController {
 		'title' => '',		
 	);
 	
+	private $application = null;
+	protected $modelState = null;
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see IController::setApplication()
+	 */
+	public function setApplication(IApplication $application) {
+		$this->application = $application;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see IController::setModelState()
+	 */
+	public function setModelState(IModelState $modelState) {
+		$this->modelState = $modelState;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see IController::getModelState()
+	 */
+	public function &getModelState() {
+		return $this->modelState;
+	}
+	
 	/**
 	 * @return ViewResult
 	 * @param object $model
@@ -13,6 +40,7 @@ class Controller implements IController {
 	public function view($model = null, $view = null) { 
 		
 		$result = new ViewResult();
+		$result->init();
 		if($model != null) {
 			$result->setModel($model);
 		}
@@ -26,24 +54,44 @@ class Controller implements IController {
 		return $result;
 		
 	}
+
 	
 	/**
 	 * 
 	 * Overloaded HttpRedirect
-	 * HttpRedirect($action)
-	 * HttpRedirect($action, $controller)
-	 * HttpRedirect($action, $controller, $parameters)
+	 * internalRedirect($action)
+	 * internalRedirect($action, $controller)
+	 * internalRedirect($action, $controller, $parameters)
 	 * 
 	 * @param unknown $action
 	 * @param string $controller
 	 * @param unknown $parameters
 	 */
-	public function httpRedirect($action, $controller = null, $parameters = array()) {
+	public function internalRedirect($action, $controller = null, $parameters = array()) {
 		
+		$result = new ViewResult();
+		$result->init();
+		if($controller == null) {
+			$controller = str_replace("Controller", "", get_class($this));
+		}
+		if(strtolower($action) == "index") {
+			$action = "";
+		} else {
+			$action = "/".$action;
+		}
+		$controller = "/".$controller;
+		
+		$result->setHeader("Location", $this->application->getApplicationRoot().$controller.$action);
+		
+		return $result;
 	}
 	
 	public function onActionError() {
 		return "";
+	}
+	
+	public function __toString() {
+		return str_replace("Controller", "", get_class($this));
 	}
 	
 }

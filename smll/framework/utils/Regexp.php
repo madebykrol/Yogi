@@ -2,28 +2,51 @@
 class Regexp {
 	
 	private $pattern;
+	private $options;
+	private $delimiter = '#';
 	
 	/**
 	 * 
 	 * regexp pattern do not use delimiters here, just expressions.
 	 * @param string $pattern
+	 * @return array of matches
 	 */
 	public function __construct($pattern) {
 		$this->pattern = $pattern;
 	}
 	
-	public function find($heystack) {
+	public function setOption($string) {
+		$this->options = $string;
+	}
+	
+	public function find($heystack, $quote = false) {
 		$matches = array();
-		
-		preg_match_all('/'.$this->pattern.'/', $heystack, $matches);
+		if($quote) {
+			$heystack = preg_quote($heystack, $this->delimiter);
+		}
+		preg_match_all(
+			$this->delimiter.str_replace($this->delimiter, "\\".$this->delimiter, $this->pattern).$this->delimiter.$this->options, 
+			$heystack, 
+			$matches
+		);
 		
 		return $matches;
 	}
-	
-	public function match($heystack) {
+	/**
+	 * 
+	 * @param unknown $heystack
+	 * @return boolean
+	 */
+	public function match($heystack, $quote = false) {
 		$matches = array();
-		
-		if(preg_match('/'.$this->pattern.'/', $heystack, $matches) == 1) {
+		if($quote) {
+			$heystack = preg_quote($heystack, $this->delimiter);
+		}
+		if(preg_match(
+				$this->delimiter.str_replace($this->delimiter, "\\".$this->delimiter, $this->pattern).$this->delimiter.$this->options, 
+				$heystack, 
+				$matches
+				) == 1) {
 			return true;
 		}
 		

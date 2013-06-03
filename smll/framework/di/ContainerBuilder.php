@@ -23,11 +23,18 @@ class ContainerBuilder implements IDependencyContainer {
 		 * @Todo Implement method body
 		 */
 	}
-	
+	/**
+	 * (non-PHPdoc)
+	 * @see IDependencyContainer::register()
+	 */
 	public function register($class, $for) {
 		return $this->registerWithIdent($for, $class, $for);
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see IDependencyContainer::registerWithIdent()
+	 */
 	public function registerWithIdent($ident, $class, $for) {
 		$definition = new Definition($class);
 		$this->register->add($ident, $definition);
@@ -35,7 +42,7 @@ class ContainerBuilder implements IDependencyContainer {
 		return $definition;
 	}
 	
-	public function get($ident) {
+	public function &get($ident) {
 		try {
 			$definition = $this->register->get($ident);
 			
@@ -44,7 +51,6 @@ class ContainerBuilder implements IDependencyContainer {
 				// Find our object in our singelton scope.
 				
 				// else just continue
-				
 				return $object;
 				
 			} else if($definition->getScope() == Definition::SCOPE_REQUEST) {
@@ -54,7 +60,6 @@ class ContainerBuilder implements IDependencyContainer {
 			}
 			
 			$reflectClass = new ReflectionClass($definition->getClass());
-			
 			
 			if($reflectClass->hasMethod("__construct")) {
 				
@@ -96,6 +101,9 @@ class ContainerBuilder implements IDependencyContainer {
 				
 				if($reflectClass->hasMethod("set".ucfirst($var))) {
 					$method = $reflectClass->getMethod("set".ucfirst($var));
+					if($val instanceof Service) {
+						$val = $this->get($val->getServiceReference());
+					}
 					
 					$method->invoke($service, $val);
 				}

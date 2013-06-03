@@ -4,6 +4,19 @@ class ViewResult implements IViewResult {
 	private $viewFile;
 	private $model;
 	private $viewBag;
+	private $headers;
+	
+	public function init() {
+		$this->headers = new HashMap();
+	}
+	
+	public function setHeader($field, $value) {
+		$this->headers->add($field, $value);
+	}
+	
+	public function getHeaders() {
+		return $this->headers;
+	}
 	
 	public function setModel($model) {
 		$this->model = $model;

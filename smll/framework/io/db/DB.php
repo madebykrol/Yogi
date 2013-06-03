@@ -65,6 +65,7 @@ class DB {
 	 */
 	public /* boolean */ function get($table = null, $limit = null, $offset = null) {
 		
+		$this->flushResult();
 		if (isset($table)) {
 			$this->table = $table;
 		} 
@@ -733,7 +734,7 @@ class DB {
 	}
 
 	protected function sanitize($input) {
-		$input = addslashes($input);
+		$input = $input;
 		return $input;
 	}
 	
@@ -746,7 +747,6 @@ class DB {
 			
 			foreach ($this->whereBindValues as $bindVal) {
 				$statement->bindValue($this->bindFieldCounter++, $this->sanitize($bindVal)); 
-				
 			}
 			
 			foreach ($this->insertBindValues as $bindVal) {

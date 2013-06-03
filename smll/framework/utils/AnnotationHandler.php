@@ -8,9 +8,17 @@ class AnnotationHandler implements IAnnotationHandler {
 	public function getAnnotations($m) {
 		if($m instanceof ReflectionMethod || $m instanceof ReflectionProperty) {
 			$comment = $m->getDocComment();
-			$regexp = new Regexp('\[(.+?)\]');
-			$matches = $regexp->find($comment);
-			return $matches[1];
+			$commentLines = explode("\n", $comment);
+			$matches = array();
+			foreach($commentLines as $commentLine) {
+				$regexp = new Regexp('^.+?\[(.+?)\]$');
+				$regexp->setOption("m");
+				$match = $regexp->find(trim($commentLine));
+				if(isset($match[1][0])) {
+					$matches[] = $match[1][0];
+				}
+			}
+			return $matches;
 		}
 		return null;
 	}
@@ -30,4 +38,57 @@ class AnnotationHandler implements IAnnotationHandler {
 		}
 	}
 	
+	public function parseAnnotation($annotation) {
+		$innerDeclarations = array();
+		
+		$regexp = new Regexp('(.+?)[=|\(|\]]');
+		$find = $regexp->find($annotation);
+		
+		$tAnnotation = array();
+		
+		if(isset($find[1]) && count($find[1]) > 0) {
+			$regexp = new Regexp('\((.+?)\)$');
+			
+			$innerDeclarations = $regexp->find($annotation);
+			if(isset($innerDeclarations[1]) && count($innerDeclarations[1]) > 0) {
+					
+				$innerDeclaration = $innerDeclarations[1][0];
+				
+				
+				$annotation = explode("(", $annotation);
+				
+				$annotation = $annotation[0];
+				
+				$innerDeclaration = explode(",", $innerDeclaration);
+				
+				$tmp = array();
+				foreach($innerDeclaration as $pos => $declaration) {
+					$declaration = explode("=", $declaration, 2);
+					if(count($declaration) == 1) {
+						$tmp[$pos] = $declaration[0];
+					} else {
+						$tmp[trim($declaration[0])] = $declaration[1];
+					}
+					
+				} 
+				
+				if(count($tmp) > 0) {
+					$innerDeclaration = $tmp;
+				}
+				
+				$tAnnotation = array($annotation, $innerDeclaration);
+				
+				
+					
+			} else {
+				
+				$tAnnotation = explode("=", $annotation);
+				
+			}
+		} else {
+			$tAnnotation = array($annotation, true);
+		}
+		
+		return $tAnnotation;
+	}
 }

@@ -4,14 +4,15 @@ class Html {
 	public static $currentForm = 0;
 	public static $formStack = array();
 	
-	public static function renderAction($action, $controller = null, $extras = null) {
+	public static function renderAction($action, $controller = null, HashMap $extras = null) {
 		global $application;
 		if($controller == null) {
-			$controller = $application->getCurrentExecutingController();
+			$controller = get_class($application->getCurrentExecutingController());
 		}
+		
 		$request = new Request(null, array('q' => $controller."/".$action), null);
 		$request->init();
-		return $application->run($request);
+		return $application->processAction($controller."Controller", $action, $extras);
 	}
 	
 	public static function renderPartial($view, $model) {
@@ -104,8 +105,13 @@ class Html {
 	
 	public static function beginFormFor($object, $action = "", $controller = "", $extras = array()) {
 		global $application;
+		if(!$application instanceof IApplication) {
+			throw new Exception();
+		}
 		self::$currentForm++;
 		self::$formStack[self::$currentForm] = array();
+		
+		$currentController = $application->getCurrentExecutingController();
 		
 		$output = "<form method=\"POST\" action=\"\">";
 		
@@ -119,25 +125,30 @@ class Html {
 				$name = $property->getName();
 				$structuredAnnotations = self::getFormFieldAnnotations($property);
 				
-				if($property->isPublic()) {
+				if($property->isPublic() && $property->getValue($object) != null) {
 					$defaultValue = $property->getValue($object);
 				} else {
-					$defaultValue = $structuredAnnotations->get('defaultvalue');;
+					$defaultValue = $structuredAnnotations->get('DefaultValue');;
 				}
 				
-				if($structuredAnnotations->get('label')) {
-					$output .= self::label($structuredAnnotations->get('label'), $name);
+				if($structuredAnnotations->get('Label')) {
+					$output .= self::label($structuredAnnotations->get('Label'), $name);
 				}
 				
-				$type = $structuredAnnotations->get('inputtype');
+				$type = $structuredAnnotations->get('InputType');
+				
+				$output .= self::validationMessageFor($name);
 				
 				if($type == 'text') {
-					$output .= self::textfield($name, $defaultValue, $structuredAnnotations->get('placeholder'));
+					$output .= self::textfield($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
+					
 				} else if($type == 'textarea') {
-					$output .= self::textarea($name, $defaultValue, $structuredAnnotations->get('placeholder'));
+					$output .= self::textarea($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
 				} else if($type == 'boolean') {
 					$output .= self::checkbox($name, Boolean::parseValue($defaultValue));
 				}
+				
+				
 			}
 		}
 		
@@ -178,17 +189,33 @@ class Html {
 		$annotations = $annotationHandler->getAnnotations($property);
 		$structuredAnnotations = new HashMap();
 		foreach($annotations as $annotation) {
-			if($annotation != "FormField") {
-				$annotation = explode("=", $annotation);
-				if(isset($annotation[1])) {
-					$structuredAnnotations->add(strtolower($annotation[0]), $annotation[1]);
-				} else {
-					$structuredAnnotations->add(strtolower($annotation[0]), true);
-				}
+			$annotation = $annotationHandler->parseAnnotation($annotation);
+			if($annotation[0] != "FormField") {
+				$structuredAnnotations->add($annotation[0], $annotation[1]);
 			}
 		}
 		
 		return $structuredAnnotations;
+	}
+	
+	public static function validationMessageFor($field) {
+		
+		global $application;
+		if(!$application instanceof IApplication) {
+			throw new Exception();
+		}
+		
+		$currentController = $application->getCurrentExecutingController();
+		
+		$modelState = $currentController->getModelState();
+		
+		$msg = $modelState->getErrorMessageFor($field);
+		
+		if($msg != null) {
+			return "<div class=\"validat-error\">".$msg."</div>";
+		}
+		
+		return null;
 	}
 	
 }
