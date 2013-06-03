@@ -89,7 +89,14 @@ CREATE TABLE `guestbook` (
 );
 </pre>
       <h2>Step three</h2> <h3>The controlller</h3>
-<pre class="prettyprint lang-php">
+      <p>
+        Open up and edit a file namned HomeController.php. Smll is setup by default 
+        to recognize this Controller as the default controller, and requests to your site root
+        will end up on this controller.
+        
+        Edit the controller to look something like this:
+      </p>
+<pre class="prettyprint lang-php linenums">
 class HomeController extends Controller {
   /**
    * @return ViewResult
@@ -100,6 +107,25 @@ class HomeController extends Controller {
     return $this->view($model);
   }
 }
+</pre>
+      <h2>Step four</h2> <h3>Views!</h3>
+      <p>
+       Go to and edit a the index.phtml file in your Views directory for the Home Controller <span class="label">views/Home/</span>
+       to look something similar to this:
+      </p>
+<pre class="prettyprint lang-html linenums">
+&lt;?php 
+$layout = "src/views/Share/_layout.phtml";
+?&gt;
+&lt;div class="row"&gt;
+  &lt;div class="guestbook form"&gt;
+    &lt;h2>Write in my guestbook&lt;/h2&gt;
+    &lt;?php print Html::beginFormFor($model);?&gt;
+    
+    &lt;input type="submit" class="btn" value="submit" /&gt;
+    &lt;?php print Html::closeForm();?&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
 </pre>
      </div>
     </div>
