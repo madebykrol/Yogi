@@ -45,4 +45,4 @@ $application = $dic->get('IApplication');
 $application->run();
 #
 $end = (float) array_sum(explode(' ',microtime()));
-print "Processing time: ". sprintf("%.4f", ($end-$start))." seconds.";
+//print "Processing time: ". sprintf("%.4f", ($end-$start))." seconds.";

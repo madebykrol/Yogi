@@ -51,7 +51,7 @@ class AutoLoader {
 		'IModelBinder'						=> 'framework/mvc/interface/',
 		'ModelBinder'							=> 'framework/mvc/',
 			
-		'DataAnnotations'					=> 'framework/mvc/DataAnnotations',
+		'DataAnnotations'					=> 'framework/mvc/',
 			
 		// Controllers
 		'MapController' => 'controllers/',

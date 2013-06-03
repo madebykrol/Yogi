@@ -5,8 +5,8 @@ class HomeController extends Controller {
 	 * @return ViewResult
 	 */
 	public function index() {
-		
-		return $this->view();
+		$this->viewBag['title'] = "Index | My smll site";
+    return $this->view();
 	}
 	
 	/**
