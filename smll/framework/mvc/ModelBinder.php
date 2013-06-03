@@ -51,9 +51,9 @@ class ModelBinder implements IModelBinder {
 				$errorMsg = $annotation[1]['ErrorMessage'];
 			} 
 			
-			if($annotation[0] == "Required" && empty($value)) {
+			if($annotation[0] == DataAnnotations::Required && empty($value)) {
 				return false;
-			} else if($annotation[0] == "ValidationPattern") {
+			} else if($annotation[0] == DataAnnotations::ValidationPattern) {
 				$pattern = "";
 				if(isset($annotation[1]['Pattern'])) {
 					$pattern = $annotation[1]['Pattern'];
@@ -64,7 +64,7 @@ class ModelBinder implements IModelBinder {
 					return false;
 				}
 				
-			} else if($annotation[0] == "StringLength") {
+			} else if($annotation[0] == DataAnnotations::StringLength) {
 				$maxLength = 0;
 				if(isset($annotation[1]['MaxLength'])) {
 					$maxLength = $annotation[1]['MaxLength'];

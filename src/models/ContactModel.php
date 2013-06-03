@@ -8,6 +8,7 @@ class ContactModel {
 	 * [DefaultValue=]
 	 * [Label=Name]
 	 * [Placeholder=Name]
+	 * [Required]
 	 */
 	public $name;
 	
@@ -18,6 +19,8 @@ class ContactModel {
 	 * [InputType=text]
 	 * [DefaultValue=]
 	 * [Label=Email]
+	 * [ValidationPattern(Pattern=[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?,ErrorMessage=Must be a valid Email adress)]
+	 * [StringLength(MaxLength=0,ErrorMessage=Email must be longer than 6 characters, MinLength=6)]
 	 * [Placeholder=Email]
 	 */
 	public $email;
@@ -28,7 +31,7 @@ class ContactModel {
 	 * [FormField]
 	 * [InputType=textarea]
 	 * [Wysiwyg]
-	 * [DefaultValue=...]
+	 * [DefaultValue=]
 	 * [Label=Message]
 	 */
 	public $message;

@@ -1,10 +1,7 @@
 <?php
 class HomeController extends Controller {
 	
-	private $repository;
-	
-	public function __construct(IContentRepository $repo) {
-		$this->repository = $repo;
+	public function __construct() {
 	}
 	
 	/**
@@ -12,13 +9,13 @@ class HomeController extends Controller {
 	 */
 	public function index() {
 		$this->viewBag['title'] = "My smll site";
-		return $this->view(array("lol", "Derp", "Snerp"));
+		return $this->view();
 	}
 	
 	
 	public function about() {
 		$this->viewBag['title'] = "About | My smll site";
-		return $this->view(array("lol", "Derp", "Snerp"));
+		return $this->view();
 	}
 	
 }

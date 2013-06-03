@@ -3,9 +3,8 @@ class Application extends HttpApplication {
 	
 	protected function applicationStart() {	
 		
-		$this->container->register('ContentRepository', 'IContentRepository');
 		$this->container->register('Session', 'ISession')
-		->addArgument(array());
+			->addArgument(array());
 		
 		$this->container->register('AnnotationHandler', 'IAnnotationHandler');
 		$this->container->register('DefaultActionFilter', 'DefaultActionFilter');

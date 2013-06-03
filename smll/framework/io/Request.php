@@ -64,6 +64,10 @@ class Request implements IRequest {
 		$this->requestMethod = $method;
 	}
 	
+	public function getApplicationRoot() {
+		return str_replace('/index.php', '', $this->requestArr['PHP_SELF']);
+	}
+	
 	private function parseRequestArr($requestArr) {
 		$this->parseRequestMethod($requestArr['REQUEST_METHOD']);
 	}

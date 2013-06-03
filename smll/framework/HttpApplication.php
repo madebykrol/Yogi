@@ -95,7 +95,7 @@ abstract class HttpApplication Implements IApplication {
 	}
 	
 	public function getApplicationRoot() {
-		return $this->settings->getAppSetting('application-root');
+		return $this->request->getApplicationRoot();
 	}
 	
 	public function init() {
