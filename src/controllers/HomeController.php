@@ -1,13 +1,19 @@
 <?php
 class HomeController extends Controller {
 	
-private $db = null;
-	
 	/**
 	 * @return ViewResult
 	 */
 	public function index() {
 		
+		return $this->view();
+	}
+	
+	/**
+	 * @return ViewResult
+	 */
+	public function about() {
+	
 		return $this->view();
 	}
 
