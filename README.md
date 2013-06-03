@@ -7,3 +7,6 @@ It's inspired by .NET MVC another framework that I'm very found of using
 
 Smll framework is currently bundled with Bootstrap 2.3.2 
 And jQuery 1.9.1
+
+for examples and docs see: http://madebykrol.github.io/Smll/
+
