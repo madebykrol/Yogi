@@ -15,8 +15,10 @@ class AutoLoader {
 		
 		// Router
 		'Router' 				=> 'framework/route/',
+		'IRouterConfig'	=> 'framework/route/interface/',
 		'RouterConfig' 	=> 'framework/route/',
 		'Route'					=> 'framework/route/',
+		'IRoute'				=> 'framework/route/interface/',
 		
 			
 		// Helpers
@@ -104,6 +106,10 @@ class AutoLoader {
 		// HTTP
 		'ISession'				=> 'framework/http/interface/',
 		'Session'					=> 'framework/http/',
+			
+		// UnitTests
+	
+		'UnitTest'				=> 'framework/unittest/',
 		
 		
 	);

@@ -13,8 +13,7 @@ class HomeController extends Controller {
 	 * @return ViewResult
 	 */
 	public function about() {
-	
 		return $this->view();
 	}
-
+	
 }

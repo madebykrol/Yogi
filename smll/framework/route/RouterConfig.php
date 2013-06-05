@@ -1,5 +1,5 @@
 <?php
-class RouterConfig {
+class RouterConfig implements IRouterConfig {
 	private $routes;
 	
 	public function __construct() {
@@ -14,7 +14,7 @@ class RouterConfig {
 		return $this->routes;
 	}
 	
-	public function mapRoute(Route $route) {
+	public function mapRoute(IRoute $route) {
 		$this->routes->add($route->getName(), $route);
 	}
 }

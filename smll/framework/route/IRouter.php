@@ -11,7 +11,7 @@ interface IRouter {
 	/**
 	 * @param RouterConfig $cofig
 	 */
-	public function setRouterConfig(RouterConfig $config);
+	public function setRouterConfig(IRouterConfig $config);
 	
 	/**
 	 * 

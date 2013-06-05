@@ -9,7 +9,7 @@ class Router implements IRouter {
 		
 	}
 	
-	public function setRouterConfig(RouterConfig $config) {
+	public function setRouterConfig(IRouterConfig $config) {
 		$this->config = $config;
 	}
 	
