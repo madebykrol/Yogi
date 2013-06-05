@@ -25,6 +25,9 @@
              <li class="active">
                <a href="./getting-started.html">Get started</a>
              </li>
+             <li class="">
+               <a href="./road-map.html">Road map</a>
+             </li>
            </ul>
          </div>
        </div>
@@ -68,13 +71,20 @@
      </div>
      <div class="span8">
       <h1>Controllers and Routing</h1>
-      <h2>Quick introduction to controllers!</h2>
+      <h2>Quick introduction to controllers and actions</h2>
       <p>
         Many of you already understand the concept of controllers and how they work. As you have seen in the any of the previous
         examples controllers are associated with either a direct path in your application or a specific set of functions
         
         When a user is browsing your site his or her request is always being handled by one or more controllers, the controllers
         are the layer between the <span class="label">Request</span> and the <span class="label">Response</span> that handles your logics.
+      </p>
+      <h3>
+        Actions
+      </h3>
+      <p>
+        When Smll MVC is routing your request to a controller it calls an action on the controller, by default Smll MVC will call the <span class="label">index</span> action.
+        lets say that you which to have a path on your site like this "about/me", by default Smll MVC will try to call the me action on the AboutController.
       </p>
       <h2>Routing, who get's to do what?</h2>
       <p>
@@ -97,6 +107,34 @@ $this->routerConfig->mapRoute(
                 "action" => "index", 
                 "id" => Route::URLPARAMETER_OPTIONAL)));
 </pre>
+
+      
+      <h2>Custom routes</h2>
+			<p>
+			 As you might have guessed, the default route is whats makes Smll MVC route your requests to your controllers
+			 say that you create a Controller called <span class="label">AboutController</span> then you will by the default route be able to access
+			 this router through http://www.example.com/About
+			</p>
+      <p>
+        But say that you don't want to create a second controller for this particular page, "About", you instead wish to 
+        use your HomeController and handle the request with a <span class="label">Action</span>!
+        
+        You simply add a new Route that looks like this.
+         
+      </p>
+      
+<pre class="prettyprint lang-php linenums">
+$this->routerConfig->mapRoute(
+        new Route("About", "About",
+            array(
+                "controller" => "Home",
+                "action" => "about",
+                "id" => Route::URLPARAMETER_OPTIONAL)));
+</pre>
+      <p>
+        don't freight, we will explain in the next chapter how these routes work and how you configure them into your application.
+        for now just keep in mind that Smll MVC uses this pattern for defining routes to controllers and actions.
+      </p>
      </div>
     </div>
   </div>
