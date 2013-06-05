@@ -56,14 +56,14 @@
 			<div class="well">
 			   <ul class="nav nav-list">
 			     <li class="nav-header">Chapters</li>
-			     <li class="active"><a href="#">1. Getting started</a>
+			     <li><a href="./getting-started.html">1. Getting started</a>
 			       <ul class="nav nav-list">
 			         <li><a href="./getting-started-a-guestbook.html">1.1 Example 1 - A Guestbook</a></li>
 			       </ul>
 			     </li>
 			     
 			     <li><a href="./controllers-routing.html">2. Controllers and Routing</a></li>
-			     <li><a href="./getting-started-views.html">3. Views</a></li>
+			     <li class="active"><a href="./getting-started-views.html">3. Views</a></li>
 			     <li><a href="#">4. Models</a></li>
 			     <li><a href="#">5. Security</a></li>
 			     <li><a href="#">6. Membership and authentication.</a>
@@ -73,49 +73,13 @@
 			 </div>
      </div>
      <div class="span8">
-      <h1>Getting Started</h1>
+      <h1>Views.</h1>
       <p>
-	      When first getting familiar with Smll you are faced with a predefined directory structure
-	      starting at <span class="label">src/</span>.
-	      <br />
-	      Smll is designed with conventions which bluntly forces you into a common
-	      way of structuring your source code.
-	    </p>
-      <h2>Source structure</h2>
-        <h3><span class="label">assets/</span></h3>
-	      <p>
-	        Common collection of all your layout material such as images and stylesheets
-	      </p>
-	      <h3><span class="label">business/</span></h3>
-        <p>
-          All your buisness objects!
-        </p>
-        <h3><span class="label">controllers/</span></h3>
-        <p>
-          Your Controllers by convention controller are namned &lt;MyPage&gt;Controller.php and with the same class name
-          controllers must by convention either implement interface IController or extend abstract class Controller
-        </p>
-        <h3><span class="label">helpers/</span></h3>
-        <p>
-          Static helper classes.
-        </p>
-        <h3><span class="label">models/</span></h3>
-        <p>
-          Your MVC models.
-        </p>
-        <h3><span class="label">modules/</span></h3>
-        <p>
-          Your or thirdparty plugins for Smll.
-        </p>
-        <h3><span class="label">scripts/</span></h3>
-        <p>
-          Your scripts, commonly javascript files.
-        </p>
-        <h3><span class="label">Views/</span></h3>
-        <p>
-          MVC Views
-        </p>
-
+        Views in Smll MVC is currently basic PHP / HTML markup!
+        When a Controller returns it's action result the result is passed through one or a series of view files.
+        <br /><br />
+        Common MVC practice is to have a shared _layout view that have your wrapping markup, and then have a view for each action in each controller.
+      </p>
      </div>
     </div>
   </div>
