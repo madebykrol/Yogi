@@ -50,13 +50,13 @@
 			<div class="well">
 			   <ul class="nav nav-list">
 			     <li class="nav-header">Chapters</li>
-			     <li class="active"><a href="#">1. Getting started</a>
+			     <li class=""><a href="./getting-started.html">1. Getting started</a>
 			       <ul class="nav nav-list">
 			         <li><a href="./getting-started-a-guestbook.html">1.1 Example 1 - A Guestbook</a></li>
 			       </ul>
 			     </li>
 			     
-			     <li><a href="./controllers-routing.html">2. Controllers and Routing</a></li>
+			     <li class="active"><a href="./controllers-routing.html">2. Controllers and Routing</a></li>
 			     <li><a href="#">3. Views</a></li>
 			     <li><a href="#">4. Models</a></li>
 			     <li><a href="#">5. Security</a></li>
@@ -67,49 +67,36 @@
 			 </div>
      </div>
      <div class="span8">
-      <h1>Getting Started</h1>
+      <h1>Controllers and Routing</h1>
+      <h2>Quick introduction to controllers!</h2>
       <p>
-	      When first getting familiar with Smll you are faced with a predefined directory structure
-	      starting at <span class="label">src/</span>.
-	      <br />
-	      Smll is designed with conventions which bluntly forces you into a common
-	      way of structuring your source code.
-	    </p>
-      <h2>Source structure</h2>
-        <h3><span class="label">assets/</span></h3>
-	      <p>
-	        Common collection of all your layout material such as images and stylesheets
-	      </p>
-	      <h3><span class="label">business/</span></h3>
-        <p>
-          All your buisness objects!
-        </p>
-        <h3><span class="label">controllers/</span></h3>
-        <p>
-          Your Controllers by convention controller are namned &lt;MyPage&gt;Controller.php and with the same class name
-          controllers must by convention either implement interface IController or extend abstract class Controller
-        </p>
-        <h3><span class="label">helpers/</span></h3>
-        <p>
-          Static helper classes.
-        </p>
-        <h3><span class="label">models/</span></h3>
-        <p>
-          Your MVC models.
-        </p>
-        <h3><span class="label">modules/</span></h3>
-        <p>
-          Your or thirdparty plugins for Smll.
-        </p>
-        <h3><span class="label">scripts/</span></h3>
-        <p>
-          Your scripts, commonly javascript files.
-        </p>
-        <h3><span class="label">Views/</span></h3>
-        <p>
-          MVC Views
-        </p>
-
+        Many of you already understand the concept of controllers and how they work. As you have seen in the any of the previous
+        examples controllers are associated with either a direct path in your application or a specific set of functions
+        
+        When a user is browsing your site his or her request is always being handled by one or more controllers, the controllers
+        are the layer between the <span class="label">Request</span> and the <span class="label">Response</span> that handles your logics.
+      </p>
+      <h2>Routing, who get's to do what?</h2>
+      <p>
+        As you have probably already figured out Smll MVC is interally by some magic figuring out which controller 
+        is responsible for handelling a particular path.
+        
+        This magic is called routing and it's quite a powerfull feature. It allowes Smll MVC to figure out by a set of rules
+        which Controller is repsonsible for different paths in your application.
+        
+        By providing a router map, you can control how Smll will route your request internally.
+      </p>
+      <p>
+      <strong>The default MVC route.</strong>
+      </p>
+<pre class="prettyprint lang-php linenums">
+$this->routerConfig->mapRoute(
+        new Route("Default", "{controller}/{action}/{id}", 
+            array(
+                "controller" => "Home", 
+                "action" => "index", 
+                "id" => Route::URLPARAMETER_OPTIONAL)));
+</pre>
      </div>
     </div>
   </div>
