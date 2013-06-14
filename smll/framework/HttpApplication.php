@@ -3,10 +3,9 @@ abstract class HttpApplication Implements IApplication {
 	
 	private $request;
 	private $router;
-	private $settings;
 	
 	/**
-	 * 
+	 * [Inject(IModelBinder)]
 	 * @var IModelBinder
 	 */
 	private $modelBinder;
@@ -30,12 +29,10 @@ abstract class HttpApplication Implements IApplication {
 	public function __construct(
 			IRequest $request, 
 			IRouter $router, 
-			ISettings $settings,
-			IActionFilterConfig $actionFilters) {
+			IFilterConfig $actionFilters) {
 		
 		$this->request 	= $request;
 		$this->router 	= $router;
-		$this->settings = $settings;
 		$this->actionFilters = $actionFilters;
 
 		$this->routerConfig = $router->getRouterConfig();
@@ -57,11 +54,20 @@ abstract class HttpApplication Implements IApplication {
 		return $this->modelBinder;
 	}
 	
+	public function install() {
+		$this->applicationInstall();
+	}
+	
 	public function run($request = null) {
+		
+		if(!$this->checkInstallStatus()) {
+			$this->install();
+		}
 		
 		if($request == null) {
 			$request = $this->request;
 		}
+		
 		$this->applicationStart();
 		// Verify request
 		$this->verifyRequest($request);
@@ -101,8 +107,8 @@ abstract class HttpApplication Implements IApplication {
 	public function init() {
 		
 		$this->container = new ContainerBuilder();
+		$this->container->loadModule(new DefaultContainerModule());
 		
-		$this->container->register('ModelState', 'IModelState');
 		$handle = opendir('src/controllers/');
 		
 		while (false !== ($entry = readdir($handle))) {
@@ -138,13 +144,15 @@ abstract class HttpApplication Implements IApplication {
 		if($controller instanceof IController) {
 			$class = get_class($controller);
 			
+			$this->attachPrincipal($controller);
+			
 			$this->currentExecutingController = $controller;
 			
 			$class = new ReflectionClass($class);
 			
 			$passed = false;
 			$output = "";
-			$result = "";
+			$result = null;
 			
 			if($this->request->getRequestMethod() == Request::METHOD_POST 
 					&& $class->hasMethod("post_".$actionName)) {
@@ -153,20 +161,39 @@ abstract class HttpApplication Implements IApplication {
 				$method = $class->getMethod($actionName);
 			}
 			
-			try {
+			// Get AuthorizationFilters
+			$annotationHandler = $this->container->get('IAnnotationHandler');
+			
+			foreach($this->filterConfig->getAuthorizationFilters()->getIterator() as $filter) {
+				$authorizationContext = new AuthorizationContext();
+				$authorizationContext->setController($controller);
+				$authorizationContext->setApplication($this);
 				
-				$passed = $this->filter($method);
-				if($passed) {
-					$result = $this->callAction($method, $controller, $parameters);
-				} else {
-					$result = $controller->onActionError();
+				$annotations = array();
+				
+				if($annotationHandler->hasAnnotation('Authorize', $class)) {
+					if($annotationHandler->hasAnnotation('AllowAnonymous', $method)) {
+						$annotations['AllowAnonymous'] = $annotationHandler->getAnnotation('AllowAnonymous', $method);
+					}
 				}
 				
-			} catch(Exception $e) {
-				$result = $controller->onActionError();
+				if($annotationHandler->hasAnnotation('Authorize', $method)) {
+					$annotations['Authorize'] = $annotationHandler->getAnnotation('Authorize', $method);
+				}
+				
+				if($annotationHandler->hasAnnotation('InRole', $method)) {
+					$annotations['InRole'] = $annotationHandler->getAnnotation('InRole', $method);
+				}
+				
+				$filter->setAnnotations($annotations);
+				$filter->onAuthorization($authorizationContext);
+				$result = $authorizationContext->getResult();
 			}
+				
 			
-			
+			if($result == null) {
+				$result = $this->callAction($method, $controller, $parameters);
+			}
 			
 			if($result instanceof IViewResult) {
 				$viewFileExists = false;
@@ -221,7 +248,7 @@ abstract class HttpApplication Implements IApplication {
 			} else if(is_string($result)) {
 				$output = $result;
 			} else {
-				throw new Exception();
+				throw new EmptyResultException('Action '. $actionName . ' on '. get_class($controller). ' did not yeild any result');
 			}
 			
 				// Output Action.
@@ -242,6 +269,25 @@ abstract class HttpApplication Implements IApplication {
 		}
 		
 		return $passed;
+	}
+	
+	private function checkInstallStatus() {
+		return true;
+	}
+	
+	private function attachPrincipal(IController $controller) {
+		$authenticationHandler = $this->container->get('IAuthenticationProvider');
+		$principal = new Principal();
+		$principal->setIdentity(new Identity(null, false, null));
+		
+		if($authenticationHandler instanceof IAuthenticationProvider) {
+			$p = $authenticationHandler->getPrincipal();
+			if($p != null) {
+				$principal = $p;
+			}
+		}
+			
+		$controller->setPrincipal($principal);
 	}
 	
 	private function callAction(ReflectionMethod $method, IController &$controller, HashMap $parameters = null) {
@@ -265,11 +311,7 @@ abstract class HttpApplication Implements IApplication {
 	abstract protected function applicationStart();
 	
 	protected function applicationFinish() {}
-	/**
-	 * (non-PHPdoc)
-	 * @see IApplication::onActionError()
-	 */
-	protected function onActionError() {}
+	protected function applicationInstall() {}
 	
 	/**
 	 * 

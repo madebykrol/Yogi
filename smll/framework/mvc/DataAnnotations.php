@@ -22,4 +22,15 @@ class DataAnnotations {
 	 * @var [StringLength]
 	 */
 	const StringLength = 'StringLength';
+	
+	/**
+	 * @var [MatchField]
+	 */
+	const MatchField = 'MatchField';
+	
+	/**
+	 * 
+	 * @var [ErrorMessage]
+	 */
+	const ErrorMessage = 'ErrorMessage';
 }

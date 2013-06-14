@@ -8,4 +8,10 @@ interface IModelState {
 	 */
 	public function isValid($state = null);
 	
+	/**
+	 * Set error message for field
+	 * @param String $name
+	 * @param String $message
+	 */
+	public function setErrorMessageFor($name, $message);
 }

@@ -6,35 +6,56 @@ class AnnotationHandler implements IAnnotationHandler {
 	}
 	
 	public function getAnnotations($m) {
-		if($m instanceof ReflectionMethod || $m instanceof ReflectionProperty) {
+		if($m instanceof ReflectionMethod || $m instanceof ReflectionProperty || $m instanceof ReflectionClass) {
 			$comment = $m->getDocComment();
+			
 			$commentLines = explode("\n", $comment);
 			$matches = array();
 			foreach($commentLines as $commentLine) {
+				
 				$regexp = new Regexp('^.+?\[(.+?)\]$');
 				$regexp->setOption("m");
 				$match = $regexp->find(trim($commentLine));
 				if(isset($match[1][0])) {
+					
 					$matches[] = $match[1][0];
 				}
 			}
+			
 			return $matches;
 		}
 		return null;
 	}
 	
 	public function hasAnnotation($annotation, $m) {
-		if($m instanceof ReflectionMethod || $m instanceof ReflectionProperty) {
+		if($m instanceof ReflectionMethod || $m instanceof ReflectionProperty || $m instanceof ReflectionClass) {
 			
 			$comment = $m->getDocComment();
-			$regexp = new Regexp('\['.$annotation.'\]');
-			$matches = $regexp->find($comment);
 			
+			$regexp = new Regexp('\['.$annotation.'\]|\['.$annotation.'\(.+?\)]');
+			$matches = $regexp->find($comment);
 			if($matches[0] != null) {
 				return true;
 			}
 			
 			return false;
+		}
+	}
+	
+	public function getAnnotation($annotation, $m) {
+		if($m instanceof ReflectionMethod || $m instanceof ReflectionProperty  || $m instanceof ReflectionClass) {
+				
+			$comment = $m->getDocComment();
+			$regexp = new Regexp('\[('.$annotation.')\]|\[('.$annotation.'\(.+?\))\]');
+			$matches = $regexp->find($comment);
+			
+			if($matches[0] != null) {
+				if($matches[2] != null && $matches[2][0] != null) {
+					return $this->parseAnnotation($matches[2][0]);
+				} else {
+					return $this->parseAnnotation($matches[1][0]);
+				}
+			}
 		}
 	}
 	
@@ -50,6 +71,7 @@ class AnnotationHandler implements IAnnotationHandler {
 			$regexp = new Regexp('\((.+?)\)$');
 			
 			$innerDeclarations = $regexp->find($annotation);
+			
 			if(isset($innerDeclarations[1]) && count($innerDeclarations[1]) > 0) {
 					
 				$innerDeclaration = $innerDeclarations[1][0];

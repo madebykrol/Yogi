@@ -23,6 +23,8 @@ class ModelState implements IModelState {
 		return $this->errorMessages->get($name);
 	}
 	
-	
+	public function getErrorStack() {
+		return $this->errorMessages;
+	}
 	
 }

@@ -6,14 +6,8 @@ class HomeController extends Controller {
 	 */
 	public function index() {
 		$this->viewBag['title'] = "Index | My smll site";
+		
     return $this->view();
-	}
-	
-	/**
-	 * @return ViewResult
-	 */
-	public function about() {
-		return $this->view();
 	}
 	
 }

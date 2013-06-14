@@ -38,11 +38,20 @@ class DB {
 	
 	protected /* array */ $result = array();
 	
-	public function __construct($driver, $host, $database, $credentials) {
-		$pdoString = $driver.":host=".$host.";dbname=".$database;
-		$this->driver = $driver;
-		$this->host = $host;
-		$this->pdo = new PDO($pdoString, $credentials['user'], $credentials['password']);
+	public function __construct($string) {
+		
+		$string = explode(";", $string);
+		$connectionString = array();
+		foreach($string as $str) {
+			$str = explode("=", $str);
+			$connectionString[$str[0]] = $str[1];
+		}
+		
+		
+		$pdoString = strtolower($connectionString['Driver']).":host=".$connectionString['Server'].";dbname=".$connectionString['Database'];
+		$this->driver = strtolower($connectionString['Driver']);
+		$this->host = $this->driver = $connectionString['Server'];
+		$this->pdo = new PDO($pdoString, $connectionString['User'], $connectionString['Password']);
 	}
 	
 	public function setPDO (PDO $db) {

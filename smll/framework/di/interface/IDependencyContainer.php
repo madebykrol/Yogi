@@ -19,4 +19,6 @@ interface IDependencyContainer {
 	public function register($class, $interface);
 	
 	public function &get($iterface);
+	
+	public function loadModule(IContainerModule $module);
 }

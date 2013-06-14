@@ -3,3 +3,8 @@
 #main-wrapper {
 	margin-top: 50px;
 }
+
+.validate-error {
+  color: #ff0000;
+  font-weight: bold;
+}

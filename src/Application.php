@@ -3,11 +3,10 @@ class Application extends HttpApplication {
 	
 	protected function applicationStart() {	
 		
-		$this->container->register('Session', 'ISession')
-			->addArgument(array());
+		$authorizationFilter = new AuthorizationFilter($this->container->get('IAnnotationHandler'));
+		$authorizationFilter->setMembership($this->container->get('IMembershipProvider'));
 		
-		$this->container->register('AnnotationHandler', 'IAnnotationHandler');
-		$this->container->register('DefaultActionFilter', 'DefaultActionFilter');
+		$this->filterConfig->addAuthorizationFilter($authorizationFilter);
 		
 		/**
 		 * Default route
@@ -19,15 +18,6 @@ class Application extends HttpApplication {
 								"action" => "index", 
 								"id" => Route::URLPARAMETER_OPTIONAL)));
 		
-		$this->routerConfig->mapRoute(
-				new Route("About", "About",
-						array(
-								"controller" => "Home",
-								"action" => "about",
-								"id" => Route::URLPARAMETER_OPTIONAL)));
-		
-		$this->filterConfig->addFilter($this->container->get('DefaultActionFilter'));
-		
-		
+			
 	}
 }

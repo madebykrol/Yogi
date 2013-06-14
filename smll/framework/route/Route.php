@@ -1,5 +1,5 @@
 <?php
-class Route {
+class Route implements IRoute{
 	
 	private $name;
 	private $url;

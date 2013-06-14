@@ -32,8 +32,12 @@ class Dir {
 				$dir = new Dir($this->path."/".$entry);
 				$dir->searchRecursive($search, $result, $ignore);
 			} else {
-				if($search instanceof Regex) {
+				if($search instanceof Regexp) {
 						
+					if($search->match($entry)) {
+						$result->add($this->path."/".$entry);
+					}
+					
 				} else if(is_string($search)) {
 						if($entry == $search) {
 							

@@ -7,6 +7,7 @@ class Session implements ISession {
 			'membershipkey' => null);
 	
 	public function __construct($defaults) {
+		
 		$this->init();
 		if($_SESSION[$this->token.'USER_LOOSE_IP'] != long2ip(ip2long($_SERVER['REMOTE_ADDR'])
 				& ip2long("255.255.0.0"))
@@ -63,14 +64,14 @@ class Session implements ISession {
 		if(isset($_SESSION[$this->token.$var]) && $_SESSION[$this->token.$var] != "") {
 			return $_SESSION[$this->token.$var];
 		} else {
-			return false;
+			return null;
 		}
 	}
 	
 	public function destroy() {
 		foreach($_SESSION as $var => $val) {
 			if(strpos($var, $this->token)!==FALSE){
-				unset($_SESSION[$var]);
+				//unset($_SESSION[$var]);
 			}
 		}
 	}

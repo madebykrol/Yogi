@@ -10,4 +10,6 @@ interface IController {
 	public function onActionError();
 	
 	public function __toString();
+	
+	public function setPrincipal(IPrincipal $user);
 }

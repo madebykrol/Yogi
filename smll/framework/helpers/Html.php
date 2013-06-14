@@ -141,7 +141,8 @@ class Html {
 				
 				if($type == 'text') {
 					$output .= self::textfield($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
-					
+				} else if($type == 'password') {
+					$output .= self::password($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
 				} else if($type == 'textarea') {
 					$output .= self::textarea($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
 				} else if($type == 'boolean') {
@@ -165,6 +166,10 @@ class Html {
 	
 	public static function textfield($name, $value = null, $placeholder = null, $extras = null) {
 		return "<input type=\"text\" value=\"".$value."\" name=\"".$name."\" placeholder=\"".$placeholder."\">";
+	}
+	
+	public static function password($name, $value = null, $placeholder = null, $extras = null) {
+		return "<input type=\"password\" value=\"".$value."\" name=\"".$name."\" placeholder=\"".$placeholder."\">";
 	}
 	
 	public static function textarea($name, $value = null, $extras = null) {
@@ -212,7 +217,7 @@ class Html {
 		$msg = $modelState->getErrorMessageFor($field);
 		
 		if($msg != null) {
-			return "<div class=\"validat-error\">".$msg."</div>";
+			return "<div class=\"validate-error\">".$msg."</div>";
 		}
 		
 		return null;

@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 $start = (float) array_sum(explode(' ',microtime()));
 #
 // PHP code whose execution time you want to measure
@@ -7,17 +7,11 @@ include('smll/AutoLoader.php');
 include('src/Application.php');
 
 $dic = new ContainerBuilder();
-$dic->register('Session', 'ISession');
-$dic->register('ViewEngine', 'IViewEngine');
-$dic->register('XmlSettingsLoader', 'ISettingsLoader')
-	->addArgument("Manifest.xml");
-
-$dic->register('AnnotationHandler', 'IAnnotationHandler');
+$dic->register('AnnotationHandler', 'IAnnotationHandler')->inRequestScope();
+$dic->register('FormFieldHandler', 'IFormFieldHandler');
 $dic->register('ModelBinder', 'IModelBinder')->inRequestScope();
 
-$dic->register('ControllerFactory', 'IControllerFactory');
-$dic->register('ViewFactory', 'IViewFactory');
-$dic->register('ActionFilterConfig', 'IActionFilterConfig')
+$dic->register('FilterConfig', 'IFilterConfig')
 	->inRequestScope();
 
 $dic->register('Request', 'IRequest')
@@ -30,16 +24,11 @@ $dic->register('Router', 'IRouter')
 	->set('RouterConfig', new RouterConfig())
 	->addMethodCall('init');
 
-$dic->register('Settings', 'ISettings')
-	->addMethodCall('load')
-	->inRequestScope();
-
 $dic->register('Application', 'IApplication')
 	->addArgument(null)
 	->addArgument(null)
-	->addArgument(new Service('ISettings'))
-	->set('ModelBinder', new Service('IModelBinder'))
-	->addMethodCall('init');
+	->addMethodCall('init')
+	->set('ModelBinder', new Service('IModelBinder'));
 
 $application = $dic->get('IApplication');
 $application->run();

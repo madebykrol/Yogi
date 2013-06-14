@@ -62,7 +62,9 @@ class Router implements IRouter {
 					} else {
 						
 						$parameter = str_replace(array('{', '}'),'', $url[$index]);
-						$value = $defaults[$parameter];
+						if(isset($defaults[$parameter])) {
+							$value = $defaults[$parameter];
+						}
 						if(isset($path[$index]) && $path[$index] != null) {
 							$value = $path[$index];
 						} else if ($request->getQueryString($parameter) != null) {

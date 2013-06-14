@@ -14,6 +14,10 @@ class ViewResult implements IViewResult {
 		$this->headers->add($field, $value);
 	}
 	
+	public function setHeaders(HashMap $headers) {
+		$this->headers = $headers;
+	}
+	
 	public function getHeaders() {
 		return $this->headers;
 	}

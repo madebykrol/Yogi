@@ -9,10 +9,14 @@ class AutoLoader {
 	protected $registeredClassPaths = array(
 
 		// Application
-		'HttpApplication' 	=> 'framework/',
-		'Settings' 					=> 'framework/settings/',
+		'HttpApplication' 		=> 'framework/',
+		'SettingsRepository' 	=> 'framework/settings/',
 		
+		// Exceptions
+		'EmptyResultException'	=> 'framework/exceptions/',
+		'MembershipUserExistsException' => 'framework/exceptions/',
 		
+			
 		// Router
 		'Router' 				=> 'framework/route/',
 		'IRouterConfig'	=> 'framework/route/interface/',
@@ -40,12 +44,19 @@ class AutoLoader {
 		'Controller' 	=> 'framework/mvc/',
 		'Action'			=> 'framework/mvc/',
 		'ViewResult'	=> 'framework/mvc/',
-		'IActionFilterRepository' => 'framework/mvc/filter/',
-		'ActionFilterRepository' 	=> 'framework/mvc/filter/',
-		'ActionFilterConfig'			=> 'framework/mvc/filter/',
-		'IActionFilterConfig'			=> 'framework/mvc/filter/',
-		'DefaultActionFilter'			=> 'framework/mvc/filter/',
+		'IFilterRepository' 			=> 'framework/mvc/filter/',
+		'FilterRepository' 				=> 'framework/mvc/filter/',
+		'FilterConfig'						=> 'framework/mvc/filter/',
+		'IFilterConfig'						=> 'framework/mvc/filter/',
+		'FilterAttribute'					=> 'framework/mvc/filter/',
 		'IActionFilter'						=> 'framework/mvc/filter/',
+		'IAuthorizationFilter'		=> 'framework/mvc/filter/',
+		'IResultFilter'						=> 'framework/mvc/filter/',
+		'AuthorizationFilter'			=> 'framework/mvc/filter/',
+			
+		'AuthorizationContext'  	=> 'framework/mvc/filter/',
+		'ControllerContext'				=> 'framework/mvc/filter/',
+		'IContext'								=> 'framework/mvc/filter/',
 			
 		'IModelState'							=> 'framework/mvc/interface/',
 		'ModelState'							=> 'framework/mvc/',
@@ -56,65 +67,94 @@ class AutoLoader {
 		'DataAnnotations'					=> 'framework/mvc/',
 			
 		// Controllers
-		'MapController' => 'controllers/',
-		'ControllerFactory' => 'framework/utils/',
+		'MapController' 					=> 'controllers/',
+		'ControllerFactory' 			=> 'framework/utils/',
 			
 		// Intefaces
-		'IController' 					=> 'framework/mvc/interface/',
-		'IRequest' 							=> 'framework/io/interface/',
-		'IModel' 								=> 'framework/mvc/interface/',
-		'IViewResult' 					=> 'framework/mvc/interface/',
-		'IDependencyContainer' 	=> 'framework/di/interface/',
-		'IDIService' 						=> 'framework/di/interface/',
-		'IList'									=> 'framework/utils/interface/',
-		'IService'							=> 'framework/di/interface/',
-		'IRouter' 							=> 'framework/route/',
-		'IApplication' 					=> 'framework/',
-		'ISettings'							=> 'framework/settings/',
-		'IControllerFactory'		=> 'framework/utils/interface/',
-		'ISettingsLoader'				=> 'framework/settings/',
-		'IAnnotationHandler'		=> 'framework/utils/interface/',
+		'IController' 						=> 'framework/mvc/interface/',
+		'IRequest' 								=> 'framework/io/interface/',
+		'IModel' 									=> 'framework/mvc/interface/',
+		'IViewResult' 						=> 'framework/mvc/interface/',
+		'IDependencyContainer' 		=> 'framework/di/interface/',
+		'IDIService' 							=> 'framework/di/interface/',
+		'IList'										=> 'framework/utils/interface/',
+		'IService'								=> 'framework/di/interface/',
+		'IRouter' 								=> 'framework/route/',
+		'IApplication' 						=> 'framework/',
+		'ISettingsRepository'			=> 'framework/settings/',
+		'IControllerFactory'			=> 'framework/utils/interface/',
+		'ISettingsLoader'					=> 'framework/settings/',
+		'IAnnotationHandler'			=> 'framework/utils/interface/',
+		'ITicket'									=> 'framework/security/interface/',
 		
 		
 		// Utils
-		'ArrayList' 		=> 'framework/utils/',
-		'HashMap'				=> 'framework/utils/',
-		'Regexp'				=> 'framework/utils/',
-		'String' 				=> 'framework/utils/',
-		'Boolean'				=> 'framework/utils/',
-		'JsonConverter' => 'framework/utils/',
-		'AnnotationHandler'	=> 'framework/utils/',
+		'ArrayList' 							=> 'framework/utils/',
+		'HashMap'									=> 'framework/utils/',
+		'Regexp'									=> 'framework/utils/',
+		'String' 									=> 'framework/utils/',
+		'Boolean'									=> 'framework/utils/',
+		'JsonConverter' 					=> 'framework/utils/',
+		'AnnotationHandler'				=> 'framework/utils/',
+		'Guid'										=> 'framework/utils/',
+		'IFormFieldHandler'				=> 'framework/utils/handlers/',
+		'FormFieldHandler'				=> 'framework/utils/handlers/',
+		
 		
 		// IOC 
-		'ContainerBuilder' 	=> 'framework/di/',
-		'DIService'					=> 'framework/di/',
-		'Definition' 				=> 'framework/di/',
-		'Service'						=> 'framework/di/',
-		'NullArgument' 			=> 'framework/di/',
+		'ContainerBuilder' 				=> 'framework/di/',
+		'DIService'								=> 'framework/di/',
+		'Definition' 							=> 'framework/di/',
+		'Service'									=> 'framework/di/',
+		'NullArgument' 						=> 'framework/di/',
+		'IContainerModule'				=> 'framework/di/interface/',
+		'DefaultContainerModule'	=> 'modules/',
 		
 		// Settings
 
-		'XmlSettingsLoader' => 'framework/io/',
-			
-		'ViewFactory'				=> 'framework/ViewFactory',
+		'XmlSettingsLoader' 			=> 'framework/io/',		
+		'ViewFactory'							=> 'framework/ViewFactory',
 		
 		// Exceptions
-		'ClassNotFoundException' => 'framework/exceptions/',
-		'IndexNotInMapException' => 'framework/exceptions/',
+		'ClassNotFoundException' 	=> 'framework/exceptions/',
+		'IndexNotInMapException' 	=> 'framework/exceptions/',
 		'CannotSerializeServiceException' => 'framework/exceptions/',
 			
 		// HTTP
-		'ISession'				=> 'framework/http/interface/',
-		'Session'					=> 'framework/http/',
+		'ISession'								=> 'framework/http/interface/',
+		'IHeaderRepository' 			=> 'framework/http/interface/',
+		'Session'									=> 'framework/http/',
+		'Headers'									=> 'framework/http/',
 			
 		// UnitTests
-	
-		'UnitTest'				=> 'framework/unittest/',
+		'UnitTest'								=> 'framework/unittest/',
+			
+		// Security 
+		'IMembership'							=> 'framework/security/interface/',
+		'IMembershipProvider'			=> 'framework/security/interface/',
+		'IRoleProvider'						=> 'framework/security/interface/',
+		'SqlMembershipProvider'		=> 'framework/security/',
+		'MembershipUser'					=> 'framework/security/',	
+			
+		'IIdentity'								=> 'framework/security/',
+		'IPrincipal'							=> 'framework/security/',
+			
+		'Identity'								=> 'framework/security/',
+		'Principal'								=> 'framework/security/',
+			
+		'FormAuthentication'			=> 'framework/security/authentication/',
+		'SessionFormAuthentication'			=> 'framework/security/authentication/',
+		'IAuthenticationProvider'	=> 'framework/security/interface/',
+			
+		'ICryptographer'					=> 'framework/security/interface/',
+		'Crypt'										=> 'framework/security/',
 		
+		'AuthenticationTicket'		=> 'framework/security/authentication/',
 		
 	);
 
 	protected $paths = array(
+		'smll/framework/lib/',
 		'src/controllers/',
 		'src/models/',
 		'src/business/',
@@ -129,6 +169,16 @@ class AutoLoader {
 
 		$trail = '';
 		$found = false;
+		
+		$class = explode("\\", $class);
+		
+		if(count($class) > 1) {
+			// we have a name space use.
+		} else {
+			// Normal case class 
+			$class = $class[0];
+		}
+		
 		if (isset($this->registeredClassPaths[$class])) {
 			include($this->registeredClassPaths[$class].$class.".php");
 			return true;
@@ -149,9 +199,17 @@ class AutoLoader {
 					include($classPath);
 					return true;
 				} 
+				
+				$dir = new Dir('smll/lib');
+				$result = new ArrayList();
+				$dir->searchRecursive($class.".php", $result);
+				foreach($result->getIterator() as $classPath) {
+					include($classPath);
+					return true;
+				}
 			}
 		}
-
+		
 		throw new ClassNotFoundException("Class not found exception $class");
 	}
 	

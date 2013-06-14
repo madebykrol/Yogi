@@ -1,5 +1,4 @@
 <?php
-interface IActionFilter {
-	public function pass(ReflectionMethod $method);
-	public function getMessage();
+interface IActionFilter extends IFilter {
+	
 }

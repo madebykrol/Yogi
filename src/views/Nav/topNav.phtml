@@ -6,10 +6,14 @@
 				<li>
 				<?php print Html::actionLink("Home", "index", "Home");?>
 				</li>
-				<li>
-				<?php print Html::actionLink("About", "index", "About");?>
-				</li>
 			</ul>
+			<?php if($model->authenticated) {?>
+				<ul class="nav pull-right">
+					<li>
+					<?php print Html::actionLink("Account", "index", "Account");?>
+					</li>
+				</ul>
+			<?php }?>
 		</div>
 	</div>
 </div>

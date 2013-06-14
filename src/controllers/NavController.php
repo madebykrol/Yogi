@@ -1,6 +1,7 @@
 <?php
 class NavController extends Controller {
 	public function topNav() {
-		return $this->view();
+		$model = (object)array('authenticated' => $this->user->getIdentity()->isAuthenticated());
+		return $this->view($model);
 	}
 }

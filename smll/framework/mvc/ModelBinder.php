@@ -3,9 +3,22 @@ class ModelBinder implements IModelBinder {
 	
 	private $annotationHandler;
 	
+	/**
+	 * [Inject(IFormFieldHandler)]
+	 * @var IFormFieldHandler
+	 */
+	private $formFieldHandler;
+	
+	private $currentFields;
+	
 	public function __construct(IAnnotationHandler $annotationHandler) {
 		$this->annotationHandler = $annotationHandler;
 	}
+	
+	public function setFormFieldHandler(IFormFieldHandler $handler) {
+		$this->formFieldHandler = $handler;
+	}
+	
 	/**
 	 * (non-PHPdoc)
 	 * @see IModelBinder::bindModel()
@@ -15,7 +28,9 @@ class ModelBinder implements IModelBinder {
 		$obj = $class->newInstance();
 		$modelState = &$controller->getModelState();
 		
-		foreach($parameters->getIterator() as $name => $value) {
+		$this->currentFields = $parameters->getIterator();
+		
+		foreach($this->currentFields as $name => $value) {
 			if($class->hasProperty($name)) {
 				$prop = $class->getProperty($name);
 		
@@ -43,25 +58,33 @@ class ModelBinder implements IModelBinder {
 	private function validateProperty(ReflectionProperty $prop, $value, &$errorMsg) {
 		$annotations = $this->annotationHandler->getAnnotations($prop);
 		
+		if($this->annotationHandler->hasAnnotation('FormField', $prop)) {
+			
+			
+			
+		}
+		$passed = true;
 		foreach($annotations as $annotation) {
 			$annotation = $this->annotationHandler->parseAnnotation($annotation);
 			$errorMsg = "";
 			
-			if(isset($annotation[1]['ErrorMessage'])) {
-				$errorMsg = $annotation[1]['ErrorMessage'];
+			if($annotation[0] == DataAnnotations::ErrorMessage) {
+				$errorMsg = $annotation[1];
 			} 
 			
 			if($annotation[0] == DataAnnotations::Required && empty($value)) {
-				return false;
+				$errorMsg = "*";
+				$passed = false;
+				
 			} else if($annotation[0] == DataAnnotations::ValidationPattern) {
 				$pattern = "";
+				
 				if(isset($annotation[1]['Pattern'])) {
 					$pattern = $annotation[1]['Pattern'];
 				}
-				
 				$regexp = new Regexp($pattern);
 				if(!$regexp->match($value) ) {
-					return false;
+					$passed = false;
 				}
 				
 			} else if($annotation[0] == DataAnnotations::StringLength) {
@@ -75,16 +98,21 @@ class ModelBinder implements IModelBinder {
 				}
 				if($maxLength > 0) {
 					if((strlen($value) < $minLength || strlen($value) > $maxLength)) {
-						return false;
+						$passed = false;
 					}
 				} else {
 					if(strlen($value) < $minLength) {
-						return false;
+						$passed = false;
 					}
+				}
+			} else if($annotation[0] == DataAnnotations::MatchField) {
+				
+				if($value != $this->currentFields[$annotation[1][0]]) {
+					$errorMsg = "*";
+					$passed = false;
 				}
 			}
 		}
-		$errorMsg = "";
-		return true;
+		return $passed;
 	}
 }

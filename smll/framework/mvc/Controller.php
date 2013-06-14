@@ -4,16 +4,70 @@ class Controller implements IController {
 	protected $viewBag = array(
 		'title' => '',		
 	);
-	
+	/**
+	 * [Inject(IApplication)]
+	 * @var IApplication
+	 */
 	private $application = null;
+	
+	/**
+	 * [Inject(IHeaderRepository)]
+	 * @var IHeaderRepository;
+	 */
+	protected $headers = null;
+	
+	/**
+	 * @var ImodelState
+	 */
 	protected $modelState = null;
 	
 	/**
+	 * [Inject(IAuthenticationProvider)]
+	 * @var IAuthenticationProvider
+	 */
+	protected $authentication;
+	
+	/**
+	 * [Inject(IMembershipProvider)]
+	 * @var IMembershipProvider
+	 */
+	protected $membership;
+	
+	/**
+	 * @var IPrincipal
+	 */
+	protected $user;
+	
+	/**
+	 * 
 	 * (non-PHPdoc)
 	 * @see IController::setApplication()
 	 */
 	public function setApplication(IApplication $application) {
 		$this->application = $application;
+	}
+	
+	public function setPrincipal(IPrincipal $user) {
+		$this->user = $user;
+	}
+	
+	/**
+	 * @return IPrincipal
+	 */
+	public function getPrincipal() {
+		return $this->user;
+	}
+	
+	public function setHeaders(IHeaderRepository $headers) {
+		$this->headers = $headers;
+	}
+	
+	public function setMembership(IMembershipProvider $membership) {
+		$this->membership = $membership;
+	}
+	
+	public function setAuthentication(IAuthenticationProvider $authentication) {
+		$this->authentication = $authentication;
 	}
 	
 	/**
@@ -50,6 +104,7 @@ class Controller implements IController {
 		}
 		
 		$result->setViewBag($this->viewBag);
+		$result->setHeaders($this->headers->getHeaders());
 		
 		return $result;
 		
@@ -59,15 +114,15 @@ class Controller implements IController {
 	/**
 	 * 
 	 * Overloaded HttpRedirect
-	 * internalRedirect($action)
-	 * internalRedirect($action, $controller)
-	 * internalRedirect($action, $controller, $parameters)
+	 * redirectToAction($action)
+	 * redirectToAction($action, $controller)
+	 * redirectToAction($action, $controller, $parameters)
 	 * 
 	 * @param unknown $action
 	 * @param string $controller
 	 * @param unknown $parameters
 	 */
-	public function internalRedirect($action, $controller = null, $parameters = array()) {
+	public function redirectToAction($action, $controller = null, $parameters = array()) {
 		
 		$result = new ViewResult();
 		$result->init();
@@ -81,8 +136,9 @@ class Controller implements IController {
 		}
 		$controller = "/".$controller;
 		
-		$result->setHeader("Location", $this->application->getApplicationRoot().$controller.$action);
+		$this->headers->add("Location", $this->application->getApplicationRoot().$controller.$action);
 		
+		$result->setHeaders($this->headers->getHeaders());
 		return $result;
 	}
 	

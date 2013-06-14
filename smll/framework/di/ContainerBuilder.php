@@ -1,8 +1,14 @@
 <?php
+/**
+ * 
+ * @author Kristoffer "mbk" Olsson
+ *
+ */
 class ContainerBuilder implements IDependencyContainer {
 	
 	protected $register;
 	protected $parameters;
+	protected $annotationHandler;
 	protected $scopes = array(
 		'request' 		=> array(),	
 	);
@@ -10,6 +16,7 @@ class ContainerBuilder implements IDependencyContainer {
 	public function __construct() {
 		$this->register = new HashMap();
 		$this->parameters = new HashMap();
+		$this->annotationHandler = new AnnotationHandler();
 	}
 	
 	public function setParameter($ident, $value) {
@@ -45,7 +52,7 @@ class ContainerBuilder implements IDependencyContainer {
 	public function &get($ident) {
 		try {
 			$definition = $this->register->get($ident);
-			
+			$service = null;
 			if($definition->getScope() == Definition::SCOPE_SINGELTON) {
 				
 				// Find our object in our singelton scope.
@@ -97,6 +104,32 @@ class ContainerBuilder implements IDependencyContainer {
 				$service = $reflectClass->newInstance();
 			}
 			
+			$properties = $reflectClass->getProperties();
+				
+			foreach($properties as $property) {
+				if($property instanceof ReflectionProperty) {
+					$doc = $property->getDocComment();
+						
+					if($this->annotationHandler->hasAnnotation("Inject", $property)) {
+						$name = $property->getName();
+						
+						$prop = $this->annotationHandler->getAnnotation("Inject", $property);
+						
+						if($property->isPublic()) {
+							$property->setValue($service, $this->get($prop[1][0]));
+						} else {
+							if($reflectClass->hasMethod('set'.ucfirst($property->getName()))) {
+								$m = $reflectClass->getMethod('set'.ucfirst($property->getName()));
+								$m->invoke($service, $this->get($prop[1][0]));
+							}
+						}
+						
+					} else {
+						continue;
+					}
+				}
+			}
+			
 			foreach($definition->getSetInjects() as $var => $val) {
 				
 				if($reflectClass->hasMethod("set".ucfirst($var))) {
@@ -117,6 +150,7 @@ class ContainerBuilder implements IDependencyContainer {
 					$args = array();
 					$reflectMethod->invoke($service);
 				}
+				
 			}
 			
 			if($definition->getScope() == Definition::SCOPE_REQUEST) {
@@ -130,11 +164,15 @@ class ContainerBuilder implements IDependencyContainer {
 				}
 			}
 			
-			
-			
 			return $service;
 		} catch (IndexNotInHashException $e) {
 			
+		}
+	}
+	
+	public function loadModule(IContainerModule $module) {
+		foreach($module->getRegister()->getIterator() as $ident => $definition) {			
+			$this->register->add($ident, $definition);
 		}
 	}
 	

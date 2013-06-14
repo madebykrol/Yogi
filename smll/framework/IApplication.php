@@ -1,13 +1,15 @@
 <?php
 interface IApplication {
-	public function run();
 	
+	public function install();
+	public function run();
 	
 	/**
 	 * @return IController
 	 */
 	public function &getCurrentExecutingController();
 	public function getApplicationRoot();
+	
 	
 	/**
 	 * @return IDependencyContainer
