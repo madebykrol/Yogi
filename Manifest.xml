@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<appSettings>
+    <encryption>
+        <add name="Default" key="IJhKcFXXl" />
+    </encryption>
+    <connectionStrings>
+        <add name="Default" 
+            connectionString="Driver=MySQL;Server=localhost;Database=smll_example;User=user;Password=pass123" />
+    </connectionStrings>
+    <authentication>
+          <add name="Provider" provider="FormAuthentication" />
+    </authentication>
+</appSettings>
