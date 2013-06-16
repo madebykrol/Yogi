@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Smll framework</title>
+  <link href="./assets/bootstrap/css/bootstrap.css" rel="stylesheet">
+  <link href="./assets/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="./assets/prettify.css" rel="stylesheet">
+  <link href="./assets/main.css" rel="stylesheet">
+</head>
+<body>
+  <div class="navbar navbar-inverse navbar-fixed-top">
+     <div class="navbar-inner">
+       <div class="container">
+         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+           <span class="icon-bar"></span>
+           <span class="icon-bar"></span>
+           <span class="icon-bar"></span>
+         </button>
+         <a class="brand" href="./index.html">Smll framework</a>
+         <div class="nav-collapse collapse">
+           <ul class="nav">
+             <li class="">
+               <a href="./index.html">Home</a>
+             </li>
+             <li class="active">
+               <a href="./getting-started.html">Get started</a>
+             </li>
+             <li class="">
+               <a href="./road-map.html">Road map</a>
+             </li>
+             <li class="">
+               <a href="./feedback.html">Feed back</a>
+             </li>
+           </ul>
+         </div>
+       </div>
+     </div>
+  </div>
+  <div class="container" id="main-wrapper">
+    <div class="row">
+      <div class="span12">
+        <div class="well">
+       <h1>Introducing Smll MVC</h1>
+       <p>Looking for a effective and easy to use PHP MVC framework? This is it!</p>
+       
+       <section id="downloads" class="">
+           <a href="https://github.com/madebykrol/Smll/zipball/master" class="btn btn-inverse">Download as .zip</a>
+           <a href="https://github.com/madebykrol/Smll/tarball/master" class="btn btn-inverse">Download as .tar.gz</a>
+           <a href="https://github.com/madebykrol/Smll" class="btn btn-github btn-inverse"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+      </div>
+    </div>
+    <div class="row">
+     <div class="span4">
+      <div class="well">
+         <ul class="nav nav-list">
+           <li class="nav-header">Chapters</li>
+           <li><a href="./getting-started.html">1. Getting started</a></li>
+           <li><a href="./controllers-routing.html">2. Controllers and Routing</a></li>
+           <li><a href="./getting-started-views.html">3. Views</a></li>
+           <li class="active"><a href="./getting-started-models.html">4. Models</a></li>
+           <li><a href="./getting-started-security.html">5. Security</a></li>
+           <li><a href="./getting-started-membership-framework.html">6. Membership and authentication.</a>
+           <li class="divider"></li>
+           <li><a href="#">Forum</a></li>
+         </ul>
+       </div>
+     </div>
+     <div class="span8">
+      <h1>Views.</h1>
+      <p>
+        Views in Smll MVC is currently basic PHP / HTML markup!
+        When a Controller returns it's action result the result is passed through one or a series of view files.
+        <br /><br />
+        Common MVC practice is to have a shared _layout view that have your wrapping markup, and then have a view for each action in each controller.
+      </p>
+     </div>
+    </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p>Developed with love and passion for software design and architecture by Kristoffer "<a href="http://twitter.com/madebykrol">mbk</a>" Olsson as a open source project </p>
+    <p>"I Love to write code, and I love the idea of sharing software, thats why I decided to release this project for free"</p>
+    <p><a href="./license.html">license</a></p>
+  </div>
+</footer>
+<script src="./scripts/jquery.js"></script>
+<script src="./scripts/bootstrap/js/bootstrap.js"></script>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-37201377-2', 'madebykrol.github.io');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>

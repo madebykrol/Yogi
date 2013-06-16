@@ -1,0 +1,249 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Smll framework</title>
+  <link href="./assets/bootstrap/css/bootstrap.css" rel="stylesheet">
+  <link href="./assets/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="./assets/prettify.css" rel="stylesheet">
+  <link href="./assets/main.css" rel="stylesheet">
+</head>
+<body>
+  <div class="navbar navbar-inverse navbar-fixed-top">
+     <div class="navbar-inner">
+       <div class="container">
+         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+           <span class="icon-bar"></span>
+           <span class="icon-bar"></span>
+           <span class="icon-bar"></span>
+         </button>
+         <a class="brand" href="./index.html">Smll framework</a>
+         <div class="nav-collapse collapse">
+           <ul class="nav">
+             <li class="">
+               <a href="./index.html">Home</a>
+             </li>
+             <li class="active">
+               <a href="./getting-started.html">Get started</a>
+             </li>
+             <li class="">
+               <a href="./road-map.html">Road map</a>
+             </li>
+             <li class="">
+               <a href="./feedback.html">Feed back</a>
+             </li>
+           </ul>
+         </div>
+       </div>
+     </div>
+  </div>
+  <div class="container" id="main-wrapper">
+    <div class="row">
+      <div class="span12">
+        <div class="well">
+       <h1>Introducing Smll MVC</h1>
+       <p>Looking for a effective and easy to use PHP MVC framework? This is it!</p>
+       
+       <section id="downloads" class="">
+           <a href="https://github.com/madebykrol/Smll/zipball/master" class="btn btn-inverse">Download as .zip</a>
+           <a href="https://github.com/madebykrol/Smll/tarball/master" class="btn btn-inverse">Download as .tar.gz</a>
+           <a href="https://github.com/madebykrol/Smll" class="btn btn-github btn-inverse"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+      </div>
+    </div>
+    <div class="row">
+     <div class="span4">
+			<div class="well">
+			   <ul class="nav nav-list">
+			     <li class="nav-header">Chapters</li>
+			     <li><a href="./getting-started.html">1. Getting started</a></li>
+			     <li><a href="./controllers-routing.html">2. Controllers and Routing</a></li>
+			     <li><a href="./getting-started-views.html">3. Views</a></li>
+			     <li><a href="./getting-started-models.html">4. Models</a></li>
+			     <li><a href="./getting-started-security.html">5. Security</a></li>
+			     <li class="active"><a href="./getting-started-membership-framework.html">6. Membership and authentication.</a>
+			     <li class="divider"></li>
+			     <li><a href="#">Forum</a></li>
+			   </ul>
+			 </div>
+     </div>
+     <div class="span8">
+      <h1>Membership framework</h1>
+      <p>
+       Smll comes packed with a internal framework for managing members in your application,
+       all the way from registration, to activtion to validation, to editing and deletion of members.
+       
+       This is done through the interfaces <span class="label">IMembershipProvider</span> and <span class="label">IRoleProvider</span>
+      </p>
+      <h2>IMembershipProvider</h2>
+      <p>
+        The IMembershipProvider interface mananges your users, the only current implementation of this interface is <span class="label">SqlMembershipProvider</span>
+        which manages membership data in your database.
+      </p>
+      <h3>Create a user</h3>
+      <p>
+        IMembershipProvider has a createUser method that takes 3 parameters, 2 required and one optional.
+        <br />
+        <table class="table table-striped">
+          <thead>
+            <th>Parameter</th><th>Description</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Username</td><td>The username of the new member</td>
+            </tr>
+            <tr>
+              <td>Password</td><td>A password for the user, this password will be hashed and stored by the provider</td>
+            </tr>
+            <tr>
+              <td>ProviderUserKey</td><td>Optional. The key, associated with this user, default is a Guid</td>
+            </tr>
+          </tbody>
+        </table>
+        When this method is invoked it will try to pass this information as a new user, and will store this information in the membership table.
+        if the user exists it will throw a <span class="label">UserExistsException</span>
+      </p>
+      <h3>Validating a user</h3>
+      <p>
+        Validating a user is commonly done in conjuction with the <span class="label">IAuthenticationProvider</span> to validate a users credentials before authenticating it.
+        <br />
+        For this purpose IMembershipProvider has a method called <span class="label">validateUser</span> which takes 2 parameters.
+        <table class="table table-striped">
+          <thead>
+            <th>Parameter</th><th>Description</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Username</td><td>The username</td>
+            </tr>
+            <tr>
+              <td>Password</td><td>The password for the user, will be hashed and matched against the stored password for the user</td>
+            </tr>
+          </tbody>
+        </table>
+        If the user does not exist, validateUser will throw a <span class="label">UserDoesNotExistException</span>
+      </p>
+      <h3>Enabaling / Disabaling a user</h3>
+      <p>
+      </p>
+      <h2>IAuthenticationProvider</h2>
+      <p>
+        Together with IMembershipProvider this interface makes out one very powerfull feature in Smll, the memmbership framework.
+        this interface handles authentication of memberships by creating a <span class="label">AuthenticationTicket</span> that 
+        is being validated on each request to keep a user authenticated.
+        The default implementation of IAuthenticationProvider is <span class="label">FormAuthentication</span>
+      </p>
+      <h3>Setting the authentication ticket / Signing in!</h3>
+      <p>
+        By calling the method <span class="label">signin</span> with a validated username IAuthenticationProvider will authenticate the user by setting a AuthenticationTicket to the response.
+        This user must then carry this ticket on each consecutive request to stay signed in.
+         <table class="table table-striped">
+          <thead>
+            <th>Parameter</th><th>Description</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Username</td><td>A validated username.</td>
+            </tr>
+            <tr>
+              <td>updateLastLoginDate</td><td>Optional. if true, IAuthenticationProvider, will update the last login date for this user.</td>
+            </tr>
+          </tbody>
+        </table>
+      </p>
+     <h3>Removing the ticket / Signing out!</h3>
+     <p>
+      By calling <span class="label">signout</span> the AuthenticationProvider will destroy the ticket, and invalidate the token, leaving the user unauthenticated untill he / she signs in again.
+     </p>
+     <h3>Checking if a user is authenticated</h3>
+     <p>
+      The IAuthenticationProvider has a <span class="label">getPrincipal</span> method, which returns a object that implements the <span class="label">IPricipal</span>.
+      This interface lets you grab a <span class="label">Identity</span> object through <span class="label">getIdentity</span> which lets you test wheater or not
+      the user of the current context is authenticated or not by invoking <span class="label">isAuthenticated</span> method. 
+     </p>
+     <h2>IRoleProvider</h2>
+     <p>
+      As any application might need different levels of authentication. Smll comes with a <span class="label">IRoleProvider</span> interface.
+      this interface provides means to handle membership roles, such as Administrators, Editors, and Users.
+     </p>
+     <h3>A list of potential roles</h3>
+     <p>You can recieve a list of roles that this application is providing by invoking IRoleProviders method <span class="label">getRoles</span></p>
+      <table class="table table-striped">
+          <thead>
+            <th>Parameter</th><th>Description</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="2">None</td>
+            </tr>
+
+          </tbody>
+        </table>
+     <h3>Check if user is in a role</h3>
+     <p>Using the <span class="label">findUserInRole</span> method you get a boolean if the user is in a specific role</p>
+     <table class="table table-striped">
+          <thead>
+            <th>Parameter</th><th>Description</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Username</td><td>The username you want to find roles for.</td>
+            </tr>
+            <tr>
+              <td>Role</td><td>Role to search in.</td>
+            </tr>
+          </tbody>
+        </table>
+     <h3>Get all roles of a user</h3>
+     <p><span class="label">getRolesForUser</span> returns a list of all the roles that this user belongs to.</p>
+     <table class="table table-striped">
+          <thead>
+            <th>Parameter</th><th>Description</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Username</td><td>The username you want to find roles for.</td>
+            </tr>
+          </tbody>
+        </table>
+     <h3>IRoleProvider together with IAuthenticationProvider</h3>
+     <p>
+     IAuthenticationProvider provides a IPrincipal that keeps track of the roles that the current user has.
+     this makes it really easy to test weather the current user has a specific role, for instance if the user is a <span class="label">Administrator</span> of your application.
+     by calling the <span class="label">isInRole</span> with Administrator as it's parameter you get a boolean telling you if the user is in this role or not.
+      <table class="table table-striped">
+          <thead>
+            <th>Parameter</th><th>Description</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Role</td><td>A string representing the role you want to test.</td>
+            </tr>
+          </tbody>
+        </table>
+     </p>
+     </div>
+    </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p>Developed with love and passion for software design and architecture by Kristoffer "<a href="http://twitter.com/madebykrol">mbk</a>" Olsson as a open source project </p>
+    <p>"I Love to write code, and I love the idea of sharing software, thats why I decided to release this project for free"</p>
+    <p><a href="./license.html">license</a></p>
+  </div>
+</footer>
+<script src="./scripts/jquery.js"></script>
+<script src="./scripts/bootstrap/js/bootstrap.js"></script>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-37201377-2', 'madebykrol.github.io');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
