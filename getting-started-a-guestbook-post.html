@@ -84,8 +84,8 @@ public function post_index(GuestbookFormModel $model) {
 private $db = null;
   
 public function __construct() {
-    $this->db = new DB('mysql', 'localhost', 'smll_example', 
-        array('user' => 'user', 'password' => 'password'));
+    // A connectionstring
+    $this->db = new DB("Driver=MySQL;Server=localhost;Database=smll_example;User=user;Password=password");
 }
 </pre>
       <p>
