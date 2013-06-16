@@ -138,7 +138,7 @@ abstract class HttpApplication Implements IApplication {
 	}
 	
 	public function processAction($controller, $actionName, HashMap $parameters = null) {
-	
+		
 		$controller = $this->container->get($controller);
 		
 		if($controller instanceof IController) {

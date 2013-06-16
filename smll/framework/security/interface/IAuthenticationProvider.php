@@ -2,19 +2,14 @@
 interface IAuthenticationProvider {
 	
 	/**
-	 * Destroys the authentication cookie and invalidates it on the server.
+	 * Destroys the AuthenticationTicket and invalidates it on the server.
 	 */
 	public function signout();
 	
 	/**
-	 * Sets a authentication cookie that contains an encrypted AuthenticationTicket
+	 * Sets the AuthenticationTicket for this request.
 	 */
-	public function setAuthCookie($username);
-	
-	/**
-	 * Get the authentication cookie for the current request.
-	 */
-	public function getAuthCookie();
+	public function signin($user, $updateLastLogin = false);
 	
 	/**
 	 * @return IPrincipal

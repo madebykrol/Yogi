@@ -5,10 +5,16 @@ class ViewResult implements IViewResult {
 	private $model;
 	private $viewBag;
 	private $headers;
+	/**
+	 * @var IViewEngine
+	 */
+	private $viewEngine;
 	
 	public function init() {
 		$this->headers = new HashMap();
 	}
+	
+	public function setViewEngine(IViewEngine $engine) {}
 	
 	public function setHeader($field, $value) {
 		$this->headers->add($field, $value);
@@ -41,6 +47,10 @@ class ViewResult implements IViewResult {
 		$this->viewBag = $viewBag;
 	}
 	
+	public function getViewBag() {
+		return $this->viewBag;
+	}
+	
 	public function render() {
 		$output = "";
 		
@@ -63,4 +73,11 @@ class ViewResult implements IViewResult {
 		return $output;
 	}
 	
+	public function renderSection() {
+		
+	}
+	
+	public function renderContent() {
+		
+	}
 }

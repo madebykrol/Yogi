@@ -8,11 +8,13 @@ class Html {
 		global $application;
 		if($controller == null) {
 			$controller = get_class($application->getCurrentExecutingController());
+		} else {
+			$controller .= "Controller";
 		}
 		
 		$request = new Request(null, array('q' => $controller."/".$action), null);
 		$request->init();
-		return $application->processAction($controller."Controller", $action, $extras);
+		return $application->processAction($controller, $action, $extras);
 	}
 	
 	public static function renderPartial($view, $model) {
@@ -105,15 +107,25 @@ class Html {
 	
 	public static function beginFormFor($object, $action = "", $controller = "", $extras = array()) {
 		global $application;
+		
 		if(!$application instanceof IApplication) {
 			throw new Exception();
 		}
+		
 		self::$currentForm++;
 		self::$formStack[self::$currentForm] = array();
 		
+		$postBack = "";
+		if($controller != "") {
+			$postBack.=$controller."/";
+		}
+		if($action != "") {
+			$postBack.=$action."/";
+		}
+		
 		$currentController = $application->getCurrentExecutingController();
 		
-		$output = "<form method=\"POST\" action=\"\">";
+		$output = "<form method=\"POST\" action=\"".$postBack."\">";
 		
 		$annotationHandler = new AnnotationHandler();
 		$rClass = new ReflectionClass(get_class($object));

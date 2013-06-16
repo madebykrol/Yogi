@@ -134,7 +134,8 @@ class AutoLoader {
 		'IMembershipProvider'			=> 'framework/security/interface/',
 		'IRoleProvider'						=> 'framework/security/interface/',
 		'SqlMembershipProvider'		=> 'framework/security/',
-		'MembershipUser'					=> 'framework/security/',	
+		'MembershipUser'					=> 'framework/security/',
+		'SqlRoleProvider'					=> 'framework/security/',
 			
 		'IIdentity'								=> 'framework/security/',
 		'IPrincipal'							=> 'framework/security/',

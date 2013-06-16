@@ -19,6 +19,17 @@ class FormAuthentication implements IAuthenticationProvider {
 	 */
 	private $headers;
 	
+	/**
+	 * [Inject(IRoleProvider)]
+	 * @var unknown
+	 */
+	private $roleProvider;
+	
+	
+	public function setRoleProvider(IRoleProvider $provider) {
+		$this->roleProvider = $provider;
+	}
+	
 	public function setEncryptor(ICryptographer $encryptor) {
 		$this->encryptor = $encryptor;
 	}
@@ -36,7 +47,7 @@ class FormAuthentication implements IAuthenticationProvider {
 	 * @param AuthenticationTicket $ticket
 	 * @return string
 	 */
-	public function encrypt(AuthenticationTicket $ticket) {
+	private function encrypt(AuthenticationTicket $ticket) {
 		
 		$encryption = $this->settings->get('encryption');
 		$key = $encryption['Default']['key'];
@@ -50,16 +61,16 @@ class FormAuthentication implements IAuthenticationProvider {
 	 * @param unknown $string
 	 * @return AuthenticationTicket
 	 */
-	public function decrypt($string) {
+	private function decrypt($string) {
 		
 		$encryption = $this->settings->get('encryption');
 		$key = $encryption['Default']['key'];
 		$this->encryptor->setEncryptionKey($key);
 		$string = $this->encryptor->decrypt($string, Crypt::ENCRYPTION_METHOD_AES);
 		if($string != FALSE) {
-			list($username, $valid, $issued, $data, $cookiePath, $expire) = explode(";", $string);
+			list($username, $valid, $issued, $roles, $cookiePath, $expire) = explode(";", $string);
 		
-			$ticket = new AuthenticationTicket($username, Boolean::parseValue($valid), $issued, $data, $cookiePath, $expire);
+			$ticket = new AuthenticationTicket($username, Boolean::parseValue($valid), $issued, explode(',', $roles), $cookiePath, $expire);
 		
 			return $ticket;
 		} 
@@ -77,23 +88,26 @@ class FormAuthentication implements IAuthenticationProvider {
 		
 	}
 	
+	public function signin($user, $updateLastLogin = false) {
+		$this->setAuthCookie($user);
+	}
+	
 	/**
-	 * (non-PHPdoc)
-	 * @see IAuthenticationProvider::setAuthCookie()
+	 * Sets a authentication cookie that contains an encrypted AuthenticationTicket
 	 */
-	public function setAuthCookie($user) {
+	private function setAuthCookie($user) {
 		$encryption = $this->settings->get('encryption');
 		$key = $encryption['Default']['key'];
 		$this->encryptor->setEncryptionKey($key);
-		$string = $this->encryptor->encrypt(new AuthenticationTicket($user, true, time(), "", "", time()+250), Crypt::ENCRYPTION_METHOD_AES);
+		
+		$string = $this->encryptor->encrypt(new AuthenticationTicket($user, true, time(), $this->roleProvider->getRolesForUser($user), "", time()+250), Crypt::ENCRYPTION_METHOD_AES);
 		$this->headers->setCookie('AuthenticationTicket', $string, time()+(3600*24*365), "/",null);
 	}
 	
 	/**
-	 * (non-PHPdoc)
-	 * @see IAuthenticationProvider::getAuthCookie()
+	 * Get the authentication cookie for the current request.
 	 */
-	public function getAuthCookie() {
+	private function getAuthCookie() {
 		return $this->headers->getCookie('AuthenticationTicket');
 	}
 	
@@ -108,6 +122,10 @@ class FormAuthentication implements IAuthenticationProvider {
 			
 			if($ticket != null) {
 				$p = new Principal();
+				
+				$roles = $ticket->getRoles();
+				$p->setRoles(new ArrayList($roles));
+				
 				$p->setIdentity(new Identity($ticket->getUserName(), true, "FormAuthentication"));
 				return $p;
 			}

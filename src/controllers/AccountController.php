@@ -30,7 +30,7 @@ class AccountController extends Controller {
 		$this->viewBag['title'] = 'Login';
 		if($this->modelState->isValid()) {
 			if($this->membership->validateUser($model->username, $model->password)) {
-				$this->authentication->setAuthCookie($model->username);
+				$this->authentication->signin($model->username);
 				return $this->redirectToAction($returnUrl);
 			} else {
 				$this->modelState->setErrorMessageFor('username', 'Username or Password was incorrect');

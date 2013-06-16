@@ -12,6 +12,7 @@ class DefaultContainerModule implements IContainerModule {
 		 $this->register('AnnotationHandler', 'IAnnotationHandler');
 		 $this->register('SqlMembershipProvider', 'IMembershipProvider')
 		 ->inRequestScope();
+		 $this->register('SqlRoleProvider', 'IRoleProvider');
 		 $this->register('Session', 'ISession')->addArgument(array());
 		 $this->register('FormAuthentication', 'IAuthenticationProvider');
 		 $this->register('Crypt', 'ICryptographer');

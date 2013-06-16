@@ -4,15 +4,15 @@ class AuthenticationTicket implements ITicket {
 	private $username = "";
 	private $valid = "";
 	private $issued = "";
-	private $data = "";
+	private $roles = "";
 	private $cookiePath = "";
 	private $expiryDate;
 	
-	public function __construct($username, $valid, $issued, $data, $cookiePath, $expiryDate ) {
+	public function __construct($username, $valid, $issued, array $roles, $cookiePath, $expiryDate ) {
 		$this->username = $username;
 		$this->valid = $valid;
 		$this->issued = $issued;
-		$this->data = $data;
+		$this->roles = $roles;
 		$this->cookiePath = $cookiePath;
 		$this->expiryDate = $expiryDate;
 	}
@@ -49,12 +49,15 @@ class AuthenticationTicket implements ITicket {
 		return $this->issued;
 	}
 	
-	public function setData($string) {
-		$this->data = $string;
+	/**
+	 * @param string $string
+	 */
+	public function setRoles($string) {
+		$this->roles = $string;
 	}
 	
-	public function getData() {
-		return $this->data;
+	public function getRoles() {
+		return $this->roles;
 	}
 	
 	public function setCookiePath($path) {
@@ -69,7 +72,7 @@ class AuthenticationTicket implements ITicket {
 		return $this->username
 		.";".$this->valid
 		.";".$this->issued
-		.";".$this->data
+		.";".join(',', $this->roles)
 		.";".$this->cookiePath
 		.";".$this->expiryDate;
 	}

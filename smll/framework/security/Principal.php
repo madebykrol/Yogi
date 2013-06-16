@@ -13,7 +13,11 @@ class Principal implements IPrincipal {
 	}
 	
 	public function isInRole($role) {
-		return true;
+		if(isset($this->roles)) {
+			return $this->roles->has($role);
+		} 
+		
+		return false;
 	}
 	
 	public function setRoles(ArrayList $roles) {
