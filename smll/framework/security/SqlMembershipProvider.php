@@ -1,11 +1,17 @@
 <?php
+namespace smll\framework\security;
+use smll\framework\security\interfaces\IMembershipProvider;
+use smll\framework\security\interfaces\ICryptographer;
+use smll\framework\settings\interfaces\ISettingsRepository;
+use smll\framework\io\db\DB;
+use smll\framework\security\MembershipUser;
 class SqlMembershipProvider implements IMembershipProvider {
 	
 	private $datastore = null;
 	private $settings = null;
 	
 	/**
-	 * [Inject(ICryptographer)]
+	 * [Inject(smll\framework\security\interfaces\ICryptographer)]
 	 * @var ICryptographer
 	 */
 	private $encrypter = null;

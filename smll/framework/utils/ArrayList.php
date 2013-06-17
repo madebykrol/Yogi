@@ -1,4 +1,6 @@
 <?php
+namespace smll\framework\utils;
+use smll\framework\utils\interfaces\IList;
 class ArrayList implements IList {
 	
 	protected $t = "IData";
@@ -16,7 +18,7 @@ class ArrayList implements IList {
 		if(is_int($n)) {
 			$this->listData[$n] = $data;
 		} else {
-			throw new InvalidArgumentException("first argument must be an integer value", "", "");
+			throw new \InvalidArgumentException("first argument must be an integer value", "", "");
 		}
 	}
 	
@@ -28,12 +30,16 @@ class ArrayList implements IList {
 	}
 	
 	public function getIterator() {
-		$iterator = new ArrayIterator($this->listData);
+		$iterator = new \ArrayIterator($this->listData);
 		return $iterator;
 	}
 	
 	public function toArray() {
 		return $this->listData;
+	}
+	
+	public function has($val) {
+		return in_array($val, $this->listData);
 	}
 	
 }

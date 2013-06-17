@@ -1,4 +1,5 @@
 <?php 
+namespace smll\framework\io\db;
 // $Id;
 /**
  * Base class for DB Results

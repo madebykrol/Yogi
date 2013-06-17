@@ -1,4 +1,6 @@
 <?php
+namespace src\controllers;
+use smll\framework\mvc\Controller;
 /**
  * 
  */

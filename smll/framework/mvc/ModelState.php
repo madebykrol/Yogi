@@ -1,4 +1,8 @@
 <?php
+namespace smll\framework\mvc;
+use smll\framework\mvc\interfaces\IModelState;
+use smll\framework\utils\HashMap;
+
 class ModelState implements IModelState {
 	
 	private $modelState = true;

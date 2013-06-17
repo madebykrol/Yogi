@@ -1,4 +1,5 @@
 <?php
+namespace smll\framework\security;
 class MembershipUser {
 	protected $providerIdent;
 	protected $providerName;

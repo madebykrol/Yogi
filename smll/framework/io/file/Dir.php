@@ -1,4 +1,5 @@
 <?php
+namespace smll\framework\io\file;
 class Dir {
 	
 	/**

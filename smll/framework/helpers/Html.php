@@ -1,4 +1,15 @@
 <?php
+namespace smll\framework\helpers;
+use smll\framework\io\Request;
+use smll\framework\utils\AnnotationHandler;
+use smll\framework\IApplication;
+use smll\framework\utils\HashMap;
+
+use \Exception;
+use \ReflectionProperty;
+
+
+
 class Html {
 	
 	public static $currentForm = 0;
@@ -65,7 +76,7 @@ class Html {
 	
 	public function textBoxFor($object, $name) {
 		$annotationHandler = new AnnotationHandler();
-		$rClass = new ReflectionClass(get_class($object));
+		$rClass = new \ReflectionClass(get_class($object));
 		
 		if($rClass->hasProperty($name)) {
 			$property = $rClass->getProperty($name);
@@ -86,7 +97,7 @@ class Html {
 	
 	public function labelFor($object, $name) {
 		$annotationHandler = new AnnotationHandler();
-		$rClass = new ReflectionClass(get_class($object));
+		$rClass = new \ReflectionClass(get_class($object));
 		
 		if($rClass->hasProperty($name)) {
 			$property = $rClass->getProperty($name);
@@ -122,13 +133,16 @@ class Html {
 		if($action != "") {
 			$postBack.=$action."/";
 		}
+		if($postBack != "") {
+			$postBack = $application->getApplicationRoot()."/".$postBack;
+		}
 		
 		$currentController = $application->getCurrentExecutingController();
 		
 		$output = "<form method=\"POST\" action=\"".$postBack."\">";
 		
 		$annotationHandler = new AnnotationHandler();
-		$rClass = new ReflectionClass(get_class($object));
+		$rClass = new \ReflectionClass(get_class($object));
 		foreach($rClass->getProperties() as $property) {
 			
 			

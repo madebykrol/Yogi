@@ -1,4 +1,6 @@
 <?php
+namespace smll\framework\security\authentication;
+use smll\framework\security\interfaces\ITicket;
 class AuthenticationTicket implements ITicket {
 	
 	private $username = "";

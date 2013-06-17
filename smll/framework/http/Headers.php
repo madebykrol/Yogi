@@ -1,4 +1,7 @@
 <?php
+namespace smll\framework\http;
+use smll\framework\http\interfaces\IHeaderRepository;
+use smll\framework\utils\HashMap;
 class Headers implements IHeaderRepository {
 	private $headers = null;
 	public function __construct() {

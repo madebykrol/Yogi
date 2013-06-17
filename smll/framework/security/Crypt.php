@@ -1,4 +1,5 @@
 <?php
+namespace smll\framework\security;
 /**
  * 
  * Smll default crypthography class.
@@ -15,6 +16,16 @@
  *
  *
  */
+require('smll/lib/phpseclib/Crypt/Rijndael.php');
+require('smll/lib/phpseclib/Crypt/AES.php');
+require('smll/lib/phpass/PasswordHash.php');
+
+use \PasswordHash;
+use \Crypt_AES;
+use \Crypt_Rijndael;
+
+use smll\framework\security\interfaces\ICryptographer;
+
 class Crypt implements ICryptographer {
 	
 	private $encryptKey = null;

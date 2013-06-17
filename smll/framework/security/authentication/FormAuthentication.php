@@ -1,26 +1,38 @@
 <?php
+namespace smll\framework\security\authentication;
+use smll\framework\security\interfaces\IAuthenticationProvider;
+use smll\framework\security\Principal;
+use smll\framework\security\Identity;
+use smll\framework\utils\ArrayList;
+use smll\framework\settings\interfaces\ISettingsRepository;
+use smll\framework\security\interfaces\ICryptographer;
+use smll\framework\http\interfaces\IHeaderRepository;
+use smll\framework\security\interfaces\IRoleProvider;
+use smll\framework\security\Crypt;
+use smll\framework\utils\Boolean;
+
 class FormAuthentication implements IAuthenticationProvider {
 	
 	/**
-	 * [Inject(ISettingsRepository)]
+	 * [Inject(smll\framework\settings\interfaces\ISettingsRepository)]
 	 * @var ISettingsRepository
 	 */
 	private $settings;
 	
 	/**
-	 * [Inject(ICryptographer)]
+	 * [Inject(smll\framework\security\interfaces\ICryptographer)]
 	 * @var ICryptographer
 	 */
 	private $encryptor;
 	
 	/**
-	 * [Inject(IHeaderRepository)]
+	 * [Inject(smll\framework\http\interfaces\IHeaderRepository)]
 	 * @var IHeaderRepository
 	 */
 	private $headers;
 	
 	/**
-	 * [Inject(IRoleProvider)]
+	 * [Inject(smll\framework\security\interfaces\IRoleProvider)]
 	 * @var unknown
 	 */
 	private $roleProvider;

@@ -1,4 +1,7 @@
 <?php
+namespace smll\framework\security\authentication;
+use smll\framework\security\interfaces\IAuthenticationProvider;
+
 class SessionFormAuthentication implements IAuthenticationProvider {
 	
 	/**
@@ -8,7 +11,7 @@ class SessionFormAuthentication implements IAuthenticationProvider {
 	private $settings;
 	
 	/**
-	 * [Inject(IHeaderRepository)]
+	 * [Inject(smll\framework\http\interfaces\IHeaderRepository)]
 	 * @var IHeaderRepository
 	 */
 	private $headers;

@@ -1,4 +1,5 @@
 <?php
-class SmllIterator implements Iterator {
+namespace smll\framework\utils;
+class SmllIterator implements \Iterator {
 	
 }

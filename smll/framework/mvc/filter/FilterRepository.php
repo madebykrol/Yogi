@@ -1,4 +1,8 @@
 <?php
+namespace smll\framework\mvc\filter;
+use smll\framework\mvc\filter\interfaces\IFilterRepository;
+use smll\framework\mvc\filter\interfaces\IFilterConfig;
+
 class FilterRepository implements IFilterRepository {
 	
 	private $filterConfig = null;

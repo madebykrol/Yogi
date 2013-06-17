@@ -1,4 +1,7 @@
 <?php
+namespace smll\framework\settings;
+use smll\framework\settings\interfaces\ISettingsRepository;
+use smll\framework\settings\interfaces\ISettingsLoader;
 class SettingsRepository implements ISettingsRepository {
 	
 	private $loader;

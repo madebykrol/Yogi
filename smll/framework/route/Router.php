@@ -1,4 +1,11 @@
 <?php
+namespace smll\framework\route;
+use smll\framework\route\interfaces\IRouter;
+use smll\framework\route\interfaces\IRouterConfig;
+use smll\framework\io\interfaces\IRequest;
+use smll\framework\mvc\Action;
+use smll\framework\utils\Regexp;
+use smll\framework\utils\HashMap;
 class Router implements IRouter {
 	
 	private $controllerFactory = null;

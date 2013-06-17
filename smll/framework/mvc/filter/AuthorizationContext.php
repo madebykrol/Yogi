@@ -1,4 +1,8 @@
 <?php
+namespace smll\framework\mvc\filter;
+use smll\framework\mvc\filter\ControllerContext;
+use smll\framework\mvc\interfaces\IController;
+use smll\framework\IApplication;
 class AuthorizationContext extends ControllerContext {
 	
 	private $result = null;

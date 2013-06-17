@@ -1,4 +1,9 @@
 <?php
+namespace smll\framework\mvc;
+use smll\framework\mvc\interfaces\IViewResult;
+use smll\framework\utils\HashMap;
+use smll\framework\helpers\Html;
+
 class ViewResult implements IViewResult {
 	
 	private $viewFile;
@@ -13,8 +18,6 @@ class ViewResult implements IViewResult {
 	public function init() {
 		$this->headers = new HashMap();
 	}
-	
-	public function setViewEngine(IViewEngine $engine) {}
 	
 	public function setHeader($field, $value) {
 		$this->headers->add($field, $value);

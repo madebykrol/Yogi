@@ -1,4 +1,7 @@
 <?php
+namespace smll\framework\di;
+use smll\framework\di\interfaces\IService;
+
 class Service implements IService {
 	protected $serviceReference;
 	

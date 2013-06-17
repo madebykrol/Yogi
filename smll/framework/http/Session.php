@@ -1,4 +1,6 @@
 <?php
+namespace smll\framework\http;
+use smll\framework\http\interfaces\ISession;
 class Session implements ISession {
 	
 	protected $token = "smll_";

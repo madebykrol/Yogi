@@ -1,4 +1,7 @@
 <?php
+namespace smll\framework\utils;
+use smll\framework\utils\interfaces\IList;
+
 class HashMap implements IList {
 	
 	protected $dataList = array();
@@ -8,7 +11,7 @@ class HashMap implements IList {
 	}
 	
 	public function getIterator() {
-		return new ArrayIterator($this->dataList);
+		return new \ArrayIterator($this->dataList);
 	}
 	
 	

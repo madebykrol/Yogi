@@ -1,10 +1,22 @@
 <?php
+namespace smll\framework\mvc;
+use smll\framework\mvc\interfaces\IModelBinder;
+use smll\framework\mvc\interfaces\IController;
+use smll\framework\utils\HashMap;
+use smll\framework\utils\interfaces\IAnnotationHandler;
+use smll\framework\mvc\DataAnnotations;
+use smll\framework\utils\Regexp;
+use smll\framework\utils\handlers\interfaces\IFormFieldHandler;
+
+use \ReflectionProperty;
+use \ReflectionClass;
+
 class ModelBinder implements IModelBinder {
 	
 	private $annotationHandler;
 	
 	/**
-	 * [Inject(IFormFieldHandler)]
+	 * [Inject(smll\framework\utils\handlers\interfaces\IFormFieldHandler)]
 	 * @var IFormFieldHandler
 	 */
 	private $formFieldHandler;

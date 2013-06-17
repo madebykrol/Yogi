@@ -1,4 +1,5 @@
 <?php
+namespace smll\framework;
 interface IApplication {
 	
 	public function install();

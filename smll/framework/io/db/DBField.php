@@ -1,4 +1,5 @@
 <?php
+namespace smll\framework\io\db;
 class DBField {
 	protected $name;
 	protected $type;

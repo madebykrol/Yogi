@@ -1,4 +1,5 @@
 <?php
+namespace smll\framework\utils;
 class Guid {
 	public static function createNew() {
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',

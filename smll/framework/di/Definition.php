@@ -1,4 +1,5 @@
 <?php
+namespace smll\framework\di;
 class Definition {
 	private $class;
 	private $file;

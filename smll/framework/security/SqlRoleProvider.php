@@ -1,8 +1,12 @@
 <?php
+namespace smll\framework\security;
+use smll\framework\security\interfaces\IRoleProvider;
+use smll\framework\settings\interfaces\ISettingsRepository;
+use smll\framework\io\db\DB;
 class SqlRoleProvider implements IRoleProvider {
 	
 	/**
-	 * [Inject(ISettingsRepository)]
+	 * [Inject(smll\framework\settings\interfaces\ISettingsRepository)]
 	 * @var unknown
 	 */
 	private $settings;

@@ -1,4 +1,9 @@
 <?php
+namespace smll\framework\mvc\filter;
+use smll\framework\mvc\filter\interfaces\IFilterConfig;
+use smll\framework\utils\ArrayList;
+use smll\framework\mvc\filter\interfaces\IActionFilter;
+use smll\framework\mvc\filter\interfaces\IAuthorizationFilter;
 class FilterConfig implements IFilterConfig {
 	
 	private $actionFilters;

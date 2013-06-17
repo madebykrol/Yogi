@@ -1,4 +1,11 @@
 <?php
+namespace smll\framework\mvc\filter;
+use smll\framework\mvc\filter\FilterAttribute;
+use smll\framework\mvc\filter\interfaces\IAuthorizationFilter;
+use smll\framework\security\interfaces\IMembershipProvider;
+use smll\framework\mvc\filter\AuthorizationContext;
+use smll\framework\mvc\ViewResult;
+use smll\framework\utils\HashMap;
 class AuthorizationFilter extends FilterAttribute implements IAuthorizationFilter {
 	
 	/**

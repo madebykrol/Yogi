@@ -1,4 +1,9 @@
 <?php
+namespace smll\framework\utils;
+use smll\framework\utils\interfaces\IAnnotationHandler;
+use \ReflectionClass;
+use \ReflectionMethod;
+use \ReflectionProperty;
 class AnnotationHandler implements IAnnotationHandler {
 	
 	public function __construct() {

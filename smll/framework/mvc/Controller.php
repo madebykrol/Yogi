@@ -1,4 +1,15 @@
 <?php
+namespace smll\framework\mvc;
+use smll\framework\mvc\interfaces\IController;
+use smll\framework\mvc\ViewReslut;
+use smll\framework\IApplication;
+use smll\framework\security\interfaces\IAuthenticationProvider;
+use smll\framework\security\interfaces\IMembershipProvider;
+use smll\framework\security\interfaces\IPrincipal;
+use smll\framework\mvc\interfaces\IModelState;
+use smll\framework\http\interfaces\IHeaderRepository;
+
+
 class Controller implements IController {
 	
 	protected $viewBag = array(
@@ -11,7 +22,7 @@ class Controller implements IController {
 	private $application = null;
 	
 	/**
-	 * [Inject(IHeaderRepository)]
+	 * [Inject(smll\framework\http\interfaces\IHeaderRepository)]
 	 * @var IHeaderRepository;
 	 */
 	protected $headers = null;
@@ -22,13 +33,13 @@ class Controller implements IController {
 	protected $modelState = null;
 	
 	/**
-	 * [Inject(IAuthenticationProvider)]
+	 * [Inject(smll\framework\security\interfaces\IAuthenticationProvider)]
 	 * @var IAuthenticationProvider
 	 */
 	protected $authentication;
 	
 	/**
-	 * [Inject(IMembershipProvider)]
+	 * [Inject(smll\framework\security\interfaces\IMembershipProvider)]
 	 * @var IMembershipProvider
 	 */
 	protected $membership;

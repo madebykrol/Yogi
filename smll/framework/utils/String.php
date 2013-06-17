@@ -1,4 +1,5 @@
 <?php
+namespace smll\framework\utils;
 class String {
 	
 	private $string = "";

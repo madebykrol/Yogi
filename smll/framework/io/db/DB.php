@@ -1,4 +1,10 @@
-<?php 
+<?php
+namespace smll\framework\io\db; 
+use \PDO;
+use \PDOStatement;
+use \PDOException;
+use \PDORow;
+use \Exception;
 // $Id;
 /**
  * 
@@ -50,8 +56,12 @@ class DB {
 		
 		$pdoString = strtolower($connectionString['Driver']).":host=".$connectionString['Server'].";dbname=".$connectionString['Database'];
 		$this->driver = strtolower($connectionString['Driver']);
-		$this->host = $this->driver = $connectionString['Server'];
+		$this->host = $connectionString['Server'];
 		$this->pdo = new PDO($pdoString, $connectionString['User'], $connectionString['Password']);
+	}
+	
+	public function __destruct() {
+		$this->pdo = null;
 	}
 	
 	public function setPDO (PDO $db) {
@@ -556,8 +566,10 @@ class DB {
 	public /* void */ function limit($limit, $offset = null) {
 		
 		$this->limitBindValues = array();
+		$limitString = "";
+		
 		if ($this->driver == "mysql") {
-			$limitString = "";
+			
 			if(isset($offset)) {
 				$limitString = "LIMIT ? OFFSET ?";
 				$this->limitBindValues[0] = $limit;
@@ -568,6 +580,7 @@ class DB {
 			}
 		}
 		$this->limit = $limitString;
+		
 	} 
 	
 	/**

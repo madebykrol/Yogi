@@ -1,4 +1,6 @@
 <?php
+namespace smll\framework\io;
+use smll\framework\io\interfaces\IRequest;
 class Request implements IRequest {
 	
 	private $requestArr = array();

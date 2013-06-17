@@ -1,4 +1,5 @@
 <?php
+namespace smll\framework\mvc\filter;
 class FilterAttribute {
 	
 	protected $annotations;

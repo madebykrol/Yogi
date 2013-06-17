@@ -1,4 +1,16 @@
 <?php
+namespace smll\framework\di;
+use smll\framework\di\interfaces\IDependencyContainer;
+use smll\framework\di\interfaces\IContainerModule;
+use smll\framework\utils\HashMap;
+use smll\framework\utils\ArrayList;
+use smll\framework\utils\AnnotationHandler;
+use smll\framework\utils\interfaces\IAnnotationHandler;
+use smll\framework\di\Service;
+use smll\framework\di\interfaces\IService;
+use \ReflectionProperty;
+use \ReflectionClass;
+use \ReflectionMethod;
 /**
  * 
  * @author Kristoffer "mbk" Olsson
@@ -53,6 +65,7 @@ class ContainerBuilder implements IDependencyContainer {
 		try {
 			$definition = $this->register->get($ident);
 			$service = null;
+			
 			if($definition->getScope() == Definition::SCOPE_SINGELTON) {
 				
 				// Find our object in our singelton scope.
@@ -90,7 +103,6 @@ class ContainerBuilder implements IDependencyContainer {
 					if($arg === null) {
 						// try to resolve the parameter by it's interface from within the
 						// containers register.
-
 						if($param->getClass() != null) {
 							$service = $this->get($param->getClass()->name);
 							$args->setAt($index, $service);
@@ -105,11 +117,11 @@ class ContainerBuilder implements IDependencyContainer {
 			}
 			
 			$properties = $reflectClass->getProperties();
-				
+			
 			foreach($properties as $property) {
 				if($property instanceof ReflectionProperty) {
 					$doc = $property->getDocComment();
-						
+					
 					if($this->annotationHandler->hasAnnotation("Inject", $property)) {
 						$name = $property->getName();
 						

@@ -1,11 +1,38 @@
 <?php
+namespace smll\framework;
+
+use smll\framework\IApplication;
+use smll\framework\io\Request;
+use smll\framework\io\interfaces\IRequest;
+use smll\framework\route\interfaces\IRouter;
+use smll\framework\mvc\filter\interfaces\IFilterConfig;
+use smll\framework\di\ContainerBuilder;
+use smll\modules\DefaultContainerModule;
+use smll\framework\di\Service;
+use smll\framework\route\Route;
+use smll\framework\utils\HashMap;
+use smll\framework\utils\ArrayList;
+use smll\framework\mvc\interfaces\IController;
+use smll\framework\security\interfaces\IAuthenticationProvider;
+use smll\framework\security\Principal;
+use smll\framework\security\Identity;
+use smll\framework\security\interfaces\IIdentity;
+use smll\framework\mvc\filter\AuthorizationContext;
+use smll\framework\exceptions\EmptyResultException;
+use smll\framework\mvc\interfaces\IViewResult;
+use smll\framework\mvc\interfaces\IModelBinder;
+
+use \ReflectionMethod;
+use \ReflectionProperty;
+use \Exception;
+
 abstract class HttpApplication Implements IApplication {
 	
 	private $request;
 	private $router;
 	
 	/**
-	 * [Inject(IModelBinder)]
+	 * [Inject(smll\framework\mvc\interfaces\IModelBinder)]
 	 * @var IModelBinder
 	 */
 	private $modelBinder;
@@ -115,9 +142,9 @@ abstract class HttpApplication Implements IApplication {
 			if(strpos($entry, "Controller") !== FALSE) {
 				$entry = explode(".", $entry);
 				$controllerName = $entry[0];
-				$this->container->register($controllerName, $controllerName)
+				$this->container->register('src\controllers\\'.$controllerName, 'src\controllers\\'.$controllerName)
 					->set('application', $this)
-					->set('modelState', new Service('IModelState'))
+					->set('modelState', new Service('smll\framework\mvc\interfaces\IModelState'))
 					->inRequestScope();
 			}
 		}
@@ -138,8 +165,8 @@ abstract class HttpApplication Implements IApplication {
 	}
 	
 	public function processAction($controller, $actionName, HashMap $parameters = null) {
-		
-		$controller = $this->container->get($controller);
+	
+		$controller = $this->container->get('src\controllers\\'.$controller);
 		
 		if($controller instanceof IController) {
 			$class = get_class($controller);
@@ -148,7 +175,7 @@ abstract class HttpApplication Implements IApplication {
 			
 			$this->currentExecutingController = $controller;
 			
-			$class = new ReflectionClass($class);
+			$class = new \ReflectionClass($class);
 			
 			$passed = false;
 			$output = "";
@@ -162,7 +189,7 @@ abstract class HttpApplication Implements IApplication {
 			}
 			
 			// Get AuthorizationFilters
-			$annotationHandler = $this->container->get('IAnnotationHandler');
+			$annotationHandler = $this->container->get('smll\framework\utils\interfaces\IAnnotationHandler');
 			
 			foreach($this->filterConfig->getAuthorizationFilters()->getIterator() as $filter) {
 				$authorizationContext = new AuthorizationContext();
@@ -215,6 +242,8 @@ abstract class HttpApplication Implements IApplication {
 					// Loop through view file conventions
 		
 					$className = str_replace("Controller", "", get_class($controller));
+					$className = explode('\\', $className);
+					$className = $className[count($className)-1];
 					$possibleViewFiles = new ArrayList(
 							array(
 									$className."/_default.phtml",
@@ -276,7 +305,7 @@ abstract class HttpApplication Implements IApplication {
 	}
 	
 	private function attachPrincipal(IController $controller) {
-		$authenticationHandler = $this->container->get('IAuthenticationProvider');
+		$authenticationHandler = $this->container->get('smll\framework\security\interfaces\IAuthenticationProvider');
 		$principal = new Principal();
 		$principal->setIdentity(new Identity(null, false, null));
 		
@@ -297,7 +326,7 @@ abstract class HttpApplication Implements IApplication {
 				$name = $parameter->getName();
 				$class = $parameter->getClass();
 				
-				if($class != null && $class instanceof ReflectionClass) {
+				if($class != null && $class instanceof \ReflectionClass) {
 					$args[] = $this->modelBinder->bindModel($class, $controller, $parameters);
 				} else {
 					$args[] = $parameters->get($name);

@@ -1,4 +1,6 @@
 <?php
+namespace smll\framework\security;
+use smll\framework\security\interfaces\IIdentity;
 class Identity implements IIdentity {
 	private $authenticated = false;
 	private $name = null;

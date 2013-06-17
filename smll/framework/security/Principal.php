@@ -1,4 +1,8 @@
 <?php
+namespace smll\framework\security;
+use smll\framework\security\interfaces\IPrincipal;
+use smll\framework\security\interfaces\IIdentity;
+use smll\framework\utils\ArrayList;
 class Principal implements IPrincipal {
 	
 	private $identity;

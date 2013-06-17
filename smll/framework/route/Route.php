@@ -1,4 +1,6 @@
 <?php
+namespace smll\framework\route;
+use smll\framework\route\interfaces\IRoute;
 class Route implements IRoute{
 	
 	private $name;

@@ -4,6 +4,8 @@
  * @author Kristoffer "mbk" Olsson
  *
  */
+namespace smll\framework\mvc;
+use smll\framework\utils\HashMap;
 class Action {
 	
 	private $controller = null;
