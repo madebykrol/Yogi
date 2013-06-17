@@ -85,6 +85,7 @@ CREATE TABLE `guestbook` (
         p.s: We won't be using the About action in this example.
       </p>
 <pre class="prettyprint lang-php linenums">
+namespace src\controllers;
 class HomeController extends Controller {
   /**
    * @return ViewResult
@@ -103,6 +104,7 @@ class HomeController extends Controller {
       </p>
 <pre class="prettyprint lang-html linenums">
 &lt;?php 
+use smll\framework\helpers\Html;
 $layout = "src/views/Share/_layout.phtml";
 ?&gt;
 &lt;div class="row"&gt;
@@ -122,6 +124,7 @@ $layout = "src/views/Share/_layout.phtml";
         we will cover how it works in another chapter.
       </p>
 <pre class="prettyprint lang-php linenums">
+namespace src\models;
 class GuestbookFormModel {
   
   /**
