@@ -22,7 +22,12 @@ class SmllClassLoader {
 	
 	
 	public function loadClass($className) {
-		require(str_replace($this->namespaceSeparator, DIRECTORY_SEPARATOR, $className).".php");
+		
+		$classPath = explode($this->namespaceSeparator, $className);
+		$className = array_pop($classPath);
+		$filePath = join(DIRECTORY_SEPARATOR, $classPath).DIRECTORY_SEPARATOR;
+		
+		require(str_replace("_", DIRECTORY_SEPARATOR, $filePath).$className.".php");
 	}
 	
 }

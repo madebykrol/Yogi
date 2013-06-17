@@ -1,6 +1,5 @@
 <?php
 namespace smll\framework;
-
 use smll\framework\IApplication;
 use smll\framework\io\Request;
 use smll\framework\io\interfaces\IRequest;
@@ -41,6 +40,8 @@ abstract class HttpApplication Implements IApplication {
 	protected $filterConfig;
 	protected $routerConfig;
 	
+	protected $controllerPaths;
+	
 	/**
 	 * 
 	 * @var IController
@@ -64,6 +65,7 @@ abstract class HttpApplication Implements IApplication {
 
 		$this->routerConfig = $router->getRouterConfig();
 		$this->filterConfig = $actionFilters;
+		$this->controllerPaths = new ArrayList();
 	}
 	
 	public function setModelBinder(IModelBinder $binder) {
@@ -87,6 +89,7 @@ abstract class HttpApplication Implements IApplication {
 	
 	public function run($request = null) {
 		
+		
 		if(!$this->checkInstallStatus()) {
 			$this->install();
 		}
@@ -94,7 +97,6 @@ abstract class HttpApplication Implements IApplication {
 		if($request == null) {
 			$request = $this->request;
 		}
-		
 		$this->applicationStart();
 		// Verify request
 		$this->verifyRequest($request);
@@ -132,20 +134,24 @@ abstract class HttpApplication Implements IApplication {
 	}
 	
 	public function init() {
-		
+		$this->configControllerPaths();
 		$this->container = new ContainerBuilder();
 		$this->container->loadModule(new DefaultContainerModule());
 		
-		$handle = opendir('src/controllers/');
-		
-		while (false !== ($entry = readdir($handle))) {
-			if(strpos($entry, "Controller") !== FALSE) {
-				$entry = explode(".", $entry);
-				$controllerName = $entry[0];
-				$this->container->register('src\controllers\\'.$controllerName, 'src\controllers\\'.$controllerName)
-					->set('application', $this)
-					->set('modelState', new Service('smll\framework\mvc\interfaces\IModelState'))
-					->inRequestScope();
+		foreach($this->controllerPaths->getIterator() as $path) {
+			$handle = opendir($path);
+			while (false !== ($entry = readdir($handle))) {
+				if(strpos($entry, "Controller") !== FALSE) {
+					$entry = explode(".", $entry);
+					$controllerName = $entry[0];
+					
+					$namespace = str_replace('/', '\\', $path);
+					
+					$this->container->register($namespace.$controllerName, 'controllers-'.$controllerName)
+						->set('application', $this)
+						->set('modelState', new Service('smll\framework\mvc\interfaces\IModelState'))
+						->inRequestScope();
+				}
 			}
 		}
 	}
@@ -166,7 +172,7 @@ abstract class HttpApplication Implements IApplication {
 	
 	public function processAction($controller, $actionName, HashMap $parameters = null) {
 	
-		$controller = $this->container->get('src\controllers\\'.$controller);
+		$controller = $this->container->get('controllers-'.$controller);
 		
 		if($controller instanceof IController) {
 			$class = get_class($controller);
@@ -341,6 +347,9 @@ abstract class HttpApplication Implements IApplication {
 	
 	protected function applicationFinish() {}
 	protected function applicationInstall() {}
+	protected function configControllerPaths() {
+		$this->controllerPaths->add('src/controllers/');
+	}
 	
 	/**
 	 * 

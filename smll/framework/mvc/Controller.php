@@ -145,8 +145,11 @@ class Controller implements IController {
 		} else {
 			$action = "/".$action;
 		}
-		$controller = "/".$controller;
 		
+		$controller = explode('\\', $controller);
+		$controller = $controller[count($controller)-1];
+		
+		$controller = "/".$controller;
 		$this->headers->add("Location", $this->application->getApplicationRoot().$controller.$action);
 		
 		$result->setHeaders($this->headers->getHeaders());
