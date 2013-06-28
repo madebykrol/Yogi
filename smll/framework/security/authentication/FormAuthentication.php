@@ -95,8 +95,12 @@ class FormAuthentication implements IAuthenticationProvider {
 	 * @see IAuthenticationProvider::signout()
 	 */
 	public function signout() {
+		$webSettings = $this->settings->get('web');
+		$path = $webSettings['cookiePath']['path'];
+		$domain = $webSettings['cookiePath']['domain'];
+
 		
-		$this->headers->setCookie('AuthenticationTicket', '', -3600*1000, "/", null);
+		$this->headers->setCookie('AuthenticationTicket', '', -3600*1000, $path."/", null);
 		
 	}
 	
@@ -112,8 +116,14 @@ class FormAuthentication implements IAuthenticationProvider {
 		$key = $encryption['Default']['key'];
 		$this->encryptor->setEncryptionKey($key);
 		
+		$webSettings = $this->settings->get('web');
+		
+		$path = $webSettings['cookiePath']['path'];
+		$domain = $webSettings['cookiePath']['domain'];
+		
+		
 		$string = $this->encryptor->encrypt(new AuthenticationTicket($user, true, time(), $this->roleProvider->getRolesForUser($user), "", time()+250), Crypt::ENCRYPTION_METHOD_AES);
-		$this->headers->setCookie('AuthenticationTicket', $string, time()+(3600*24*365), "/",null);
+		$this->headers->setCookie('AuthenticationTicket', $string, time()+(3600*24*365), $path."/",null);
 	}
 	
 	/**

@@ -339,11 +339,10 @@ class DB {
 			}
 			$this->updateBindValues[] = $dataSet[$fields[$i]];
 		}
-
+		
 		$statement = $this->pdo->prepare($this->getUpdateQuery());
 		
 		if ($this->execute($statement) ){
-			
 			return true;
 		} else {
 			$errorInfo = $statement->errorInfo();
@@ -376,6 +375,7 @@ class DB {
 				$this->updateBindValues[] = $dataSet[$k][$fields[$i]];
 			}
 		}
+		
 		$statement = $this->pdo->prepare($this->getUpdateQuery());
 		
 		if ($this->execute($statement) ){
@@ -630,7 +630,10 @@ class DB {
 		}
 		
 		if($this->execute($statement, false)) {
-			return $this->getResult();
+			$result = $this->getResult();
+			$this->flushResult();
+			
+			return $result;
 		}
 	}
 	

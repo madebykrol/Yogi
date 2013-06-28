@@ -6,8 +6,16 @@ class HashMap implements IList {
 	
 	protected $dataList = array();
 	
+	public function __construct($data = array()) {
+		$this->dataList = $data;
+	}
+	
 	public function add($ident, $data) {
 		$this->dataList[$ident] = $data;
+	}
+	
+	public function getLength() {
+		return count($this->dataList);
 	}
 	
 	public function getIterator() {
@@ -21,5 +29,9 @@ class HashMap implements IList {
 		} else {
 			return null;
 		}
+	}
+	
+	public function remove($ident) {
+		unset($this->dataList[$ident]);
 	}
 }

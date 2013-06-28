@@ -10,4 +10,21 @@
     <authentication>
           <add name="Provider" provider="FormAuthentication" />
     </authentication>
+    <applicationPool>
+        <add name="Default" path="~/assets/files/" />
+    </applicationPool>
+    <web>
+        <membership defaultProvider="DefaultMembershipProvider">
+            <providers>
+                <add name="DefaultMembershipProvider" type="SqlMembershipProvider" />
+            </providers>
+        </membership>
+        <roleManager defaultProvider="DefaultRoleProvider">
+            <providers>
+                <add name="DefaultRoleProvider" type="SqlRoleProvider" />
+            </providers>
+        </roleManager>
+        <applicationState state="Debug"></applicationState>
+        <cookiePath path="/Smll" domain="workspace" />
+    </web>
 </appSettings>

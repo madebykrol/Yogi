@@ -7,6 +7,6 @@ $layout = "src/views/Share/_layout.phtml";
 <div class="row">
 	<?php print Html::beginFormFor($model);?>
 		<input class="btn" type="submit" value="sign in">
-		<?php print Html::actionLink("Register", "register"); ?>
+		<?php print Html::actionLink("Register", "register", 'Account'); ?>
 	<?php print Html::closeForm();?>
 </div>

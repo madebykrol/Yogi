@@ -65,7 +65,6 @@ class ContainerBuilder implements IDependencyContainer {
 		try {
 			$definition = $this->register->get($ident);
 			$service = null;
-			
 			if($definition->getScope() == Definition::SCOPE_SINGELTON) {
 				
 				// Find our object in our singelton scope.

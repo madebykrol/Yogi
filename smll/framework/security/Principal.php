@@ -20,7 +20,6 @@ class Principal implements IPrincipal {
 		if(isset($this->roles)) {
 			return $this->roles->has($role);
 		} 
-		
 		return false;
 	}
 	

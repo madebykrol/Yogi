@@ -5,6 +5,7 @@ use smll\framework\security\interfaces\ICryptographer;
 use smll\framework\settings\interfaces\ISettingsRepository;
 use smll\framework\io\db\DB;
 use smll\framework\security\MembershipUser;
+use smll\framework\utils\Guid;
 class SqlMembershipProvider implements IMembershipProvider {
 	
 	private $datastore = null;

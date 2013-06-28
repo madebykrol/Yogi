@@ -1,4 +1,5 @@
 <?php
+namespace src\models;
 class AccountModel {
 	/**
 	 * [FormField]

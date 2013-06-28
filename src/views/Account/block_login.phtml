@@ -1,0 +1,11 @@
+<?php
+use smll\framework\helpers\Html;
+$layout = null;
+
+?>
+<div class="row">
+	<?php print Html::beginFormFor($model, 'login', 'Account');?>
+		<input class="btn" type="submit" value="sign in">
+		<?php print Html::actionLink("Register", "register"); ?>
+	<?php print Html::closeForm();?>
+</div>

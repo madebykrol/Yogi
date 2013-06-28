@@ -35,7 +35,6 @@ class SqlRoleProvider implements IRoleProvider {
 				LEFT JOIN memberships AS u ON (uir.user_ident = u.ident) WHERE u.username = ?', $user) as $role) {
 				$roles[] = $role->role_name;
 		}
-		
 		return $roles;
 	}
 }

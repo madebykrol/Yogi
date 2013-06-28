@@ -133,7 +133,7 @@ class Controller implements IController {
 	 * @param string $controller
 	 * @param unknown $parameters
 	 */
-	public function redirectToAction($action, $controller = null, $parameters = array()) {
+	public function redirectToAction($action, $controller = null, HashMap $parameters = null) {
 		
 		$result = new ViewResult();
 		$result->init();
@@ -150,7 +150,21 @@ class Controller implements IController {
 		$controller = $controller[count($controller)-1];
 		
 		$controller = "/".$controller;
-		$this->headers->add("Location", $this->application->getApplicationRoot().$controller.$action);
+		
+		$params = "";
+		if(isset($parameters) && $parameters->getLength() > 0) {
+			$params .= "?";
+			$i = 0;
+			foreach($parameters->getIterator() as $var => $extra) {
+				$params.=$var."=".$extra;
+				$i++;
+				if($parameters->getLength() > $i) {
+					$params.="&";
+				}
+			}
+		}
+		
+		$this->headers->add("Location", $this->application->getApplicationRoot().$controller.$action.$params);
 		
 		$result->setHeaders($this->headers->getHeaders());
 		return $result;

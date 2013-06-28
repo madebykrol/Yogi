@@ -47,8 +47,8 @@ class Html {
 		return $output;
 	}
 	
-	public static function actionLink($text, $action, $controller = null, $extras = null) {
-		global $application; 
+	public static function actionUrl($action, $controller = null, HashMap $extras = null) {
+		global $application;
 		if($controller == null) {
 			$controller = $application->getCurrentExecutingController();
 		}
@@ -59,12 +59,39 @@ class Html {
 		}
 		$controller = "/".$controller;
 		
-		return "<a href=\"".$application->getApplicationRoot().$controller.$action."\">".$text."</a>";
+		return $application->getApplicationRoot().$controller.$action;
+	}
+	
+	public static function actionLink($text, $action, $controller = null, HashMap $extras = null) {
+		global $application; 
+		if($controller == null) {
+			$controller = $application->getCurrentExecutingController();
+		}
+		if(strtolower($action) == "index") {
+			$action = "";
+		} else {
+			$action = "/".$action;
+		}
+		$controller = "/".$controller;
+		$params = "";
+		if(isset($extras) && $extras->getLength() > 0) {
+			$params .= "?";
+			$i = 0;
+			foreach($extras->getIterator() as $var => $extra) {
+				$params.=$var."=".$extra;
+				$i++;
+				if($extras->getLength() > $i) {
+					$params.="&";
+				}
+			}
+		}
+		
+		return "<a href=\"".$application->getApplicationRoot().$controller.$action.$params."\">".$text."</a>";
 		
 	}
 	
 	
-	public static function beginForm($action = "", $controller = "", $extras = array()) {
+	public static function beginForm($action = "", $controller = "", HashMap $extras = null) {
 		global $application;
 		self::$currentForm++;
 		self::$formStack[self::$currentForm] = array();
@@ -116,7 +143,7 @@ class Html {
 		}
 	}
 	
-	public static function beginFormFor($object, $action = "", $controller = "", $extras = array()) {
+	public static function beginFormFor($object, $action = "", $controller = "", HashMap $extras = null) {
 		global $application;
 		
 		if(!$application instanceof IApplication) {
@@ -144,27 +171,27 @@ class Html {
 		$annotationHandler = new AnnotationHandler();
 		$rClass = new \ReflectionClass(get_class($object));
 		foreach($rClass->getProperties() as $property) {
-			
-			
-			if($annotationHandler->hasAnnotation('FormField', $property)) {
 				
+				
+			if($annotationHandler->hasAnnotation('FormField', $property)) {
+		
 				$name = $property->getName();
 				$structuredAnnotations = self::getFormFieldAnnotations($property);
-				
+		
 				if($property->isPublic() && $property->getValue($object) != null) {
 					$defaultValue = $property->getValue($object);
 				} else {
 					$defaultValue = $structuredAnnotations->get('DefaultValue');;
 				}
-				
+		
 				if($structuredAnnotations->get('Label')) {
 					$output .= self::label($structuredAnnotations->get('Label'), $name);
 				}
-				
+		
 				$type = $structuredAnnotations->get('InputType');
-				
+		
 				$output .= self::validationMessageFor($name);
-				
+		
 				if($type == 'text') {
 					$output .= self::textfield($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
 				} else if($type == 'password') {
@@ -174,8 +201,8 @@ class Html {
 				} else if($type == 'boolean') {
 					$output .= self::checkbox($name, Boolean::parseValue($defaultValue));
 				}
-				
-				
+		
+		
 			}
 		}
 		
@@ -186,19 +213,19 @@ class Html {
 		return "</form>";	
 	}
 	
-	public static function label($label, $for = null, $extras = null) {
+	public static function label($label, $for = null, HashMap $extras = null) {
 		return "<label for=\"".$for."\">".$label."</label>";
 	}
 	
-	public static function textfield($name, $value = null, $placeholder = null, $extras = null) {
+	public static function textfield($name, $value = null, $placeholder = null, HashMap $extras = null) {
 		return "<input type=\"text\" value=\"".$value."\" name=\"".$name."\" placeholder=\"".$placeholder."\">";
 	}
 	
-	public static function password($name, $value = null, $placeholder = null, $extras = null) {
+	public static function password($name, $value = null, $placeholder = null, HashMap $extras = null) {
 		return "<input type=\"password\" value=\"".$value."\" name=\"".$name."\" placeholder=\"".$placeholder."\">";
 	}
 	
-	public static function textarea($name, $value = null, $extras = null) {
+	public static function textarea($name, $value = null, HashMap $extras = null) {
 		return "<textarea name=\"".$name."\">".$value."</textarea>";
 	}
 	

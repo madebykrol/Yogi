@@ -38,6 +38,10 @@ class Request implements IRequest {
 		return $this->path;
 	}
 	
+	public function setPath(array $path) {
+		$this->path = $path;
+	}
+	
 	public function getAccept() {
 		return "/";
 	}

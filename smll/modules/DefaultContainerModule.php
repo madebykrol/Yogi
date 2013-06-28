@@ -3,6 +3,9 @@ namespace smll\modules;
 use smll\framework\di\interfaces\IContainerModule;
 use smll\framework\utils\HashMap;
 use smll\framework\di\Definition;
+use smll\framework\route\RouterConfig;
+use smll\framework\di\Service;
+
 class DefaultContainerModule implements IContainerModule {
 	
 	private $reg; 
@@ -51,6 +54,49 @@ class DefaultContainerModule implements IContainerModule {
 		 $this->register('smll\framework\http\Headers', 
 		 		'smll\framework\http\interfaces\IHeaderRepository')
 		 ->inRequestScope();
+		 
+		 $this->register(
+		 		'smll\framework\utils\AnnotationHandler',
+		 		'smll\framework\utils\interfaces\IAnnotationHandler')
+		 		->inRequestScope();
+		 $this->register(
+		 		'smll\framework\utils\handlers\FormFieldHandler',
+		 		'smll\framework\utils\handlers\interfaces\IFormFieldHandler');
+		 $this->register(
+		 		'smll\framework\mvc\ModelBinder',
+		 		'smll\framework\mvc\interfaces\IModelBinder')
+		 		->inRequestScope();
+		 
+		 $this->register(
+		 		'smll\framework\mvc\filter\FilterConfig',
+		 		'smll\framework\mvc\filter\interfaces\IFilterConfig')
+		 		->inRequestScope();
+		 
+		 $this->register(
+		 		'smll\framework\io\Request',
+		 		'smll\framework\io\interfaces\IRequest')
+		 		->addArgument($_SERVER)
+		 		->addArgument($_GET)
+		 		->addArgument($_POST)
+		 		->addMethodCall('init');
+		 
+		 $this->register(
+		 		'smll\framework\mvc\ViewEngineRepository',
+		 		'smll\framework\mvc\interfaces\IViewEngineRepository');
+		 
+		 $this->register(
+		 		'smll\framework\route\Router',
+		 		'smll\framework\route\interfaces\IRouter')
+		 		->set('RouterConfig', new RouterConfig())
+		 		->addMethodCall('init');
+		 
+		 $this->register(
+		 		'src\Application',
+		 		'smll\framework\IApplication')
+		 		->addArgument(null)
+		 		->addArgument(null)
+		 		->set('ModelBinder', new Service('smll\framework\mvc\interfaces\IModelBinder'));
+		 
 	}
 	
 	public function getRegister() {

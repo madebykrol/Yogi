@@ -1,8 +1,19 @@
 <?php
 namespace smll\framework\utils;
 class Guid {
+	
+	protected $uuid = "";
+	
+	private function __construct($uuid) {
+		$this->uuid = $uuid;
+	}
+	
+	public function __toString() { 
+		return $this->uuid;
+	}
+	
 	public static function createNew() {
-		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+		return new Guid(sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
 		
 				// 32 bits for "time_low"
 				mt_rand(0, 0xffff), mt_rand(0, 0xffff),
@@ -21,6 +32,10 @@ class Guid {
 		
 				// 48 bits for "node"
 				mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-		);
+		));
+	}
+	
+	public static function parse($uuid) {
+		return new Guid($uuid);
 	}
 }

@@ -42,4 +42,8 @@ class ArrayList implements IList {
 		return in_array($val, $this->listData);
 	}
 	
+	public function clear() {
+		$this->listData = array();
+	}
+	
 }

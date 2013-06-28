@@ -25,7 +25,8 @@ DROP TABLE IF EXISTS `memberships`;
 CREATE TABLE `memberships` (
   `ident` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `password` varchar(255) NOT NULL,
+  PRIMARY KEY (`ident`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -35,6 +36,7 @@ CREATE TABLE `memberships` (
 
 LOCK TABLES `memberships` WRITE;
 /*!40000 ALTER TABLE `memberships` DISABLE KEYS */;
+INSERT INTO `memberships` VALUES ('7fe9e0ae-674b-46fe-b183-4c613255bcbc','admin','$2a$08$Nn1hIMzyqYOXm.sd5GNgVev0LyyMOV0EHpPxkebLpcgdpfi0zkMdi');
 /*!40000 ALTER TABLE `memberships` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -49,7 +51,8 @@ CREATE TABLE `roles` (
   `application` varchar(100) NOT NULL,
   `role_id` varchar(100) NOT NULL,
   `role_name` varchar(100) NOT NULL,
-  `description` varchar(100) NOT NULL
+  `description` varchar(100) NOT NULL,
+  PRIMARY KEY (`role_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -73,7 +76,8 @@ CREATE TABLE `users` (
   `application` varchar(100) NOT NULL,
   `ident` varchar(100) NOT NULL,
   `username` varchar(255) NOT NULL,
-  `last_active_date` datetime DEFAULT NULL
+  `last_active_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`ident`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -83,6 +87,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES ('#1','7fe9e0ae-674b-46fe-b183-4c613255bcbc','admin','2013-06-28 14:00:10');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -95,7 +100,10 @@ DROP TABLE IF EXISTS `users_in_roles`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users_in_roles` (
   `user_ident` varchar(100) NOT NULL,
-  `role_id` varchar(100) NOT NULL
+  `role_id` varchar(100) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -117,4 +125,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-06-14 15:11:27
+-- Dump completed on 2013-06-28 14:04:32

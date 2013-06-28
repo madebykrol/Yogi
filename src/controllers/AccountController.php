@@ -1,13 +1,15 @@
 <?php
 namespace src\controllers;
 use smll\framework\mvc\Controller;
+use src\models\AccountModel;
+use src\models\RegisterModel;
 /**
- * 
+ * [Authorize]
  */
 class AccountController extends Controller {
 	
 	/**
-	 * 
+	 * [Authorize]
 	 * @return ViewResult
 	 */
 	public function index() {
@@ -16,6 +18,7 @@ class AccountController extends Controller {
 	}
 	
 	/**
+	 * [AllowAnonymous]
 	 * @return ViewResult
 	 */
 	public function login() {
@@ -26,6 +29,23 @@ class AccountController extends Controller {
 	}
 	
 	/**
+	 * [AllowAnonymous]
+	 * @return ViewResult|string
+	 */
+	public function block_login() {
+		
+		if(!$this->user->getIdentity()->isAuthenticated()) {
+			$this->viewBag['title'] = 'Login';
+			$model = new AccountModel();
+			
+			return $this->view($model);
+		} 
+		
+		return "";
+	}
+	
+	/**
+	 * [AllowAnonymous]
 	 * @return ViewResult
 	 */
 	public function post_login(AccountModel $model, $returnUrl = 'index') {
@@ -43,6 +63,7 @@ class AccountController extends Controller {
 	}
 	
 	/**
+	 * [Authorize]
 	 * @return ViewResult
 	 */
 	public function logout() {
@@ -51,6 +72,7 @@ class AccountController extends Controller {
 	}
 	
 	/**
+	 * [AllowAnonymous]
 	 * @return ViewResult
 	 */
 	public function register() {
@@ -60,13 +82,14 @@ class AccountController extends Controller {
 	}
 	
 	/**
+	 * [AllowAnonymous]
 	 * @return ViewResult
 	 */
 	public function post_register(RegisterModel $model, $returnUrl = 'index') {
 		if($this->modelState->isValid()) {
 			try {
 				$user = $this->membership->createUser($model->username, $model->password, false);
-				$this->authentication->setAuthCookie($user->getProviderName());
+				$this->authentication->signin($user->getProviderName());
 				return $this->redirectToAction($returnUrl);
 			} catch(MembershipUserExistsException $e) {
 				$this->modelState->setErrorMessageFor('username', 'Username is already in use, please pick another');

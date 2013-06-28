@@ -19,6 +19,7 @@ class XmlSettingsLoader implements ISettingsLoader {
 		if($appSettings->hasChildNodes()) {
 			$nodes = $dom->getElementsByTagName('appSettings')->item(0)->childNodes;
 			foreach($nodes as $node) {
+				
 				if(!($node->nodeType instanceof \DOMText) && $node->nodeName != "#text") {
 					$settings[$node->nodeName] = array();
 					if($node->hasChildNodes()) {
@@ -33,14 +34,28 @@ class XmlSettingsLoader implements ISettingsLoader {
 	
 	private function traverseNodeChildren($node, &$settings) {
 		$nodes = $node->childNodes;
+		$name = $node->nodeName;
+		
+		if($node->hasAttributes()) {
+			foreach($node->attributes as $attr => $value) {
+				if($attr == "name") {
+					$name = $value->nodeValue;
+				} else {
+					$attributes[$attr] = $value->value;
+				}
+			}
+			
+			$settings[$name] = array();
+			$settings[$name] = $attributes;
+		}
+		
 		foreach($nodes as $node) {
 			$name = $node->nodeName;
 			if(!($node->nodeType instanceof DOMText) && $node->nodeName != "#text") {
-				if($node->nodeName == "add") {
 					
 					$attributes = array();
 					foreach($node->attributes as $attr => $value) {
-						if($attr == "name") {
+						if($attr == "name" && $node->nodeName == "add") {
 							$name = $value->nodeValue;
 						} else {
 							$attributes[$attr] = $value->value;
@@ -48,7 +63,8 @@ class XmlSettingsLoader implements ISettingsLoader {
 					}
 					$settings[$name] = array();
 					$settings[$name] = $attributes;
-				}
+				
+				
 				if($node->hasChildNodes()) {
 					$this->traverseNodeChildren($node, $settings[$node->nodeName]);
 				}

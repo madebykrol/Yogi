@@ -11,16 +11,13 @@ use smll\framework\helpers\Html;
 	<link href="/Smll/src/assets/main.css" rel="stylesheet">
 </head>
 <body>
-
 	<div class="container" id="main-wrapper">
 		<?php print Html::renderAction("topNav", "Nav"); ?>
 		<?php
-			print $this->renderContent();
-		?>
 		
-		<div class="span2">
-			<?php print $this->renderSection('derp');?>
-		</div>
+			print $content;
+		
+		?>
 	</div>
 <script src="/Smll/src/scripts/jquery.js"></script>
 <script src="/Smll/src/scripts/bootstrap/js/bootstrap.js"></script>

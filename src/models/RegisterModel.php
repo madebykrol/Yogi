@@ -1,4 +1,5 @@
 <?php
+namespace src\models;
 class RegisterModel {
 	
 	/**
@@ -7,7 +8,7 @@ class RegisterModel {
 	 * [InputType=text]
 	 * [Required]
 	 * [StringLength(MinLength=3)]
-	 * [ErrorMessage=Måste vara en giltig epost]
+	 * [ErrorMessage=Must be a atleast 3 chars long]
 	 * @var unknown
 	 */
 	public $username;

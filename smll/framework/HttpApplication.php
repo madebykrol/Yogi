@@ -1,5 +1,7 @@
 <?php
 namespace smll\framework;
+use smll\framework\di\interfaces\IDependencyContainer;
+
 use smll\framework\IApplication;
 use smll\framework\io\Request;
 use smll\framework\io\interfaces\IRequest;
@@ -20,8 +22,12 @@ use smll\framework\mvc\filter\AuthorizationContext;
 use smll\framework\exceptions\EmptyResultException;
 use smll\framework\mvc\interfaces\IViewResult;
 use smll\framework\mvc\interfaces\IModelBinder;
+use smll\framework\mvc\interfaces\IViewEngineRepository;
+use smll\framework\mvc\SmllViewEngine;
+use smll\framework\utils\interfaces\IAnnotationHandler;
 
 use \ReflectionMethod;
+use \ReflectionClass;
 use \ReflectionProperty;
 use \Exception;
 
@@ -41,6 +47,13 @@ abstract class HttpApplication Implements IApplication {
 	protected $routerConfig;
 	
 	protected $controllerPaths;
+	protected $viewPaths;
+	
+	/**
+	 * [Inject(smll\framework\mvc\interfaces\IViewEngineRepository)]
+	 * @var IViewEngineRepository
+	 */
+	protected $viewEngines;
 	
 	/**
 	 * 
@@ -53,6 +66,9 @@ abstract class HttpApplication Implements IApplication {
 	 * @var IDependencyContainer
 	 */
 	protected $container;
+	
+	
+	protected $annotationHandler = null;
 	
 	public function __construct(
 			IRequest $request, 
@@ -76,6 +92,10 @@ abstract class HttpApplication Implements IApplication {
 		}
 	}
 	
+	public function setViewEngines(IViewEngineRepository $engines) {
+		$this->viewEngines = $engines;
+	}
+	
 	/**
 	 * @return IModelBinder
 	 */
@@ -97,17 +117,20 @@ abstract class HttpApplication Implements IApplication {
 		if($request == null) {
 			$request = $this->request;
 		}
+		
+		$this->preStart();
+		
 		$this->applicationStart();
 		// Verify request
 		$this->verifyRequest($request);
 		
-		$action = $this->router->lookup($request);
+		// Lookup 
+		$action = $this->lookup($request);
 		
 		$controller = $action->getController()."Controller";
 		$actionName = $action->getAction();
 		
 		$output = $this->processAction($controller, $actionName, $action->getParameters());
-		// Route to action
 		
 		print $output;
 		
@@ -119,6 +142,19 @@ abstract class HttpApplication Implements IApplication {
 	 */
 	public function getContainer() {
 		return $this->container;
+	}
+	
+	public function setContainer(IDependencyContainer $container) {
+		$this->container = $container;
+	}
+	
+	
+	public function setAnnotationHandler(IAnnotationHandler $handler) {
+		$this->annotationHandler = $handler;
+	}
+	
+	public function getAnnotationHandler() {
+		return $this->annotationHandler;
 	}
 	
 	/**
@@ -135,8 +171,6 @@ abstract class HttpApplication Implements IApplication {
 	
 	public function init() {
 		$this->configControllerPaths();
-		$this->container = new ContainerBuilder();
-		$this->container->loadModule(new DefaultContainerModule());
 		
 		foreach($this->controllerPaths->getIterator() as $path) {
 			$handle = opendir($path);
@@ -154,19 +188,23 @@ abstract class HttpApplication Implements IApplication {
 				}
 			}
 		}
+		
+		$this->setAnnotationHandler($this->container->get('smll\framework\utils\interfaces\IAnnotationHandler'));
+		
+		$this->viewEngines->addEngine(new SmllViewEngine());
 	}
 	
 	/**
 	 * @return boolean;
 	 */
-	private function checkViewFile($file) {
+	protected function checkViewFile($file) {
 		if(is_file($file)) {
 			return true;
 		} 
 		return false;
 	}
 	
-	private function verifyRequest($request) {
+	protected function verifyRequest($request) {
 		// Perform some verification and first hint of tinkered requests.
 	}
 	
@@ -181,12 +219,13 @@ abstract class HttpApplication Implements IApplication {
 			
 			$this->currentExecutingController = $controller;
 			
-			$class = new \ReflectionClass($class);
+			$class = new ReflectionClass($class);
+			
+			$actionName = str_replace(array('-', ' ', '+'),'_', $actionName);
 			
 			$passed = false;
 			$output = "";
 			$result = null;
-			
 			if($this->request->getRequestMethod() == Request::METHOD_POST 
 					&& $class->hasMethod("post_".$actionName)) {
 				$method = $class->getMethod("post_".$actionName);
@@ -194,92 +233,24 @@ abstract class HttpApplication Implements IApplication {
 				$method = $class->getMethod($actionName);
 			}
 			
-			// Get AuthorizationFilters
-			$annotationHandler = $this->container->get('smll\framework\utils\interfaces\IAnnotationHandler');
-			
-			foreach($this->filterConfig->getAuthorizationFilters()->getIterator() as $filter) {
-				$authorizationContext = new AuthorizationContext();
-				$authorizationContext->setController($controller);
-				$authorizationContext->setApplication($this);
-				
-				$annotations = array();
-				
-				if($annotationHandler->hasAnnotation('Authorize', $class)) {
-					if($annotationHandler->hasAnnotation('AllowAnonymous', $method)) {
-						$annotations['AllowAnonymous'] = $annotationHandler->getAnnotation('AllowAnonymous', $method);
-					}
-				}
-				
-				if($annotationHandler->hasAnnotation('Authorize', $method)) {
-					$annotations['Authorize'] = $annotationHandler->getAnnotation('Authorize', $method);
-				}
-				
-				if($annotationHandler->hasAnnotation('InRole', $method)) {
-					$annotations['InRole'] = $annotationHandler->getAnnotation('InRole', $method);
-				}
-				
-				$filter->setAnnotations($annotations);
-				$filter->onAuthorization($authorizationContext);
-				$result = $authorizationContext->getResult();
-			}
-				
+			$result = $this->processFilters($method, $class, $controller);
 			
 			if($result == null) {
 				$result = $this->callAction($method, $controller, $parameters);
 			}
 			
 			if($result instanceof IViewResult) {
-				$viewFileExists = false;
-				$triedViewFiles = new ArrayList();
+				$engines = $this->viewEngines->getEngines();
+				$render = "";
 				
+				$controllerName = str_replace("Controller", "", get_class($controller));
+				$controllerName = explode('\\', $controllerName);
+				$controllerName = $controllerName[count($controllerName)-1];
 				
-				foreach($result->getHeaders()->getIterator() as $field => $value) {
-					header($field.": ".$value);
+				foreach($engines->getIterator() as $engine) {
+					$render = $engine->renderResult($result, $controllerName, $actionName);
 				}
-				
-				if($result->getViewFile() != null) {
-					if(is_file($result->getViewFile())) {
-						$viewFileExists = true;
-		
-					} else {
-						$triedViewFiles->add($result->getViewFile());
-					}
-				} else {
-					// Loop through view file conventions
-		
-					$className = str_replace("Controller", "", get_class($controller));
-					$className = explode('\\', $className);
-					$className = $className[count($className)-1];
-					$possibleViewFiles = new ArrayList(
-							array(
-									$className."/_default.phtml",
-									$className."/".$actionName.".phtml",
-									"Share/".$actionName.".phtml"
-							)
-					);
-		
-					foreach($possibleViewFiles->getIterator() as $file) {
-						
-						if(is_file("src/views/".$file)) {
-							$viewFileExists = true;
-							$result->setViewFile("src/views/".$file);
-							break;
-						} else {
-							$triedViewFiles->add("src/views/".$file);
-						}
-					}
-				}
-		
-				if($viewFileExists) {
-					
-					$output = $result->render();
-					
-					
-				} else {
-					foreach($triedViewFiles->getIterator() as $file) {
-						print $file."\n";
-					}
-				}
+				$output .= $render;
 			} else if(is_string($result)) {
 				$output = $result;
 			} else {
@@ -294,7 +265,46 @@ abstract class HttpApplication Implements IApplication {
 		return $output;
 	}
 	
-	private function filter(ReflectionMethod $method) {
+	protected function processFilters(ReflectionMethod $method, ReflectionClass $class, IController $controller) {
+		
+		$result = null;
+		// Get AuthorizationFilters
+		$annotationHandler = $this->getAnnotationHandler();
+			
+		foreach($this->filterConfig->getAuthorizationFilters()->getIterator() as $filter) {
+			$authorizationContext = new AuthorizationContext();
+			$authorizationContext->setController($controller);
+			$authorizationContext->setApplication($this);
+		
+			$annotations = array();
+		
+			if($annotationHandler->hasAnnotation('Authorize', $class)) {
+				$annotations['Authorize'] = $annotationHandler->getAnnotation('Authorize', $class);
+			} else {
+				if($annotationHandler->hasAnnotation('Authorize', $method)) {
+					$annotations['Authorize'] = $annotationHandler->getAnnotation('Authorize', $method);
+				}
+			}
+		
+			if($annotationHandler->hasAnnotation('AllowAnonymous', $method)) {
+				$annotations['AllowAnonymous'] = $annotationHandler->getAnnotation('AllowAnonymous', $method);
+			}
+		
+			if($annotationHandler->hasAnnotation('InRole', $method)) {
+				$annotations['InRole'] = $annotationHandler->getAnnotation('InRole', $method);
+					
+			}
+		
+			$filter->setAnnotations($annotations);
+			$filter->onAuthorization($authorizationContext);
+			$result = $authorizationContext->getResult();
+		}
+		
+		return $result;
+		
+	}
+	
+	protected function filter(ReflectionMethod $method) {
 		$passed = true;
 		$filters = $this->filterConfig->getFilters();
 		
@@ -306,11 +316,11 @@ abstract class HttpApplication Implements IApplication {
 		return $passed;
 	}
 	
-	private function checkInstallStatus() {
+	protected function checkInstallStatus() {
 		return true;
 	}
 	
-	private function attachPrincipal(IController $controller) {
+	protected function attachPrincipal(IController $controller) {
 		$authenticationHandler = $this->container->get('smll\framework\security\interfaces\IAuthenticationProvider');
 		$principal = new Principal();
 		$principal->setIdentity(new Identity(null, false, null));
@@ -325,14 +335,22 @@ abstract class HttpApplication Implements IApplication {
 		$controller->setPrincipal($principal);
 	}
 	
-	private function callAction(ReflectionMethod $method, IController &$controller, HashMap $parameters = null) {
+	protected function lookup(IRequest $request) {
+		$action = $this->router->lookup($request);
+		
+		return $action;
+	}
+	
+	protected function callAction(ReflectionMethod $method, IController &$controller, HashMap $parameters = null) {
 		$args = array();
 		if(isset($parameters)) {
 			foreach($method->getParameters() as $parameter) {
 				$name = $parameter->getName();
 				$class = $parameter->getClass();
 				
-				if($class != null && $class instanceof \ReflectionClass) {
+				if($class != null && $class instanceof ReflectionClass) {
+					
+					
 					$args[] = $this->modelBinder->bindModel($class, $controller, $parameters);
 				} else {
 					$args[] = $parameters->get($name);
@@ -347,6 +365,7 @@ abstract class HttpApplication Implements IApplication {
 	
 	protected function applicationFinish() {}
 	protected function applicationInstall() {}
+	protected function preStart() {}
 	protected function configControllerPaths() {
 		$this->controllerPaths->add('src/controllers/');
 	}

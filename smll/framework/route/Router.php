@@ -1,6 +1,7 @@
 <?php
 namespace smll\framework\route;
 use smll\framework\route\interfaces\IRouter;
+use smll\framework\route\interfaces\IRoute;
 use smll\framework\route\interfaces\IRouterConfig;
 use smll\framework\io\interfaces\IRequest;
 use smll\framework\mvc\Action;
@@ -28,74 +29,110 @@ class Router implements IRouter {
 		return $this->config;
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\route\interfaces\IRouter::lookup()
+	 */
 	public function lookup(IRequest $request) {
-		$path = $request->getPath();
+		$rPath = $request->getPath();
 		$action = new Action();
 		$parameters = array();
-		/**
-		 * @Todo This needs so much rewriting
-		 */
-		foreach($this->config->getRoutes()->getIterator() as $route) {
-			$url = explode("/", $route->getUrl());
+	
+		$routes = clone $this->config->getRoutes();
+		$defaultRoute = $routes->get('Default');
+		
+		
+		if($rPath[0] == "") {
 			
-			$defaults = $route->getDefaults();
-			
-			$controller = $defaults['controller'];
-			$actionString = $defaults['action'];
-			
-			foreach($defaults as $param => $value) {
-				if($param != 'controller' && $param != 'action') {
-					$parameters[$param] =  $value;
+			foreach($defaultRoute->getDefaults() as $var => $value) {
+				if($var == "action") {
+					$action->setAction($value);
+				} else  if($var == "controller") {
+					$action->setController($value);
+				} else {
+					$action->addParameter($var, $value);
 				}
 			}
 			
-			foreach($url as $index => $part) {
-				if($this->isToken($part)) {
-						
-					if($part == "{controller}") {
-						
-						$controller = $defaults['controller'];
-						if(isset($path[$index]) && $path[$index] != null) {
-							
-							$controller = $path[$index];
-						}
-						
-					} else if($part == "{action}") {
-						$actionString = $defaults['action'];
-						if(isset($path[$index]) && $path[$index] != null) {
-							$actionString = $path[$index];
-						} 
-
+			return $action;
+		}
+		
+		// For each step of route.. Find matches.
+		foreach($rPath as $index => $step) {
+			foreach($routes->getIterator() as $name =>  $routeMap) {
+				if($routeMap instanceof IRoute) {
+					if(!isset($parameters[$name]) || !is_array($parameters[$name])) {
+						$parameters[$name] = array();
+					}
+					$mUrl = explode("/", $routeMap->getUrl());
+					if(isset($mUrl[$index]) && $mUrl[$index] != $step && !$this->isToken($mUrl[$index])) {
+						// Discard all other routes that does not match current step.
+						$routes->remove($name);
 					} else {
-						
-						$parameter = str_replace(array('{', '}'),'', $url[$index]);
-						if(isset($defaults[$parameter])) {
-							$value = $defaults[$parameter];
+						if(isset($mUrl[$index])) {
+							if($this->isToken($mUrl[$index])) {
+								$token = str_replace(array('{', '}'), '', $mUrl[$index]);
+								
+								if($token == 'controller' || $token == 'action') {
+									$parameters[$name][$token] = $step;
+								} else {
+									$parameters[$name][
+										$token
+									] = $step;
+								}
+							}
 						}
-						if(isset($path[$index]) && $path[$index] != null) {
-							$value = $path[$index];
-						} else if ($request->getQueryString($parameter) != null) {
-							$value = $request->getQueryString($parameter);
-						}
-						
-						$parameters[$parameter] = $value;
-						
 					}
-				} else {
-					if($path[$index] != $part) {
-						break;
-					}
+				}
+			}
+		}	
+		
+		$routes->remove('Default');
+
+		if($routes->getLength() <= 0) {
+			// Now we need to find one singel path.
+			$routes->add('Default', $defaultRoute);
+		}
+		// First cascade is finished.
+		$controller = "";
+		$actionString = "";
+		$name = "";
+		if($routes->getLength() > 0) {
+			foreach($routes->getIterator() as $name => $route) {
+				
+				$defaults = $route->getDefaults();
+				
+				$controller = $defaults['controller'];
+				unset($defaults['controller']);
+				if(isset($parameters[$name]['controller'])  && $parameters[$name]['controller'] != "") {
+					$controller = $parameters[$name]['controller'];
+					unset($parameters[$name]['controller']);
+				}
+				$actionString = $defaults['action'];
+				unset($defaults['action']);
+				if(isset($parameters[$name]['action']) && $parameters[$name]['action'] != "") {
+					$actionString = $parameters[$name]['action'];
+					unset($parameters[$name]['action']);
 				}
 				
-				$action->setAction($actionString);
-				$action->setController($controller);
-				foreach($parameters as $param => $value) {
-					$action->addParameter($param, $value);
+				foreach($defaults as $var => $val) {
+					if($val == Route::URLPARAMETER_REQUIRED && !isset($parameters[$name][$var])) {
+						throw new \Exception();
+					} else {
+						
+					}
 				}
 			}
-			
 		}
-	
+		
+		
+		
+		$action->setAction($actionString);
+		$action->setController($controller);
+		
+		foreach($parameters[$name] as $param => $value) {
+			$action->addParameter($param, $value);
+		}
 		foreach($request->getGetData() as $ident => $val) {
 			if($ident != "q") {
 				$action->addParameter($ident,$val);
@@ -105,7 +142,9 @@ class Router implements IRouter {
 		foreach($request->getPostData() as $ident => $val) {
 			$action->addParameter($ident,$val);
 		}
+		
 		return $action;
+		
 	}
 	
 	public function init() {
