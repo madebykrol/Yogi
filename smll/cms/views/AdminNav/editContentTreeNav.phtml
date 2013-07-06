@@ -1,0 +1,39 @@
+<?php 
+use smll\framework\helpers\Html;
+?>
+<div class="">
+	<ul class="nav nav-list">
+		<li class="nav-header">Site structure</li>
+		<li class="active"><a href="<?php print Html::actionUrl('edit', 'Cms');?>">/</a></li>
+		<li><ul class="nav nav-list collapsible open adminContentMenu" id="menu-root">
+		<?php
+		foreach($model->getItems()->getIterator() as $index => $item) {?>
+			<li class="ui-state-default menuItem" id="<?php print $item->getId(); ?>">
+			<?php if($item->hasChildren()) {?>
+			<span class="collapse-toggle" data-target="#parent-<?php print $item->getId(); ?>"><a href="#"><i class="icon-folder-close"></i></a></span>
+			<?php } else {?>
+			<span class="collapse-toggle" data-target="#parent-<?php print $item->getId(); ?>"><a href="#"><i class="icon-minus"></i></a></span>
+			<?php }?>
+			<span class="item"><a href="<?php print Html::actionUrl($item->getLink(), 'Content');?>"><?php print $item->getTitle();?></a></span>
+			<span class="actions"></span>
+				<ul class="sub-nav nav nav-list collapsible closed adminContentMenu" id="parent-<?php print $item->getId(); ?>">
+				<?php if($item->hasChildren()) {?>
+						<?php
+							foreach($item->getChildren()->getIterator() as $index => $child) {?>
+							<li class="ui-state-default menuItem" id="<?php print $child->getId();?>">
+								<span class="item"><a href="<?php print Html::actionUrl($child->getLink(), 'Content');?>"><?php print $child->getTitle();?></a></span>
+								<span class="actions"></span>
+							</li>
+						<?php }?>
+				<?php }?>
+				</ul>
+			</li>
+		<?php }?>
+		</ul></li>
+		<li class="nav-header">System pages</li>
+		<li><a href="#">Profile</a></li>
+		<li><a href="#">Settings</a></li>
+		<li class="divider"></li>
+		<li><a href="#">Help</a></li>
+	</ul>
+</div>

@@ -1,0 +1,45 @@
+<?php
+use smll\framework\utils\HashMap;
+
+$layout = 'smll/cms/views/Share/_layout.phtml';
+
+use smll\framework\helpers\Html;
+?>
+<div class="row-fluid">
+	<div class="span12">
+		<?php print Html::renderAction('adminToolsNav', 'AdminNav');?>
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span12">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>User</th>
+					<th>Join date</th>
+					<th>Roles</th>
+					<th class="pull-right">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Kw33l</td>
+					<td></td>
+					<td>Editor, Administrator</td>
+					<td>
+						<div class="user-actions">
+							<div class="btn-group pull-right">
+							  <a href="" class="btn btn-primary">Edit</a>
+							  <a href="" class="btn btn-warning">Block</a>
+							  <a href="" class="btn btn-danger">Delete</a>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="span2">
+		
+	</div>
+</div>

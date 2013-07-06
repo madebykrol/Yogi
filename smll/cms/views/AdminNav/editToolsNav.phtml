@@ -1,0 +1,31 @@
+<?php 
+use smll\framework\helpers\Html;
+use smll\framework\utils\HashMap;
+?>
+	<div class="navbar">
+		<div class="navbar-inner">
+			<div class="container ">
+				<ul class="nav">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-file"></i><b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<?php foreach($model->contentTypes->getIterator() as $type => $displayName) {?>
+							<li><a href="<?php print Html::actionUrl('new/'.$type, 'Content');?>">Create <?php print $displayName?></a></li>
+							<?php }?>
+						</ul>
+					</li>
+					<li class="divider-vertical"></li>
+					<?php foreach($model->tools->getIterator() as $id => $tool) {?>
+						<li>
+						<?php if($tool->active) { ?>
+							<?php print Html::actionLink('<i class="'.$tool->icon.'"></i>', $tool->action, $tool->controller, $tool->extras);?>
+						<?} else {?>
+							<a href="#"><i class="<?php print $tool->icon; ?>"></i></a>
+						<?php }?>
+						</li>
+					<?php }?>
+				</ul>
+				
+			</div>
+		</div>
+	</div>

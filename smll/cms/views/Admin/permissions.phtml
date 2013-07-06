@@ -1,0 +1,144 @@
+<?php
+use smll\framework\utils\HashMap;
+
+$layout = 'smll/cms/views/Share/_layout.phtml';
+
+use smll\framework\helpers\Html;
+?>
+<div class="row-fluid">
+	<div class="span12">
+		<?php print Html::renderAction('adminToolsNav', 'AdminNav');?>
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span12">
+		<h2>Page Permissions</h2>
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					<td colspan="5"><h2>Game page</h2></td>
+				</tr>
+				<tr>
+				<th>Event</th>
+				<th class="">Anonymous</th>
+				<th class="">User</th>
+				<th class="">Editor</th>
+				<th class="">Administrator</th>
+				</tr>
+				<tr>
+					<td>View</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+				<tr>
+					<td>Edit</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+				<tr>
+					<td>Delete</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+				<tr>
+					<td>View - Own</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+				<tr>
+					<td>Edit - Own</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+				<tr>
+					<td>Delete - Own</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h2>System permissions</h2>
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+				<th>Event</th>
+				<th class="">Anonymous</th>
+				<th class="">User</th>
+				<th class="">Editor</th>
+				<th class="">Administrator</th>
+				</tr>
+				<tr>
+					<td>Search</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h2>Site permissions</h2>
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+				<th>Event</th>
+				<th class="">Anonymous</th>
+				<th class="">User</th>
+				<th class="">Editor</th>
+				<th class="">Administrator</th>
+				</tr>
+				<tr>
+					<td>Post comment</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+				<tr>
+					<td>Api - Create</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+				<tr>
+					<td>Api - Update</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+				<tr>
+					<td>Api - Retrieve</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+				<tr>
+					<td>Api - Delete</td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+					<td><input type="checkbox" /></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="span2">
+		
+	</div>
+</div>

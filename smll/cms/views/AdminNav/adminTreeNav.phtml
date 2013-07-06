@@ -1,0 +1,19 @@
+<?php 
+use smll\framework\helpers\Html;
+?>
+<div class="well">
+	<ul class="nav nav-list">
+		<li class="nav-header">Menu Tree</li>
+		<li class="active"><a href="<?php print Html::actionUrl('edit', 'Cms');?>">/</a></li>
+		<ul class="nav nav-list">
+		<?php foreach($model->getIterator() as$id => $page) {?>
+		<li><a href="<?php print Html::actionUrl('display/'.$id, 'Content');?>"><?php print $page->title;?></a></li>
+		<?php }?>
+		</ul>
+		<li class="nav-header">System pages</li>
+		<li><a href="#">Profile</a></li>
+		<li><a href="#">Settings</a></li>
+		<li class="divider"></li>
+		<li><a href="#">Help</a></li>
+	</ul>
+</div>

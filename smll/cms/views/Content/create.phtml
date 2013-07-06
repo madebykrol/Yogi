@@ -1,0 +1,24 @@
+<?php
+use smll\framework\helpers\Html;
+use smll\cms\framework\helpers\CmsHtml;
+$layout = 'smll/cms/views/Share/_layout.phtml';
+?>
+
+<div class="row-fluid">
+	<div class="span12">
+		<?php print Html::renderAction('editToolsNav', 'AdminNav');?>
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span2">
+		<?php print Html::renderAction('editContentTreeNav', 'AdminNav'); ?>
+	</div>
+	<div class="span8">
+		
+		<?php print CmsHtml::cmsFormForPage($model);?>
+
+			<input type="submit" class="btn" />
+			
+			<?php print Html::closeForm();?>
+	</div>
+</div>

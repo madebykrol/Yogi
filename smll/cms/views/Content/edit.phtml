@@ -1,0 +1,38 @@
+<?php
+use smll\framework\utils\HashMap;
+
+use smll\framework\helpers\Html;
+use smll\cms\framework\helpers\CmsHtml;
+$layout = 'smll/cms/views/Share/_layout.phtml';
+?>
+
+<div class="row-fluid">
+	<div class="span12">
+		<?php print Html::renderAction('editToolsNav', 'AdminNav', new HashMap(array('id' => $model->id)));?>
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span2">
+		<?php print Html::renderAction('editContentTreeNav', 'AdminNav'); ?>
+	</div>
+	<div class="span8">
+		<?php print CmsHtml::cmsFormForPage($model);?>
+
+			<input type="submit" class="btn" />
+			
+			<?php print Html::closeForm();?>
+	</div>
+</div>
+
+<div class="modal hide fade" id="browser">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<div class="browser-title"></div>
+  </div>
+  <div class="modal-body">
+    
+  </div>
+  <div class="modal-footer">
+    
+  </div>
+</div>
