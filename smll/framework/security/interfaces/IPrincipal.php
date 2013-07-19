@@ -13,4 +13,6 @@ interface IPrincipal {
 	public function isInRole($role);
 	
 	public function setRoles(ArrayList $roles);
+	
+	public function getRoles();
 }

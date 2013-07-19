@@ -2,6 +2,12 @@
 namespace smll\framework\http;
 use smll\framework\http\interfaces\IHeaderRepository;
 use smll\framework\utils\HashMap;
+
+/**
+ * Implementation of IHeaderRepository
+ * @author Kristoffer "mbk" Olsson
+ *
+ */
 class Headers implements IHeaderRepository {
 	private $headers = null;
 	public function __construct() {
@@ -16,6 +22,11 @@ class Headers implements IHeaderRepository {
 		return $this->headers;
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\http\interfaces\IHeaderRepository::getCookie()
+	 * @todo Return a Cookie instance
+	 */
 	public function getCookie($name) {
 		
 		if(isset($_COOKIE[$name])) {

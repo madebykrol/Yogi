@@ -1,13 +1,21 @@
 <?php
 namespace smll\framework\mvc\filter;
+use smll\framework\utils\HashMap;
+
 use smll\framework\mvc\filter\ControllerContext;
 use smll\framework\mvc\interfaces\IController;
 use smll\framework\IApplication;
+use smll\framework\mvc\interfaces\IViewResult;
+
+/**
+ * @author Kristoffer "mbk" Olsson
+ *
+ */
 class AuthorizationContext extends ControllerContext {
 	
-	private $result = null;
 	private $controller = null;
 	private $application = null;
+	private $parameters = null;
 	
 	public function setController(IController $controller) {
 		$this->controller = $controller;
@@ -25,11 +33,19 @@ class AuthorizationContext extends ControllerContext {
 		return $this->controller;
 	}
 	
-	public function getResult() {
-		return $this->result;
+	public function setAction(\ReflectionMethod $action) {
+		$this->action = $action;
 	}
 	
-	public function setResult(IViewResult $result) {
-		$this->result = $result;
+	public function getAction() {
+		return $this->action;
+	}
+	
+	public function setParameters(HashMap $parameters = null) {
+		$this->parameters = $parameters;
+	}
+	
+	public function getParameters() {
+		return $this->parameters;
 	}
 }

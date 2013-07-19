@@ -46,4 +46,8 @@ class ArrayList implements IList {
 		$this->listData = array();
 	}
 	
+	public function getLength() {
+		return count($this->listData);
+	}
+	
 }

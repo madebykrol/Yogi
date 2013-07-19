@@ -8,6 +8,7 @@ use smll\framework\security\interfaces\IMembershipProvider;
 use smll\framework\security\interfaces\IPrincipal;
 use smll\framework\mvc\interfaces\IModelState;
 use smll\framework\http\interfaces\IHeaderRepository;
+use smll\framework\utils\HashMap;
 
 
 class Controller implements IController {
@@ -165,6 +166,16 @@ class Controller implements IController {
 		}
 		
 		$this->headers->add("Location", $this->application->getApplicationRoot().$controller.$action.$params);
+		
+		$result->setHeaders($this->headers->getHeaders());
+		return $result;
+	}
+	
+	public function redirectToUri($uri) {
+		$result = new ViewResult();
+		$result->init();
+		
+		$this->headers->add("Location", $uri);
 		
 		$result->setHeaders($this->headers->getHeaders());
 		return $result;

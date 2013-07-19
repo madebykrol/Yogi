@@ -1,5 +1,11 @@
 <?php
 namespace smll\framework\http\interfaces;
+
+/**
+ * Sessions are commonly used to track users on your site.
+ * @author Kristoffer "mbk" Olsson
+ *
+ */
 interface ISession {
 	
 	public function getToken();

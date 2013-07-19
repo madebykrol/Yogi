@@ -2,6 +2,11 @@
 namespace smll\framework\di;
 use smll\framework\di\interfaces\IService;
 
+/**
+ * 
+ * @author Kristoffer "mbk" Olsson
+ *
+ */
 class Service implements IService {
 	protected $serviceReference;
 	

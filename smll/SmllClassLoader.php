@@ -23,11 +23,14 @@ class SmllClassLoader {
 	
 	public function loadClass($className) {
 		
+		$classPath = str_replace($this->namespaceSeparator, DIRECTORY_SEPARATOR, $className);
+		/**
 		$classPath = explode($this->namespaceSeparator, $className);
 		$className = array_pop($classPath);
 		$filePath = join(DIRECTORY_SEPARATOR, $classPath).DIRECTORY_SEPARATOR;
+		*/
 		
-		require(str_replace("_", DIRECTORY_SEPARATOR, $filePath).$className.".php");
+		require(str_replace("_", DIRECTORY_SEPARATOR, $classPath).".php");
 	}
 	
 }

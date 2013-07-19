@@ -5,7 +5,7 @@ class Guid {
 	protected $uuid = "";
 	
 	private function __construct($uuid) {
-		$this->uuid = $uuid;
+		$this->uuid = "".$uuid;
 	}
 	
 	public function __toString() { 
@@ -36,6 +36,15 @@ class Guid {
 	}
 	
 	public static function parse($uuid) {
-		return new Guid($uuid);
+		if(is_string($uuid) && preg_match('/^[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}$/', $uuid) == 1) {
+			return new Guid($uuid);
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public function getString() {
+		return $this->uuid;
 	}
 }

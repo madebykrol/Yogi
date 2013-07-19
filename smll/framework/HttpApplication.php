@@ -1,5 +1,13 @@
 <?php
 namespace smll\framework;
+use smll\framework\mvc\filter\ActionContext;
+
+use smll\framework\mvc\CachedViewResult;
+
+use smll\framework\exceptions\AccessDeniedException;
+
+use smll\framework\mvc\ViewResult;
+
 use smll\framework\di\interfaces\IDependencyContainer;
 
 use smll\framework\IApplication;
@@ -122,17 +130,18 @@ abstract class HttpApplication Implements IApplication {
 		
 		$this->applicationStart();
 		// Verify request
-		$this->verifyRequest($request);
-		
-		// Lookup 
-		$action = $this->lookup($request);
-		
-		$controller = $action->getController()."Controller";
-		$actionName = $action->getAction();
-		
-		$output = $this->processAction($controller, $actionName, $action->getParameters());
-		
-		print $output;
+		if($this->verifyRequest($request)) {
+			
+			// Lookup 
+			$action = $this->lookup($request);
+			
+			$controller = $action->getController()."Controller";
+			$actionName = $action->getAction();
+			
+			$output = $this->processAction($controller, $actionName, $action->getParameters());
+			
+			print  $output;
+		} else {throw new Exception(); }
 		
 		$this->applicationFinish();
 	}
@@ -206,6 +215,8 @@ abstract class HttpApplication Implements IApplication {
 	
 	protected function verifyRequest($request) {
 		// Perform some verification and first hint of tinkered requests.
+		
+		return true;
 	}
 	
 	public function processAction($controller, $actionName, HashMap $parameters = null) {
@@ -226,37 +237,39 @@ abstract class HttpApplication Implements IApplication {
 			$passed = false;
 			$output = "";
 			$result = null;
+			
 			if($this->request->getRequestMethod() == Request::METHOD_POST 
 					&& $class->hasMethod("post_".$actionName)) {
 				$method = $class->getMethod("post_".$actionName);
+				$this->request->setRequestMethod(Request::METHOD_GET);
 			} else {
 				$method = $class->getMethod($actionName);
 			}
 			
-			$result = $this->processFilters($method, $class, $controller);
-			
+			try {
+				$result = $this->processAuthorizationFilters($method, $class, $controller,$parameters);
+			} catch (AccessDeniedException $e) {
+				$result = new ViewResult();
+				return "Access denied!";
+			}
 			if($result == null) {
-				$result = $this->callAction($method, $controller, $parameters);
-			}
-			
-			if($result instanceof IViewResult) {
-				$engines = $this->viewEngines->getEngines();
-				$render = "";
 				
-				$controllerName = str_replace("Controller", "", get_class($controller));
-				$controllerName = explode('\\', $controllerName);
-				$controllerName = $controllerName[count($controllerName)-1];
-				
-				foreach($engines->getIterator() as $engine) {
-					$render = $engine->renderResult($result, $controllerName, $actionName);
+
+				// Run Action filters
+				try {
+					$result = $this->processActionFilters($method, $controller, $parameters);
+				} catch (Exception $e) {
+					
 				}
-				$output .= $render;
-			} else if(is_string($result)) {
-				$output = $result;
-			} else {
-				throw new EmptyResultException('Action '. $actionName . ' on '. get_class($controller). ' did not yeild any result');
+				
+				// If it's still null.. "May need some rethinking"..
+				if($result == null) {
+					$result = $this->callAction($method, $controller, $parameters);
+				}
 			}
+		
 			
+			$output = $this->renderResult($result, $controller, $actionName);
 				// Output Action.
 		} else {
 			throw new Exception();
@@ -265,16 +278,64 @@ abstract class HttpApplication Implements IApplication {
 		return $output;
 	}
 	
-	protected function processFilters(ReflectionMethod $method, ReflectionClass $class, IController $controller) {
+	public function renderResult($result, IController $controller, $actionName) {
+		$engines = $this->viewEngines->getEngines();
+		
+		if($result instanceof IViewResult) {
+			$controllerName = str_replace("Controller", "", get_class($controller));
+			$controllerName = explode('\\', $controllerName);
+			$controllerName = $controllerName[count($controllerName)-1];
+		
+			$render = "";
+			foreach($engines->getIterator() as $engine) {
+				$render = $engine->renderResult($result, $controllerName, $actionName);
+			}
+			return $render;
+		} else if(is_string($result)) {
+			return $result;
+		} else {
+			throw new EmptyResultException('Action '. $actionName . ' on '. get_class($controller). ' did not yeild any result');
+		}
+			
+	}
+	
+	protected function processActionFilters(ReflectionMethod $method, IController $controller, HashMap $parameters = null) {
+		
+		$result = null;
+		$annotationHandler = $this->getAnnotationHandler();
+		foreach($this->filterConfig->getActionFilters()->getIterator() as $filter) {
+			$filter->setAnnotationHandler($annotationHandler);
+			$actionContext = new ActionContext();
+			$actionContext->setController($controller);
+			$actionContext->setAction($method);
+			$actionContext->setApplication($this);
+			$actionContext->setParameters($parameters);
+			$actionContext->setResult($result);
+			
+			$filter->onActionCall($actionContext);
+			
+			$result = $actionContext->getResult();
+		}
+		 
+		return $result;
+	}
+	
+	protected function processAuthorizationFilters(ReflectionMethod $method, ReflectionClass $class, IController $controller, HashMap $parameters = null) {
+		
+		
 		
 		$result = null;
 		// Get AuthorizationFilters
 		$annotationHandler = $this->getAnnotationHandler();
-			
+		
+		
 		foreach($this->filterConfig->getAuthorizationFilters()->getIterator() as $filter) {
 			$authorizationContext = new AuthorizationContext();
 			$authorizationContext->setController($controller);
 			$authorizationContext->setApplication($this);
+			$authorizationContext->setAction($method);
+			$authorizationContext->setParameters($parameters);
+			$authorizationContext->setResult($result);
 		
 			$annotations = array();
 		
@@ -292,13 +353,14 @@ abstract class HttpApplication Implements IApplication {
 		
 			if($annotationHandler->hasAnnotation('InRole', $method)) {
 				$annotations['InRole'] = $annotationHandler->getAnnotation('InRole', $method);
-					
 			}
 		
 			$filter->setAnnotations($annotations);
 			$filter->onAuthorization($authorizationContext);
+			$tmpResult = $authorizationContext->getResult();
 			$result = $authorizationContext->getResult();
 		}
+		
 		
 		return $result;
 		
@@ -347,15 +409,16 @@ abstract class HttpApplication Implements IApplication {
 			foreach($method->getParameters() as $parameter) {
 				$name = $parameter->getName();
 				$class = $parameter->getClass();
-				
-				if($class != null && $class instanceof ReflectionClass) {
-					
-					
-					$args[] = $this->modelBinder->bindModel($class, $controller, $parameters);
+				if($class != null) {
+					$className = $class->getName();
+				}
+				if((is_object($parameters->get($name)) && $class != null) && $parameters->get($name) instanceof $className) {
+					$args[] = $parameters->get($name);
+				} else if($class != null && $class instanceof ReflectionClass) {
+					$args[] = $this->getModelBinder()->bindModel($class, $controller, $parameters);
 				} else {
 					$args[] = $parameters->get($name);
 				}
-				
 			}
 		}
 		return $method->invokeArgs($controller, $args);
