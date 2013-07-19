@@ -585,14 +585,15 @@ class SqlContentRepository implements IContentRepository {
 	public function getPageTypes() {
 		$db = $this->db;
 		$pageTypes = new ArrayList();
-		
-		foreach($db->query('SELECT * FROM page_type') as $page_type) {
+		$installedPageTypes = $db->query('SELECT * FROM page_type');
+		if(is_array($installedPageTypes)) {
+		foreach($installedPageTypes as $page_type) {
 			$pageTypes->add($page_type);
 		}
 		
 		$db->flushResult();
 		$db->clearCache();
-		
+		}
 		return $pageTypes;
 	}
 	
