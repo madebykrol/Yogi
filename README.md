@@ -1,12 +1,15 @@
-Smll
+Smll CMS
 ==== 
-This framework has been undergoing some extensive rewriting from the ground up
-to incorporate a better MVC structure, better inversion of control and some other new cool features.
+Smll CMS is currently in a very early stage of development, and is not ready for production development right now.
 
-It's inspired by .NET MVC another framework that I'm very found of using
+If you have feature requests and issues with the current version, please read the up coming roadmap, and look for changes to the source on git.
+Once the CMS is in a Release candidate state, development of the master branch will stop, and you will be able to do production work
+with Smll MVC and the framework.
 
-Smll framework is currently bundled with Bootstrap 2.3.2 
+
+
+Smll framework and the CMS is currently bundled with Bootstrap 2.3.2 
 And jQuery 1.9.1
 
-for examples and docs see: http://madebykrol.github.io/Smll/
+for examples and docs see: http://madebykrol.github.io/Smll/cms <- Under construction....
 

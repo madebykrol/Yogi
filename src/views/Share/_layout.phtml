@@ -1,0 +1,29 @@
+<?php 
+use smll\framework\helpers\Styles;
+use smll\framework\helpers\Scripts;
+use smll\framework\helpers\Html;
+?>
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title><?php print $viewBag['title']?></title>
+	<?php print Styles::style('~/src/assets/bootstrap/css/bootstrap.css'); ?>
+	<?php print Styles::style('~/src/assets/bootstrap/css/bootstrap-responsive.css'); ?>
+	<?php print Styles::style('~/src/assets/prettify.css'); ?>
+	<?php print Styles::style('~/src/assets/main.css'); ?>
+</head>
+<body>
+	<div class="container" id="main-wrapper">
+		<?php print Html::renderAction("topNav", "Nav"); ?>
+		<?php
+		
+			print $content;
+		
+		?>
+	</div>
+<?php print Scripts::script('~/src/scripts/jquery.js'); ?>
+<?php print Scripts::script('~/src/scripts/bootstrap/js/bootstrap.js'); ?>
+<?php print Scripts::script('~/src/scripts/prettify.js'); ?>
+<?php print Scripts::script('~/src/scripts/main.js'); ?>
+</body>
+</html>

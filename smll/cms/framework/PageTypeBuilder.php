@@ -72,7 +72,9 @@ class PageTypeBuilder implements IPageTypeBuilder {
 			$field->setFieldName($prop->getName());
 				
 			$pageDef = $this->contentRepository->getPageDefinitionByName($prop->getName(), $pageTypeId);
-			$field->setDefinitionId($pageDef->id);
+			if($pageDef != null) {
+				$field->setDefinitionId($pageDef->id);
+			}
 				
 			if(isset($annotation['WeightOrder'])) {
 				$field->setWeightOrder($annotation['WeightOrder']);

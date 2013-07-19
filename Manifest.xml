@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <appSettings>
     <encryption>
-        <add name="Default" key="IJhKcFXXl" />
+        <add name="Default" key="[RandomKey]" />
     </encryption>
     <connectionStrings>
         <add name="Default" 
-            connectionString="Driver=MySQL;Server=localhost;Database=smll_example;User=user;Password=pass123" />
+            connectionString="Driver=MySQL;Server=127.0.0.1;Database=smll_cms_1;User=user;Password=pass123" />
     </connectionStrings>
     <authentication>
           <add name="Provider" provider="FormAuthentication" />
     </authentication>
     <applicationPool>
-        <add name="Default" path="~/assets/files/" />
+        <add name="Default" path="src/assets/files/" />
     </applicationPool>
     <web>
         <membership defaultProvider="DefaultMembershipProvider">
@@ -25,6 +25,20 @@
             </providers>
         </roleManager>
         <applicationState state="Debug"></applicationState>
-        <cookiePath path="/Smll" domain="workspace" />
+        <cookiePath path="/Smll-cms" domain="workspace" />
+        <frontPage pageId="0" />
+        <formUpload>
+            <maxUploadSize>8MB</maxUploadSize>
+            <allowedFileTypes>
+                <add name="Jpg" extension=".jpg" caseSensitive="false" mime="image/jpeg,image/pjpeg" />
+                <add name="Png" extension=".png" caseSensitive="false" mime="image/png" />
+                <add name="Gif" extension=".gif" caseSensitive="false" mime="image/gif" />
+                <add name="Bmp" extension=".bmp" caseSensitive="false" mime="image/bmp"/>
+                <add name="Doc" extension=".doc" caseSensitive="false" mime="application/msword"/>
+                <add name="Docx" extension=".docx" caseSensitive="false" mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+                <add name="Pdf" extension=".pdf" caseSensitive="false" mime="application/pdf"/>
+                <add name="Xml" extension=".xml" caseSensitive="false" mime="text/xml,application/xml"/>
+            </allowedFileTypes>
+        </formUpload>
     </web>
 </appSettings>
