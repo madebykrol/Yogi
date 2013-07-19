@@ -1,0 +1,10 @@
+<?php 
+use smll\framework\utils\HashMap;
+
+use smll\framework\helpers\Html;
+
+print Html::beginFormFor($model,'add-term', 'Taxonomy', new HashMap(array('returnUrl' => urlencode($model->returnUrl))));
+?>
+
+<input type="submit" class="btn btn-primary" value="add" />
+<?php print Html::closeForm();?>
