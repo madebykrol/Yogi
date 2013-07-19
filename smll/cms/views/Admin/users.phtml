@@ -22,20 +22,30 @@ use smll\framework\helpers\Html;
 				</tr>
 			</thead>
 			<tbody>
+			<?php foreach($model->getIterator() as $user) {?>
 				<tr>
-					<td>Kw33l</td>
+					<td><?php print $user->membershipData->getProviderName();?></td>
 					<td></td>
-					<td>Editor, Administrator</td>
+					<td><?php print join(",", $user->roles);?></td>
 					<td>
 						<div class="user-actions">
 							<div class="btn-group pull-right">
-							  <a href="" class="btn btn-primary">Edit</a>
-							  <a href="" class="btn btn-warning">Block</a>
-							  <a href="" class="btn btn-danger">Delete</a>
+							  <a href="<?php print Html::actionUrl(
+							  		'edit',
+							  		'User', 
+							  		new HashMap(
+											array(
+												'id' => 
+												$user->membershipData->getProviderIdent()
+											)
+										));?>" class="btn btn-primary"><i class="icon-edit"></i></a>
+							  <a href="" class="btn btn-warning"><i class="icon-remove-sign"></i></a>
+							  <a href="" class="btn btn-danger"><i class="icon-trash"></i></a>
 							</div>
 						</div>
 					</td>
 				</tr>
+				<?php }?>
 			</tbody>
 		</table>
 	</div>

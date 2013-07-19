@@ -1,5 +1,6 @@
 <?php
 namespace smll\framework\di;
+
 use smll\framework\di\interfaces\IDependencyContainer;
 use smll\framework\di\interfaces\IContainerModule;
 use smll\framework\utils\HashMap;
@@ -12,14 +13,36 @@ use \ReflectionProperty;
 use \ReflectionClass;
 use \ReflectionMethod;
 /**
+ * Smll's default implementation of the IContainerModule
  * 
+ * The default ContainerBuilder utilizes a Annotation handler so classes can
+ * request injection of properties. 
+ * A property can be annoted with for example [Inject(smll\framework\route\interfaces\IRouter)]
+ * and the container will automatically inject the property either directly or through
+ * a setter method. 
  * @author Kristoffer "mbk" Olsson
  *
  */
 class ContainerBuilder implements IDependencyContainer {
 	
+	/**
+	 * Registered services
+	 * @var HashMap
+	 */
 	protected $register;
+	
+	/**
+	 * Registered parameters
+	 * @var HashMap
+	 */
 	protected $parameters;
+	
+	/**
+	 * A Annotation handler, this annotationhandler is used to scan 
+	 * classes for requested injections.
+	 * 
+	 * @var unknown
+	 */
 	protected $annotationHandler;
 	protected $scopes = array(
 		'request' 		=> array(),	
@@ -61,29 +84,41 @@ class ContainerBuilder implements IDependencyContainer {
 		return $definition;
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\di\interfaces\IDependencyContainer::get()
+	 */
 	public function &get($ident) {
 		try {
 			$definition = $this->register->get($ident);
 			$service = null;
+			if($definition == null) {
+				throw new \Exception("Could not load service for ".$ident);
+			}
 			if($definition->getScope() == Definition::SCOPE_SINGELTON) {
+				// Find our object in our singelton scopes
 				
-				// Find our object in our singelton scope.
-				
+				// #### NOT YET IMPLEMENTED #### //
 				// else just continue
 				return $object;
-				
 			} else if($definition->getScope() == Definition::SCOPE_REQUEST) {
+				// If this service is registered in the request scope, it's life time 
+				// is set to be through out the complete request.
 				if(isset($this->scopes['request'][$ident])) {
-					return $this->scopes['request'][$ident];
+					// Return instance of service from request scope.
+					return $this->scopes['request'][$ident]; 
 				}
 			}
 			
+			// Create a new reflection class for this service 
 			$reflectClass = new ReflectionClass($definition->getClass());
-			
+			// See if the class has a constructor and begin constructor injection			
 			if($reflectClass->hasMethod("__construct")) {
 				
+				// Get all registered constructor injection parameters
 				$args = new ArrayList();
 				foreach($definition->getArguments() as $arg) {
+					// 
 					if($arg instanceof Service) {
 						$args->add($this->get($arg->getServiceReference()));
 						continue;
@@ -94,10 +129,10 @@ class ContainerBuilder implements IDependencyContainer {
 					$args->add($arg);
 				}
 				
-				
+				// Get constructor method
 				$reflectConstructMethod = $reflectClass->getMethod("__construct");
 				$params = $reflectConstructMethod->getParameters();
-				foreach($params as $index =>  $param) {
+				foreach($params as $index => $param) {
 					$arg = $definition->getArgument($index);
 					if($arg === null) {
 						// try to resolve the parameter by it's interface from within the
@@ -109,12 +144,15 @@ class ContainerBuilder implements IDependencyContainer {
 					}
 				}
 				
-				
+				// Instanciate from reflection class and inject parameters
 				$service = $reflectClass->newInstanceArgs($args->toArray());
 			} else {
+				// Otherwise just return a instance of the service without any constructor
+				// Injections
 				$service = $reflectClass->newInstance();
 			}
 			
+			// Go through each property for setter injection.
 			$properties = $reflectClass->getProperties();
 			
 			foreach($properties as $property) {
@@ -141,6 +179,7 @@ class ContainerBuilder implements IDependencyContainer {
 				}
 			}
 			
+			// Go through each requested injection.
 			foreach($definition->getSetInjects() as $var => $val) {
 				
 				if($reflectClass->hasMethod("set".ucfirst($var))) {
@@ -167,7 +206,7 @@ class ContainerBuilder implements IDependencyContainer {
 			if($definition->getScope() == Definition::SCOPE_REQUEST) {
 				$this->scopes['request'][$ident] = $service;
 			} else if($definition->getScope() == Definition::SCOPE_SINGELTON) {
-				// Store serialized singelton to disc, this should be loaded
+				
 				if($service instanceof Serializable) {
 					
 				} else {
@@ -181,6 +220,10 @@ class ContainerBuilder implements IDependencyContainer {
 		}
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\di\interfaces\IDependencyContainer::loadModule()
+	 */
 	public function loadModule(IContainerModule $module) {
 		foreach($module->getRegister()->getIterator() as $ident => $definition) {			
 			$this->register->add($ident, $definition);

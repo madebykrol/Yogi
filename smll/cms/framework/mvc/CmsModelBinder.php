@@ -1,5 +1,7 @@
 <?php
 namespace smll\cms\framework\mvc;
+use smll\cms\framework\content\files\interfaces\IFileRepository;
+
 use smll\framework\io\file\FileReference;
 
 use smll\framework\utils\Guid;
@@ -39,7 +41,13 @@ class CmsModelBinder implements IModelBinder {
 	private $contentRepository;
 	
 	/**
-	 * [Inject(smll\cms\framework\ui\interfaces\IFeidlTypeFactory)]
+	 * [Inject(smll\cms\framework\content\files\interfaces\IFileRepository)]
+	 * @var IFileRepository
+	 */
+	private $fileRepository;
+	
+	/**
+	 * [Inject(smll\cms\framework\ui\interfaces\IFieldTypeFactory)]
 	 * @var IFieldTypeFactory
 	 */
 	private $fieldTypeFactory;
@@ -58,12 +66,15 @@ class CmsModelBinder implements IModelBinder {
 		$this->contentRepository = $repo;
 	}
 	
+	public function setFileRepository(IFileRepository $repo) {
+		$this->fileRepository = $repo;
+	}
+	
 	/**
 	 * (non-PHPdoc)
 	 * @see IModelBinder::bindModel()
 	 */
 	public function bindModel(ReflectionClass $class, IController &$controller, HashMap $parameters) {
-		
 		
 		$obj = $class->newInstance();
 		$modelState = &$controller->getModelState();
@@ -78,7 +89,9 @@ class CmsModelBinder implements IModelBinder {
 					$annotation = $this->annotationHandler->getAnnotation('ContentField', $prop);
 					$contentField = $this->contentRepository->getPageDefinitionTypeByName($annotation[1]['Type']);
 					
-					$field = $this->fieldTypeFactory->buildFieldType($contentField->assembler);
+					$settings = $this->fieldTypeFactory->buildFieldSettings(new HashMap());
+					
+					$field = $this->fieldTypeFactory->buildFieldType($contentField->assembler, $settings);
 					$field->setName($name);
 					
 					if(!$field->validateField($value)) {
@@ -89,23 +102,21 @@ class CmsModelBinder implements IModelBinder {
 					} else {
 						if($field instanceof IFileFieldType) {
 							
-							if(($guid = Guid::parse($value)) != null) {
-								// get FileReference
-								$value = $this->contentRepository->getFileReference($guid);
-							} else {
-								if(($fileName = $field->processData($value)) != null) {
-									$ref = new FileReference();
-									$ref->setFilename($fileName);
-									$ref->setIdent(Guid::createNew());
-									
-									$ref = $this->contentRepository->setFileReference($ref);
-									$value = $ref->getIdent();
+							foreach($value as $index => $val) {
+								if($val != null) {
+									// Don't process guids... They are already set.
+									if(($fileGuid = Guid::parse($val)) == null) {
+										
+										$value[$index] = $this->processFileReference($val, $field, $index);
+									}
 								}
 							}
 							
 						} else {
+							
 							$value = $field->processData($value);
 						}
+						
 						$prop->setValue($obj, $value);
 					}
 					
@@ -116,7 +127,7 @@ class CmsModelBinder implements IModelBinder {
 						$modelState->isValid(false);
 						$modelState->setErrorMessageFor($name, $errorMsg);
 					}
-		
+					
 					if($prop->isPublic()) {
 						$prop->setValue($obj, $value);
 					} else {
@@ -134,9 +145,21 @@ class CmsModelBinder implements IModelBinder {
 	
 	}
 	
+	private function processFileReference($value, IFileFieldType $field, $index) {
+		
+		if(($guid = Guid::parse($value[$index])) != null) {
+			// get FileReference
+			$value = $this->fileRepository->getFileReference($guid);
+		} else {
+			$value = $field->processData($value, $index);
+		}
+		
+		return $value;
+	}
+	
 	private function validateProperty(ReflectionProperty $prop, $value, &$errorMsg) {
 		$annotations = $this->annotationHandler->getAnnotations($prop);
-	
+		
 		if($this->annotationHandler->hasAnnotation('FormField', $prop)) {
 				
 				/**

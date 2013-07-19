@@ -21,9 +21,20 @@ class CmsContainerModule implements IContainerModule {
 		 		'smll\framework\io\file\interfaces\IFileUploadManager')
 		 	->addArgument($_FILES)
 		 	->inRequestScope();
+		 
+		 $this->register(
+		 		'smll\cms\framework\content\taxonomy\SqlTaxonomyRepository',
+		 		'smll\cms\framework\content\taxonomy\interfaces\ITaxonomyRepository')
+		 ->inRequestScope();
+		 
+		 $this->register(
+		 		'smll\cms\framework\content\files\SqlFileRepository',
+		 		'smll\cms\framework\content\files\interfaces\IFileRepository')
+		 ->inRequestScope();
 		
 		 $this->register('smll\cms\framework\ui\FieldTypeFactory',
-		 		'smll\cms\framework\ui\interfaces\IFieldTypeFactory');
+		 		'smll\cms\framework\ui\interfaces\IFieldTypeFactory')
+		 ->inRequestScope();
 		
 		 $this->register('smll\framework\utils\AnnotationHandler', 
 		 		'smll\framework\utils\interfaces\IAnnotationHandler');
@@ -36,7 +47,12 @@ class CmsContainerModule implements IContainerModule {
 		 		'smll\framework\security\interfaces\IRoleProvider');
 		 
 		 $this->register('smll\cms\framework\content\utils\SqlContentRepository',
-		 		'smll\cms\framework\content\utils\interfaces\IContentRepository');
+		 		'smll\cms\framework\content\utils\interfaces\IContentRepository')
+		 ->inRequestScope();
+		 
+		 $this->register('smll\cms\framework\security\SqlContentPermissionHandler',
+		 		'smll\cms\framework\security\interfaces\IContentPermissionHandler')
+		 		->inRequestScope();
 		 
 		 $this->register('smll\framework\http\Session', 
 		 		'smll\framework\http\interfaces\ISession')
@@ -85,12 +101,7 @@ class CmsContainerModule implements IContainerModule {
 		 
 		 $this->register(
 		 		'smll\framework\io\Request',
-		 		'smll\framework\io\interfaces\IRequest')
-		 		->addArgument($_SERVER)
-		 		->addArgument($_GET)
-		 		->addArgument($_POST)
-		 		->addArgument($_FILES)
-		 		->addMethodCall('init');
+		 		'smll\framework\io\interfaces\IRequest');
 		 
 		 $this->register(
 		 		'smll\framework\mvc\ViewEngineRepository',

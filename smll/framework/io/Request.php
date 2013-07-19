@@ -1,6 +1,12 @@
 <?php
 namespace smll\framework\io;
 use smll\framework\io\interfaces\IRequest;
+
+/**
+ * Contains information the current HTTP / HTTPS request
+ * @author Kristoffer "mbk" Olsson
+ *
+ */
 class Request implements IRequest {
 	
 	private $requestArr = array();
@@ -9,19 +15,44 @@ class Request implements IRequest {
 	private $path;
 	private $requestMethod = Request::METHOD_GET;
 	
-	public function __construct($requestArr, $get, $post) {
-		$this->requestArr = $requestArr;
+	public function __construct($requestArr = null, $get = null, $post = null, $files = null) {
 		
-		$this->parseRequestArr($requestArr);
+		if(!isset($requestArr)) {
+			$this->requestArr = $_SERVER;
+		} else {
+			$this->requestArr = $requestArr;
+			
+		}
 		
-		$this->get = $get;
+		$this->parseRequestArr($this->requestArr);
 		
-		if($post != null) {
+		if(!isset($get)) {
+			$this->get = $_GET;
+		} else {
+			$this->get = $get;
+		}
+		
+		if(!isset($post)) {
+			$this->post = $_POST;
+		} else {
 			$this->post = $post;
 		}
-	}
-	
-	public function init() {
+		
+		
+		if(!isset($files)) {
+			$files = $_FILES;
+		}
+		if(isset($files)) {
+			foreach($files as $name => $val) {
+				$this->post[$name] = $val['name'];
+			}
+		}
+		
+		if(count($this->post) > 0) {
+			//print_r($this->post);
+			//die();
+		}
+		
 		$path = "";
 		
 		if(isset($this->get['q'])) {
@@ -29,23 +60,37 @@ class Request implements IRequest {
 		}
 		
 		$this->path = explode("/",$path);
-
-		unset($_GET);
-		unset($_POST);
+		
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\io\interfaces\IRequest::getPath()
+	 */
 	public function getPath() {
 		return $this->path;
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\io\interfaces\IRequest::setPath()
+	 */
 	public function setPath(array $path) {
 		$this->path = $path;
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\io\interfaces\IRequest::getAccept()
+	 */
 	public function getAccept() {
 		return "/";
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\io\interfaces\IRequest::getQueryString()
+	 */
 	public function getQueryString($var) {
 		if(isset($this->get[$var])) {
 			return $this->get[$var];
@@ -54,24 +99,66 @@ class Request implements IRequest {
 		}
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\io\interfaces\IRequest::getPostData()
+	 */
 	public function getPostData() {
 		return $this->post;
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\io\interfaces\IRequest::getGetData()
+	 */
 	public function getGetData() {
 		return $this->get;
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\io\interfaces\IRequest::getRequestMethod()
+	 */
 	public function getRequestMethod() {
 		return $this->requestMethod;
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\io\interfaces\IRequest::setRequestMethod()
+	 */
 	public function setRequestMethod($method) {
 		$this->requestMethod = $method;
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\io\interfaces\IRequest::getApplicationRoot()
+	 */
 	public function getApplicationRoot() {
-		return str_replace('/index.php', '', $this->requestArr['PHP_SELF']);
+		return str_replace('/index.php', '', $_SERVER['PHP_SELF']);
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\io\interfaces\IRequest::getCurrentUri()
+	 */
+	public function getCurrentUri() {
+		$params = $this->get;
+		unset($params['q']);
+		$queryString = "";
+		$i = 0;
+		foreach($params as $param => $value) {
+			$queryString.=$param."=".$value;
+			
+			$i++;
+			
+			if(count($params) > $i) {
+				$queryString .= "&";
+			}
+			
+		}
+		return $this->getApplicationRoot()."/".$this->get['q']."?".$queryString;
 	}
 	
 	private function parseRequestArr($requestArr) {

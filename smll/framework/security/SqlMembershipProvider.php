@@ -1,5 +1,7 @@
 <?php
 namespace smll\framework\security;
+use smll\framework\utils\ArrayList;
+
 use smll\framework\security\interfaces\IMembershipProvider;
 use smll\framework\security\interfaces\ICryptographer;
 use smll\framework\settings\interfaces\ISettingsRepository;
@@ -25,6 +27,23 @@ class SqlMembershipProvider implements IMembershipProvider {
 		$this->settings = $settings;
 		$connectionStrings = $settings->get('connectionStrings');
 		$this->datastore = new DB($connectionStrings['Default']['connectionString']);
+	}
+	
+	public function getAllUsers() {
+		$users = new ArrayList();
+		$this->datastore->clearCache();
+		if($this->datastore->get('memberships')) {
+			$allUsers = $this->datastore->get('memberships');
+			foreach($allUsers as $u) {
+				$user = new MembershipUser();
+				$user->setProviderIdent($u->ident);
+				$user->setProviderName($u->username);
+				
+				$users->add($user);
+			}
+		}
+		
+		return $users;
 	}
 	
 	public function validateUser($username, $password) {
@@ -74,19 +93,27 @@ class SqlMembershipProvider implements IMembershipProvider {
 	}
 	
 	
-	public function getUser($username) {
-		$user = null;
+	public function getUser($user) {
+		
+		$userObject = null;
 		$this->datastore->clearCache();
-		$this->datastore->where(array('username', '=', $username));
-		if($this->datastore->get('memberships')) {
-			$users = $this->datastore->get('memberships');
+		
+		
+		
+		if($user instanceof Guid) {
+			
+			$this->datastore->where(array('ident', '=', $user));
+		} else if(is_string($user)) {
+			$this->datastore->where(array('username', '=', $user));
+		}
+		if(($users = $this->datastore->get('memberships')) != false) {
 			if(isset($users)) {
-				$user = new MembershipUser();
-				$user->setProviderIdent($users[0]->ident);
-				$user->setProviderName($users[0]->username);
+				$userObject = new MembershipUser();
+				$userObject->setProviderIdent($users[0]->ident);
+				$userObject->setProviderName($users[0]->username);
 			}
 		}
 		
-		return $user;
+		return $userObject;
 	}
 }

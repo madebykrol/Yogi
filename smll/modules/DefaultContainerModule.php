@@ -17,6 +17,10 @@ class DefaultContainerModule implements IContainerModule {
 	
 	public function init() {
 		
+		 $this->register('smll\framework\io\file\FileUploadManager',
+				'smll\framework\io\file\interfaces\IFileUploadManager')
+				->addArgument($_FILES);
+		 
 		 $this->register('smll\framework\utils\AnnotationHandler', 
 		 		'smll\framework\utils\interfaces\IAnnotationHandler');
 		 
@@ -74,11 +78,7 @@ class DefaultContainerModule implements IContainerModule {
 		 
 		 $this->register(
 		 		'smll\framework\io\Request',
-		 		'smll\framework\io\interfaces\IRequest')
-		 		->addArgument($_SERVER)
-		 		->addArgument($_GET)
-		 		->addArgument($_POST)
-		 		->addMethodCall('init');
+		 		'smll\framework\io\interfaces\IRequest');
 		 
 		 $this->register(
 		 		'smll\framework\mvc\ViewEngineRepository',

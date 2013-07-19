@@ -26,4 +26,8 @@ class Principal implements IPrincipal {
 	public function setRoles(ArrayList $roles) {
 		$this->roles = $roles;
 	}
+	
+	public function getRoles() {
+		return $this->roles;
+	}
 }

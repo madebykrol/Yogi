@@ -1,4 +1,6 @@
 <?php
+namespace smll\framework\unittest;
+
 abstract class UnitTest {
 	
 	private $tests = array();

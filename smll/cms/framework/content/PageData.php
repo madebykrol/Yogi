@@ -1,5 +1,7 @@
 <?php
 namespace smll\cms\framework\content;
+use smll\cms\framework\content\interfaces\IPageReference;
+
 use smll\cms\framework\content\interfaces\IPageData;
 
 /**
@@ -74,5 +76,15 @@ abstract class PageData implements IPageData {
 	 * @var unknown
 	 */
 	public $creationDate;
+	
+	private $pageReference = null;
+	
+	public function getPageReference() {
+		return $this->pageReference;
+	}
+	
+	public function setPageReference(IPageReference $reference) {
+		$this->pageReference = $reference;
+	}
 	
 }

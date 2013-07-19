@@ -632,7 +632,7 @@ class DB {
 		if($this->execute($statement, false)) {
 			$result = $this->getResult();
 			$this->flushResult();
-			
+			$this->clearCache();
 			return $result;
 		}
 	}

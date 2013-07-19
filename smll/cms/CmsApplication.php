@@ -1,5 +1,7 @@
 <?php
 namespace smll\cms;
+use smll\cms\framework\mvc\filters\ContentAuthorizationFilter;
+
 use smll\cms\framework\BlockController;
 
 use smll\framework\di\interfaces\IContainerModule;
@@ -45,10 +47,16 @@ abstract class CmsApplication extends HttpApplication {
 			$contentType = $annotation[1][0];
 			foreach($methodParameters as $index => $parameter) {
 				
-				
+				$name = $parameter->getName();
 				$class = $parameter->getClass();
-
-				if($parameter->getClass()->getShortName() == 'PageReference') {
+				if($class != null) {
+					$className = $class->getName();
+				}
+				if((is_object($parameters->get($name)) && $class != null) && $parameters->get($name) instanceof $className) {
+					$args[] = $parameters->get($name);
+					unset($methodParameters[$index]);
+					
+				} else if($parameter->getClass()->getShortName() == 'PageReference') {
 					// Bind model Get Data from DB
 					
 					$args[] = $this->bindPageData($contentType, $class, $controller, $parameters);
@@ -70,7 +78,7 @@ abstract class CmsApplication extends HttpApplication {
 				$class = $parameter->getClass();
 			
 				if($parameter->getClass()->getShortName() == 'BlockReference') {
-					// Bind model Get Data from DB
+					// Bind model get Data from DB
 						
 					$args[] = $this->bindPageData($blockType, $class, $controller, $parameters);
 					// Unset parameter from list
@@ -107,8 +115,12 @@ abstract class CmsApplication extends HttpApplication {
 			foreach($methodParameters as $index => $parameter) {
 				$name = $parameter->getName();
 				$class = $parameter->getClass();
-				
-				if($class != null && $class instanceof ReflectionClass) {
+				if($class != null) {
+					$className = $class->getName();
+				}
+				if((is_object($parameters->get($name)) && $class != null) && $parameters->get($name) instanceof $className) {
+					$args[] = $parameters->get($name);
+				} else if($class != null && $class instanceof ReflectionClass) {
 					$args[] = $this->getModelBinder()->bindModel($class, $controller, $parameters);
 				} else {
 					$args[] = $parameters->get($name);
@@ -137,12 +149,25 @@ abstract class CmsApplication extends HttpApplication {
 	
 	protected function preStart() {
 		
-		$authorizationFilter = new AuthorizationFilter($this->container->get('IAnnotationHandler'));
+		$authorizationFilter = new AuthorizationFilter($this->container->get('smll\framework\utils\interfaces\IAnnotationHandler'));
 		$authorizationFilter->setMembership(
 				$this->container->get(
 						'smll\framework\security\interfaces\IMembershipProvider'));
 		
+		$contentAuthorizationFilter = new ContentAuthorizationFilter($this->container->get('smll\framework\utils\interfaces\IAnnotationHandler'));
+		$contentAuthorizationFilter->setMembership(
+				$this->container->get(
+						'smll\framework\security\interfaces\IMembershipProvider'));
+		
+		$contentAuthorizationFilter->setContentRepository(
+				$this->container->get(
+						'smll\cms\framework\content\utils\interfaces\IContentRepository'));
+		
+		$contentAuthorizationFilter->setContentPermissionHandler(
+				$this->container->get('smll\cms\framework\security\interfaces\IContentPermissionHandler'));
+		
 		$this->filterConfig->addAuthorizationFilter($authorizationFilter);
+		$this->filterConfig->addAuthorizationFilter($contentAuthorizationFilter);
 		
 		$this->viewEngines->clearEngines();
 		

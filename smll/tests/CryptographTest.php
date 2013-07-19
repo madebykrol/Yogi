@@ -1,4 +1,7 @@
 <?php
+namespace smll\tests;
+use smll\framework\security\Crypt;
+use smll\framework\unittest\UnitTest;
 class CryptographTest extends UnitTest { 
 	public function setup() {
 		

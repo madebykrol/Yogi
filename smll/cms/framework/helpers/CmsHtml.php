@@ -1,5 +1,9 @@
 <?php
 namespace smll\cms\framework\helpers;
+use smll\cms\framework\content\fieldtype\interfaces\ITaxonomyFieldType;
+
+use smll\framework\utils\HashMap;
+
 use smll\framework\io\file\FileReference;
 
 use smll\framework\utils\Guid;
@@ -80,34 +84,63 @@ class CmsHtml {
 				$tab = $field->tab;
 			}
 			
-			
 			$typeId = $field->fkPageDefinitionTypeId;
 			$result = $db->query('SELECT * FROM page_definition_type WHERE id = ?',$typeId);
 			
 			$defType = $result[0];
 			
 			
-			$rField = $fieldFactory->buildFieldType($defType->assembler);
+			//print_r($annotationHandler->getAnnotation('ContentField', $reflectionPage));
+			$defaultFieldSettings = $annotationHandler->getAnnotation("ContentField",$reflectionPage->getProperty($field->name));
+			$hashMap = new HashMap($defaultFieldSettings[1]);
+			
+			foreach((array)$field as $prop => $val) {
+				$hashMap->add($prop, $val);
+			}
+			$rField = $fieldFactory->buildFieldType($defType->assembler, $hashMap);
+			
+			//print_r($rField);
+			
 			$rField->setName($field->name);
 			
 			$value = $reflectionPage->getProperty($field->name)->getValue($page);
 			if($rField instanceof IFileFieldType) {
-				if(($guid = Guid::parse($value)) != null) {
-					// get FileReference
-					
-					$db->where(array('ident', '=', $value));
-					$ref = $db->get('file_reference');
-					$db->flushResult();
-					$db->clearCache();
-					
-					$reference = new FileReference();
-					$reference->setIdent($guid);
-					$reference->setId($ref[0]->id);
-					$reference->setFilename($ref[0]->filename);
-					$reference->setFilesize($ref[0]->size);
-					$reference->setMime($ref[0]->mime);
-					
-					$value = $reference;
+				if(is_array($value)) {
+					foreach($value as $index => $val) {
+						if(($guid = Guid::parse($val)) != null) {
+							// get FileReference
+								
+							$db->where(array('ident', '=', $guid));
+							$ref = $db->get('file_reference');
+							$db->flushResult();
+							$db->clearCache();
+								
+							$reference = new FileReference();
+							$reference->setIdent($guid);
+							$reference->setId($ref[0]->id);
+							$reference->setFilename($ref[0]->filename);
+							$reference->setFilesize($ref[0]->size);
+							$reference->setMime($ref[0]->mime);
+								
+							$value[$index] = $reference;
+						}
+					}
+				} else {
+					if(($guid = Guid::parse($value)) != null) {
+						$db->where(array('ident', '=', $guid));
+						$ref = $db->get('file_reference');
+						$db->flushResult();
+						$db->clearCache();
+						
+						$reference = new FileReference();
+						$reference->setIdent($guid);
+						$reference->setId($ref[0]->id);
+						$reference->setFilename($ref[0]->filename);
+						$reference->setFilesize($ref[0]->size);
+						$reference->setMime($ref[0]->mime);
+						
+						$value = $reference;
+					}
 				}
 			}
 			

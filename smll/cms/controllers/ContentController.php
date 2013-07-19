@@ -35,8 +35,19 @@ class ContentController extends Controller {
 	 * @return \smll\framework\mvc\ViewResult
 	 */
 	public function edit($id) {
-		$page = $this->contentRepository->getPage($id);
+		$pageReference = $this->contentRepository->getPageReference($id);
+		$page = $this->contentRepository->getPageData($pageReference);
 		return $this->view($page);
+	}
+	
+	/**
+	 * [InRole(Role=Editor)]
+	 * @param unknown $id
+	 * @return \smll\framework\mvc\ViewResult
+	 */
+	public function remove($id) {
+		$this->contentRepository->removePage($id);
+		return $this->redirectToAction('edit', 'Cms');
 	}
 	
 	/**
@@ -47,6 +58,8 @@ class ContentController extends Controller {
 	public function post_edit(IPageData $page) {
 		if($this->modelState->isValid()) {
 			$this->contentRepository->addPage($page);
+			
+			return $this->redirectToAction('display', 'Content', new HashMap(array('id' => $page->id)));
 		}
 		
 		return $this->view($page);
@@ -54,7 +67,8 @@ class ContentController extends Controller {
 	
 	public function display($id) {
 		
-		$page = $this->contentRepository->getPage($id);
+		$pageReference = $this->contentRepository->getPageReference($id);
+		$page = $this->contentRepository->getPageData($pageReference);
 		
 		
 		return $this->view($page);
@@ -81,7 +95,6 @@ class ContentController extends Controller {
 	 */
 	public function post_create(IPageData $type) {
 		if($this->modelState->isValid()) {
-			
 			$page = $this->contentRepository->addPage($type);
 			if($page !== FALSE) {
 				$this->redirectToAction('display', null, new HashMap(array('id' => $page->id)));

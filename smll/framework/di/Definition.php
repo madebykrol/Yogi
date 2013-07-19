@@ -1,5 +1,17 @@
 <?php
 namespace smll\framework\di;
+/**
+ * 
+ * When working with the Dependency container you register services to either
+ * identification names or interfaces.
+ * 
+ * When a registration is made a definition is created!
+ * A Definitions manipulation methods all return an instance of the defintion 
+ * instance that you are currently working on, making chaining possible.
+ * 
+ * @author Kristoffer "mbk" Olsson
+ *
+ */
 class Definition {
 	private $class;
 	private $file;
@@ -12,33 +24,65 @@ class Definition {
 	public function __construct($class) {
 		$this->class = $class;
 	}
-
+	
+	/**
+	 * Get the class for the service
+	 */
 	public function getClass() {
 		return $this->class;
 	}
 	
+	/**
+	 * Set the scope of the service to singelton
+	 * @return \smll\framework\di\Definition
+	 */
 	public function inSingeltonScope() {
 		$this->scope = self::SCOPE_SINGELTON;
+		return $this;
 	}
 	
+	/**
+	 * Set the scope of this service to request
+	 * @return \smll\framework\di\Definition
+	 */
 	public function inRequestScope() {
 		$this->scope = self::SCOPE_REQUEST;
+		return $this;
 	}
 	
+	/**
+	 * Set the scope of this service to the default scope
+	 * @return \smll\framework\di\Definition
+	 */
 	public function inDefaultScope() {
 		$this->scope = self::SCOPE_DEFAULT;
+		return $this;
 	}
 	
+	/**
+	 * Add argument's to be injected into the new instance
+	 * @param unknown $value
+	 * @return \smll\framework\di\Definition
+	 */
 	public function addArgument($value) {
 		$this->arguments[] =  $value;
 		return $this;
 	}
 	
+	/**
+	 * Get all arguments for this service
+	 * @return multitype:
+	 */
 	public function getArguments() {
 		
 		return $this->arguments;
 	}
 	
+	/**
+	 * Get specific argument
+	 * @param number $n
+	 * @return multitype:|NULL
+	 */
 	public function getArgument($n) {
 		if(isset($this->arguments[$n])) {
 			return $this->arguments[$n];
@@ -46,24 +90,48 @@ class Definition {
 		return null;
 	}
 	
+	/**
+	 * Adding a method to be called once an instance have been created from this
+	 * service.
+	 * @param unknown $method
+	 * @return \smll\framework\di\Definition
+	 */
 	public function addMethodCall($method) {
 		$this->methodCalls[$method] = $method;
 		return $this;
 	}
 	
-	public function set($var, $val) {
-		$this->setInjects[$var] = $val;
+	/**
+	 * Set a property injection value
+	 * @param unknown $var
+	 * @param unknown $val
+	 * @return \smll\framework\di\Definition
+	 */
+	public function set($property, $val) {
+		$this->setInjects[$property] = $val;
 		return $this;
 	}
 	
+	/**
+	 * Get all injections
+	 * @return multitype:
+	 */
 	public function getSetInjects() {
 		return $this->setInjects;
 	}
 	
+	/**
+	 * Get all method calls
+	 * @return multitype:
+	 */
 	public function getMethodCalls() {
 		return $this->methodCalls;
 	}
 	
+	/**
+	 * Get all scopes
+	 * @return string
+	 */
 	public function getScope() {
 		return $this->scope;
 	}

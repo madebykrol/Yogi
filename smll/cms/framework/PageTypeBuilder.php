@@ -42,7 +42,7 @@ class PageTypeBuilder implements IPageTypeBuilder {
 		
 		$file = str_replace(array('\\'), '/', get_class($pageType)).".php";
 		
-		
+		$renderer = "";
 		
 		$contentTypeAnnotation = $this->annotationHandler->getAnnotation('ContentType', $rPageType);
 		$controller = str_replace('Page', '', $type);
@@ -93,9 +93,15 @@ class PageTypeBuilder implements IPageTypeBuilder {
 			if(isset($annotation['Tab'])) {
 				$field->setTab($annotation['Tab']);
 			}
+			
+			$pageDefinitionId = $this->contentRepository->addPageTypeField($pageTypeId, $field);
+			
+			if($this->annotationHandler->hasAnnotation('Renderer', $prop)) {
+				$renderer = $this->annotationHandler->getAnnotation('Renderer', $prop);
+				$renderer = $renderer[1][0];
 				
-			$this->contentRepository->addPageTypeField($pageTypeId, $field);
-				
+				$this->contentRepository->setFieldRenderer($pageTypeId, $pageDefinitionId, $renderer);
+			}
 		
 		}
 		

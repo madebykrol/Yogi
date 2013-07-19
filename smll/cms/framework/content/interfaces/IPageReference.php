@@ -22,16 +22,11 @@ interface IPageReference {
 	public function setTitle($title);
 	public function getTitle();
 	
-	
-	public function setPageData(IPageData $data);
-	
-	/**
-	 * @return IPageData
-	 */
-	public function getPageData();
-	
 	public function isVisibleInMenu($boolean = null);
 	
 	public function getExternalUrl();
 	public function setExternalUrl($url);
+	
+	public function getPageTypeId();
+	public function setPageTypeId($id);
 }

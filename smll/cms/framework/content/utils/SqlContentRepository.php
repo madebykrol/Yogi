@@ -1,5 +1,19 @@
 <?php
 namespace smll\cms\framework\content\utils;
+use smll\cms\framework\ui\interfaces\IFieldTypeFactory;
+
+use smll\cms\framework\ui\FieldTypeFactory;
+
+use smll\cms\framework\content\PageProperty;
+
+use smll\cms\framework\content\interfaces\IPageProperty;
+
+use smll\cms\framework\content\fieldtype\interfaces\IFileFieldType;
+
+use smll\cms\framework\content\interfaces\IPropertyCriteriaCollection;
+
+use smll\cms\framework\content\interfaces\IPageReference;
+
 use smll\framework\io\file\FileReference;
 
 use smll\framework\io\file\interfaces\IFileReference;
@@ -29,19 +43,21 @@ class SqlContentRepository implements IContentRepository {
 	private $settings;
 	private $connectionString;
 	private $db;
+	private $fieldFactory;
 		
-	public function __construct(ISettingsRepository $settings) {
+	public function __construct(ISettingsRepository $settings, IFieldTypeFactory $fieldFactory) {
 		$this->settings = $settings;
 		
 		$connectionStrings = $this->settings->get('connectionStrings');
 		$this->connectionString = $connectionStrings['Default']['connectionString'];
 		$this->db = new DB($this->connectionString);
+		
+		$this->fieldFactory = $fieldFactory;
 	}
 	
 	
 	public function addPage(IPageData $page) {
 		
-		//print_r($page);
 		$db = $this->db;
 		
 		$reflectionPage = new ReflectionClass($page);
@@ -114,9 +130,6 @@ class SqlContentRepository implements IContentRepository {
 			
 			// Store the data
 			
-			
-			
-			
 			foreach($values as $field => $val) {
 				
 				$defId = $properties[$field]->getDefinitionId();
@@ -125,17 +138,17 @@ class SqlContentRepository implements IContentRepository {
 				if($fieldType instanceof IFieldType) {
 					$datatype = $fieldType->getPropertyDataType();
 				}
-					
+								
 				if(is_array($val)) {
-					foreach($val as $part) {
-						$db->insert('property', array($datatype => $part, 'fkPageId' => $pageId, 'fkPageDefinitionId' => $defId));
+					foreach($val as $index => $part) {
+						$db->insert('property', array($datatype => $part, 'fkPageId' => $pageId, 'fkPageDefinitionId' => $defId, 'index' => $index));
 					}
 				} else {
 					$db->insert('property', array($datatype => $val, 'fkPageId' => $pageId, 'fkPageDefinitionId' => $defId));
 				}
 			}
 			
-			$page = $this->getPage($pageId);
+			$page->id = $pageId;
 			
 		} else {
 			// assume it's a pre existing page, ready for update
@@ -157,31 +170,58 @@ class SqlContentRepository implements IContentRepository {
 			// Store the data
 			
 			foreach($values as $field => $val) {
-
+				
 				$defId = $properties[$field]->getDefinitionId();
 				$fieldType = $properties[$field]->getFieldType();
-				
-				
-			
+				$fileField = false;
 				if($fieldType instanceof IFieldType) {
 					$datatype = $fieldType->getPropertyDataType();
+				} else {
+					$datatype = "string";
 				}
 				
-				
-				$db->where(array('fkPageId', '=', $pageId));
-				$db->where(array('fkPageDefinitionId', '=', $defId));
-				
-				if(is_array($val)) {
+				if(!$fieldType instanceof IFileFieldType) {
+					
+					$db->where(array('fkPageId', '=', $pageId));
+					$db->where(array('fkPageDefinitionId', '=', $defId));
+					
 					$db->delete('property');
-					foreach($val as $index => $part) {
-						$db->insert('property', array($datatype => $part, 'fkPageId' => $pageId, 'fkPageDefinitionId' => $defId));
-					}
+					$db->clearCache();
 					
 				} else {
-					$db->update('property', array($datatype => $val, 'fkPageId' => $pageId, 'fkPageDefinitionId' => $defId));
+					$fileField = true;
 				}
-				$db->flushResult();
-				$db->clearCache();
+				
+				if(is_array($val)) {
+					foreach($val as $index => $part) {
+						
+						$prop = new PageProperty();
+						if(!empty($part)) {
+							$prop->setValue($part);
+						}
+						$prop->setIndex($index);
+						$prop->setPageDefinitionId($defId);
+						$prop->setDataType($datatype);
+						
+						if($fileField) {
+							$prop->ignoreIfNull(true);
+						}
+						
+						$this->setPropertyForPage($pageId, $prop);
+					}
+				} else {
+					$prop = new PageProperty();
+					if(!empty($val)) {
+						$prop->setValue($val);
+					}
+					$prop->setIndex(0);
+					$prop->setPageDefinitionId($defId);
+					$prop->setDataType($datatype);
+					if($fileField) {
+						$prop->ignoreIfNull(true);
+					}
+					$this->setPropertyForPage($pageId, $prop);
+				}
 				
 			}
 			
@@ -194,6 +234,35 @@ class SqlContentRepository implements IContentRepository {
 		
 		return $page;
 	}
+	
+	public function setPropertyForPage($pageId, IPageProperty $prop) {
+		$db = $this->db;
+		if(is_null($prop->getValue())) {
+			if($prop->ignoreIfNull()) {
+				return;
+			}
+		}
+		$db->insert('property', array(
+				$prop->getDataType() 	=> $prop->getValue(), 
+				'fkPageId' 						=> $pageId, 
+				'fkPageDefinitionId' 	=> $prop->getPageDefinitionId(), 
+				'index' 							=> $prop->getIndex()));
+		$db->clearCache();
+		$db->flushResult();
+	}
+	
+	public function removePropertyForPage($pageId, IPageProperty $prop) {
+		$db = $this->db;
+		$db->where(array('fkPageId', '=', $pageId));
+		$db->where(array('fkPageDefinitionId', '=', $prop->getPageDefinitionId()));
+		$index = $prop->getIndex();
+		if($index != null) {
+			$db->where(array('index', '=', $prop->getIndex()));
+		}
+		$db->delete('property');
+		$db->clearCache();
+	}
+	
 	
 	public function getRootPage() {
 		$rootPageRef = new PageReference($this);
@@ -244,20 +313,24 @@ class SqlContentRepository implements IContentRepository {
 	
 	public function getPageReference($id) {
 		
-		$pageRef = new PageReference($this);
+		$pageRef = new PageReference();
 		$db = $this->db;
+		$db->flushResult();
+		
 		if($id instanceof Guid) {
 			$page = $db->query("SELECT * FROM page WHERE ident = ?", $id);
 		} else if(is_numeric($id)) {
 			$page = $db->query("SELECT * FROM page WHERE id = ?", $id);
 		}
 		$page = $page[0];
-		
+				
 		if(isset($page)) {
 			$pageRef->setIdent($page->ident);
 			$pageRef->setId($page->id);
 			$pageRef->setTitle($page->title);
 			$pageRef->isVisibleInMenu((bool)$page->visibleInMenu);
+			$pageRef->setPageTypeId($page->fkPageTypeId);
+			$pageRef->setAuthor($page->authorName);
 			
 			$pageRef->setExternalUrl($page->externalUrl);
 			$children = $db->query('SELECT id FROM page WHERE parentId = ? ORDER by peerOrderWeight', $page->id);
@@ -271,6 +344,10 @@ class SqlContentRepository implements IContentRepository {
 			
 			$pageRef->setChildren($childPageReferences);
 		}
+		
+		$db->clearCache();
+		$db->flushResult();
+		
 		return $pageRef;
 	}
 	
@@ -408,16 +485,16 @@ class SqlContentRepository implements IContentRepository {
 		$id = null;
 		
 		$vals = array(
-				'fkPageTypeId' => $pageTypeId,
-				'fkPageDefinitionTypeId' => $field->getDefinitionTypeId(),
-				'name' => $field->getFieldName(),
-				'searchable' => $field->isSearchable(),
-				'required' => $field->isRequired(),
-				'weightOrder' => $field->getWeightOrder(),
-				'longStringSettings' => $field->getLongStringSettings(),
-				'displayName'	=> $field->getDisplayName(),
-				'tab' => $field->getTab()
-				);		
+			'fkPageTypeId' 						=> $pageTypeId,
+			'fkPageDefinitionTypeId' 	=> $field->getDefinitionTypeId(),
+			'name' 										=> $field->getFieldName(),
+			'searchable' 							=> $field->isSearchable(),
+			'required' 								=> $field->isRequired(),
+			'weightOrder' 						=> $field->getWeightOrder(),
+			'longStringSettings' 			=> $field->getLongStringSettings(),
+			'displayName'							=> $field->getDisplayName(),
+			'tab' 										=> $field->getTab()
+		);
 		
 		if($field->getDefinitionId() != null) {
 			// Update field
@@ -472,6 +549,8 @@ class SqlContentRepository implements IContentRepository {
 	public function getPageDefinitionByName($def, $pageTypeId) {
 		$db = $this->db;
 		$type = $db->query('SELECT * FROM page_definition WHERE name = ? AND fkPageTypeId = ?', $def, $pageTypeId);
+		$db->clearCache();
+		$db->flushResult();
 		if(is_array($type) && count($type) > 0) {
 			return $type[0];
 		} else {
@@ -481,6 +560,7 @@ class SqlContentRepository implements IContentRepository {
 	
 	public function getPageDefinitionTypeByName($defType) {
 		$db = $this->db;
+		
 		$type = $db->query('SELECT * FROM page_definition_type WHERE name = ?', $defType);
 		$db->clearCache();
 		$db->flushResult();
@@ -534,53 +614,40 @@ class SqlContentRepository implements IContentRepository {
 		return str_replace(array('/', '.php'), array('\\', ''), $pageType->file);
 	}
 	
-	public function getPage($id) {
-		$data = $this->getPageRaw($id);
+	public function getPageData(IPageReference $page) {
+		$data = $this->getPageRaw($page->getId());
 		$type = $data['fkPageTypeId'];
 		
 		$db = $this->db;
 		$result = $db->query('SELECT file FROM page_type WHERE id = ?', $type);
-		$type = new \ReflectionClass(
-				str_replace(array('/', '.php'), array('\\', ''), $result[0]->file));
-		
-		$page = $type->newInstance();
-		
-		foreach($type->getProperties() as $name => $prop) {
-			if(isset($data[$prop->getName()])) {
-				$prop->setValue($page, $data[$prop->getName()]);
+		if(count($result) > 0) {
+			$type = new \ReflectionClass(
+					str_replace(array('/', '.php'), array('\\', ''), $result[0]->file));
+			
+			$pageData = $type->newInstance();
+			
+			foreach($type->getProperties() as $name => $prop) {
+				if(isset($data[$prop->getName()])) {
+					$prop->setValue($pageData, $data[$prop->getName()]);
+				}
 			}
+			
+			$db->flushResult();
+			$db->clearCache();
+			
+			$pageData->setPageReference($page);
+			
+			return $pageData;
+		} else {
+			return null;
 		}
-		
-		$db->flushResult();
-		$db->clearCache();
-		
-		return $page;
 	}	
 	
-	public function findPageWithCriteria() {
-		$properties = $db->query('SELECT
-				pd.name as name,
-				linkGuid,
-				longString,
-				number,
-				pageRef,
-				date,
-				string,
-				title
-			FROM
-				page_definition AS pd
-			JOIN page as p ON (
-					pd.fkPageId = p.id
-				)
-			JOIN
-				property AS pty ON (
-					pty.fkPageDefinitionId = pd.id
-				)
-			LEFT JOIN
-				page_definition_type as pdt ON (
-					pdt.id = pd.fkPageDefinitionTypeId
-				)
-			WHERE fkPageId = ? ORDER BY peerOrderWeight', $page['id']);
+	public function findPageWithCriteria(IPageReference $page, IPropertyCriteriaCollection $criteriaCollection) {
+		
+		$startPageId = $page->getId();
+		
+		$query = "SELECT * FROM page ";
 		
 	}
 	
@@ -625,7 +692,6 @@ class SqlContentRepository implements IContentRepository {
 		
 		
 		$props = array();
-		
 		foreach($properties as $property) {
 			$property =(array)$property;
 			$propName = $property['name'];
@@ -637,15 +703,16 @@ class SqlContentRepository implements IContentRepository {
 			$assembler = $property['assembler'];
 			unset($property['assembler']);
 			
-			foreach($property as $prop => $val) {
-				if($val != "") {
-					if(!isset($props[$propName])) {
-						$props[$propName] = array();
-					}
-					$props[$propName][] = $val;
-					break;
-				}
+			$hashMap = new HashMap();
+			
+			
+			
+			$field = $this->fieldFactory->buildFieldType($assembler, $hashMap);
+			$datatype = $field->getPropertyDataType();
+			if(!isset($props[$propName])) {
+				$props[$propName] = array();
 			}
+			$props[$propName][] = $field->processData($property[$datatype]);
 		}
 		
 		foreach($props as $name => $prop) {
@@ -660,6 +727,25 @@ class SqlContentRepository implements IContentRepository {
 	}
 	
 	public function removePage($id) {
+		$db = $this->db;
+		
+		if($id instanceof Guid) {
+			
+			$db->where(array('ident', '=', $id));
+			$page = $db->get('page');
+			$page = $page[0];
+			
+			$id = $page->id;
+		} 
+		
+		$db->clearCache();
+		
+		$db->where(array('id', '=', $id));
+		$db->delete('page');
+		$db->clearCache();
+		
+		$db->where(array('fkPageId', '=', $id));
+		$db->delete('property');
 		
 	}
 	
@@ -671,38 +757,31 @@ class SqlContentRepository implements IContentRepository {
 		
 	}
 	
-	public function getFileReference($ident) {
-		$db = $this->db;
-		$db->where(array('ident', '=', $ident));
-		$ref = $db->get('file_reference');
-		
-		$reference = new FileReference();
-		$reference->setIdent(Guid::parse($ref[0]->ident));
-		$reference->setId($ref[0]->id);
-		$reference->setFilename($ref[0]->filename);
-		$reference->setFilesize($ref[0]->size);
-		$reference->setMime($ref[0]->mime);
-		
-		return $reference;
-	}
-	
-	public function setFileReference(IFileReference $ref) {
-		
+	public function setFieldRenderer($pageType, $pageDefinitionTypeId, $renderer) {
 		$db = $this->db;
 		
-		$values = array(
-			'ident' => $ref->getIdent(),
-			'filename' => $ref->getFilename(),
-			'size' => $ref->getFilesize(),
-			'mime' => $ref->getMime()
-		);
+		$db->query('DELETE FROM page_definition_renderer WHERE fkPageTypeId = ? AND fkPageDefinitionId = ?', $pageType, $pageDefinitionTypeId);
 		
-		$db->insert('file_reference', $values);
-		
-		return $ref;
+		$db->insert('page_definition_renderer', array('fkPageTypeId' => $pageType, 'fkPageDefinitionId' => $pageDefinitionTypeId, 'renderer' => $renderer));
 	}
 	
-	public function removeFileReference($ident) {
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\cms\framework\content\utils\interfaces\IContentRepository::getFieldRenderer()
+	 */
+	public function getFieldRenderer($pageType, $pageDefinitionTypeId) {
+		$db = $this->db;
 		
+		$renderers = $db->query('SELECT renderer FROM page_definition_renderer WHERE fkPageTypeId = ? AND fkPageDefinitionId = ?', $pageType, $pageDefinitionTypeId);
+		
+		if(is_array($renderers) && count($renderers) > 0) {
+			$rClass = new ReflectionClass($renderers[0]->renderer);
+			return $rClass->newInstance();
+		}
+		
+		return null;
 	}
-}
+	
+	
+	
+} 

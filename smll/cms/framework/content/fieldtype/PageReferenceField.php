@@ -18,22 +18,14 @@ use smll\cms\framework\content\fieldtype\interfaces\IFieldType;
  * 
  * [DefaultRenderer(smll\cms\framework\ui\fields\PageReferenceRenderer)]
  */
-class PageReferenceField implements IFieldType {
-	
-	private $name;
-	private $dataType = "pageRef";
-	private $enabled = true;
-	private $error = "";
-	private $multifield = false;
-	private $renderer = null;
+class PageReferenceField extends BaseFieldType {
+
+	protected $dataType = "pageRef";
 	
 	public function __construct() {
 		
 	}
 	
-	public function setName($name) {
-		$this->name = $name;
-	}
 	public function renderField($data, $parameters = null) {
 		/**
 		 * @todo Rewrite prototype code.
@@ -57,31 +49,5 @@ class PageReferenceField implements IFieldType {
 		
 		return $output;
 	}
-	public function validateField($data, $parameters = null) {
-		return true;
-	}
-	
-	public function getPropertyDataType() {
-		return $this->dataType;
-	}
-	public function processData($data) {
-		return $data;
-	}
-	
-	public function getErrorMessage() {}
-	
-	public function setPropertyDataType($datatype) {
-		$this->dataType = $datatype;
-	}
-	
-	public function setRenderer(IFieldRenderer $renderer) {
-		$this->renderer = $renderer;
-	} 
-	
-	public function renderFieldJson($data) {}
-
-	public function setData($data) {}
-	
-	public function setFieldSettings(IFieldSettings $settings) {}
 	
 }

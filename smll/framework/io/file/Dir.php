@@ -1,5 +1,14 @@
 <?php
 namespace smll\framework\io\file;
+use smll\framework\utils\ArrayList;
+use smll\framework\utils\Regexp;
+
+/**
+ * Performing directory tasks on the file system, like finding files in directory
+ * creating new directories or deleting them.
+ * @author Kristoffer "mbk" Olsson
+ *
+ */
 class Dir {
 	
 	/**
@@ -13,14 +22,25 @@ class Dir {
 		$this->path = $dir;
 	}
 	
-	public function search($search, ArrayList &$result) {
+	public function search($search, ArrayList &$result, ArrayList &$ignore = null) {
 		
-		if($search instanceof Regex) {
-			
-		} else if(is_string($search)) {
-			
+		$entries = $this->read();
+		
+		// To make things alitle easier along the way.
+		if(!isset($ignore)) {
+			$ignore = new ArrayList();
 		}
 		
+		// Go through each files in the directory
+		foreach($entries->getIterator() as $entry) {
+			if($search instanceof Regex) {
+				
+			} else if(is_string($search)) {
+				if($entry == $search && !$ignore->has($entry)) {
+					$result->add($entry);
+				}
+			}
+		}
 		return $result;
 	}
 	
@@ -28,22 +48,26 @@ class Dir {
 		
 		$entries = $this->read();
 		
+		// pretty much duplicated from l.29 but who cares really.
+		if(!isset($ignore)) {
+			$ignore = new ArrayList();
+		}
+		
 		foreach($entries->getIterator() as $entry) {
 			if($this->isDir($this->path."/".$entry)) {
 				$dir = new Dir($this->path."/".$entry);
 				$dir->searchRecursive($search, $result, $ignore);
 			} else {
 				if($search instanceof Regexp) {
-						
-					if($search->match($entry)) {
+					
+					if($search->match($entry) &&!$ignore->has($entry)) {
 						$result->add($this->path."/".$entry);
 					}
 					
 				} else if(is_string($search)) {
-						if($entry == $search) {
-							
-							$result->add($this->path."/".$entry);
-						}
+					if($entry == $search && !$ignore->has($entry)) {
+						$result->add($this->path."/".$entry);
+					}
 				}
 				
 			}
@@ -52,9 +76,10 @@ class Dir {
 	}
 	
 	/**
+	 * This method is pretty redundant, but it makes the OOP cleaner.
 	 * @return boolean
 	 */
-	private function isDir($dir) {
+	public function isDir($dir) {
 		if(is_dir($dir)) {
 			return true;
 		} 
@@ -72,7 +97,6 @@ class Dir {
 				$entries->add($entry);
 			}
 		}
-		
 		
 		return $entries;
 	}

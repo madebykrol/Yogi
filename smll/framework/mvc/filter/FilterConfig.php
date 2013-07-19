@@ -27,6 +27,6 @@ class FilterConfig implements IFilterConfig {
 	}
 	
 	public function getActionFilters() {
-		return $this->authorizationFilters;
+		return $this->actionFilters;
 	}
 }

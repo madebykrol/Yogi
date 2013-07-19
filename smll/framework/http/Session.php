@@ -1,6 +1,14 @@
 <?php
 namespace smll\framework\http;
 use smll\framework\http\interfaces\ISession;
+
+/**
+ * Session handler.
+ * This implementation of Session is trying it's best to prevent Session hijacking
+ * by trying to invalidate the session if it's being used.
+ * @author Kristoffer "mbk" Olsson
+ *
+ */
 class Session implements ISession {
 	
 	protected $token = "smll_";
@@ -11,6 +19,9 @@ class Session implements ISession {
 	public function __construct($defaults) {
 		
 		$this->init();
+		/**
+		 * @Todo fix a timestamp threshold for the sudden change of User agent and IP.
+		 */
 		if($_SESSION[$this->token.'USER_LOOSE_IP'] != long2ip(ip2long($_SERVER['REMOTE_ADDR'])
 				& ip2long("255.255.0.0"))
 				|| $_SESSION[$this->token.'USER_AGENT'] != $_SERVER['HTTP_USER_AGENT']

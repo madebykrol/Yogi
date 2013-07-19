@@ -13,6 +13,19 @@ $(document).ready(function() {
 		weekStart: 1
 	});
 	
+	$('.has-tooltip').tooltip();
+	
+	$('.btn-confirm').on('click', function(event) {
+		event.preventDefault();
+		href = $(this).attr('href');
+		if(confirm($(this).data('confirm'), 'Warning!')) {
+			$(this).removeClass('btn-confirm');
+			$.get(href, function (data, status) {
+				location.reload();
+			});
+		}
+	});
+	
 	$('.adminContentMenu').sortable({
 		connectWith: ".adminContentMenu",
 		update: sortUpdateCallback,
@@ -32,14 +45,20 @@ $(document).ready(function() {
 	});
 	
 	$('a.browser').on('click', function(event) {
+		event.preventDefault();
 		var browser = $(this).data('browser');
 		
 		var width = 450;
 		var offset = width/2;
 		$('#browser').css('width', width);
 		$('#browser').css('margin-left', -offset);
-			
-		$('#browser').modal({remote: '/gamescom/Browser/page'});
+		if(browser == 'page') {
+			$('#browser').removeData('modal');
+			$('#browser').modal({remote: '/gamescom/Browser/page'});
+		} else {
+			$('#browser').removeData('modal');
+			$('#browser').modal({remote: $(this).attr('href')});
+		}
 	});
 });
 

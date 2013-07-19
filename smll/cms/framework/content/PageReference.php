@@ -21,17 +21,22 @@ class PageReference implements IPageReference {
 	private $externalUrl;
 	private $author;
 	private $parent;
-	private $contentRepository;
+	private $pageTypeId;
 	
 	
-	public function __construct(IContentRepository $contentRepo) {
+	public function __construct() {
 		$this->children = new ArrayList();
-		$this->contentRepository = $contentRepo;
+
 	}
 	
-	public function getPageData() {
-		return $this->contentRepository->getPage($this->id);
+	public function getPageTypeId() {
+		return $this->pageTypeId;
 	}
+	
+	public function setPageTypeId($id) {
+		$this->pageTypeId = $id;
+	}
+
 	
 	public function setPageData(IPageData $data) {
 		$this->pageData = $data;
@@ -85,4 +90,11 @@ class PageReference implements IPageReference {
 		$this->externalUrl = $url;
 	}
 	
+	public function getAuthor() {
+		return $this->author;
+	}
+	
+	public function setAuthor($author) {
+		$this->author = $author;
+	}
 }

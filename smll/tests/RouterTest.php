@@ -1,4 +1,18 @@
 <?php
+namespace smll\tests;
+use smll\framework\route\Route;
+
+use smll\framework\io\interfaces\IRequest;
+
+use smll\framework\route\interfaces\IRouterConfig;
+
+use smll\framework\route\interfaces\IRoute;
+
+use smll\framework\utils\HashMap;
+
+use smll\framework\route\Router;
+
+use smll\framework\unittest\UnitTest;
 class RouterTest extends UnitTest {
 	
 	private $routerConfig;
@@ -67,6 +81,10 @@ class MockRoute implements IRoute {
 }
 
 class MockDefaultsRequest implements IRequest {
+	public function setPath(array $path){}
+	
+	public function getRequestMethod() {}
+	public function setRequestMethod($method){}
 	public function getPath() {
 		return array('Home', 'about', '1');
 	}
@@ -78,6 +96,10 @@ class MockDefaultsRequest implements IRequest {
 }
 
 class MockRequest implements IRequest {
+	public function setPath(array $path){}
+	
+	public function getRequestMethod() {}
+	public function setRequestMethod($method){}
 	public function getPath() {
 		return array('Home', 'about', '1', 'foo');
 	}

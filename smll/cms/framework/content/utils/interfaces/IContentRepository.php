@@ -1,5 +1,9 @@
 <?php
 namespace smll\cms\framework\content\utils\interfaces;
+use smll\cms\framework\content\interfaces\IPageProperty;
+
+use smll\cms\framework\content\interfaces\IPageReference;
+
 use smll\framework\io\file\interfaces\IFileReference;
 
 use smll\framework\utils\ArrayList;
@@ -110,7 +114,7 @@ interface IContentRepository {
 	 * @param $id
 	 * @return IPageData
 	 */
-	public function getPage($id);
+	public function getPageData(IPageReference $page);
 	
 	/**
 	 * 
@@ -138,8 +142,17 @@ interface IContentRepository {
 	
 	public function setPageCrudListener(ICrudListener $listener);
 	
-	public function getFileReference($ident);
-	public function setFileReference(IFileReference $ref);
-	public function removeFileReference($ident);
+	public function setFieldRenderer($pageType, $pageDefinitionTypeId, $renderer);
+	
+	public function setPropertyForPage($pageId, IPageProperty $prop);
+	
+	/**
+	 * @return IFieldTypeRenderer
+	 * @param numeric $pageType
+	 * @param numeric $pageDefinitionTypeId
+	 */
+	public function getFieldRenderer($pageType, $pageDefinitionTypeId);
+	
+	public function removePropertyForPage($pageId, IPageProperty $prop);
 	
 }

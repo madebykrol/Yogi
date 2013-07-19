@@ -1,5 +1,7 @@
 <?php
 namespace smll\framework\helpers;
+use smll\framework\utils\Boolean;
+
 use smll\framework\io\Request;
 use smll\framework\utils\AnnotationHandler;
 use smll\framework\IApplication;
@@ -7,6 +9,7 @@ use smll\framework\utils\HashMap;
 
 use \Exception;
 use \ReflectionProperty;
+use \ReflectionClass;
 
 
 
@@ -14,6 +17,9 @@ class Html {
 	
 	public static $currentForm = 0;
 	public static $formStack = array();
+	public static $builder = null;
+	public static $uiState = 'view';
+	
 	
 	public static function renderAction($action, $controller = null, HashMap $extras = null) {
 		global $application;
@@ -24,8 +30,24 @@ class Html {
 		}
 		
 		$request = new Request(null, array('q' => $controller."/".$action), null);
-		$request->init();
 		return $application->processAction($controller, $action, $extras);
+	}
+	
+	public static function propertyFor($model, $property) {
+		
+		$rModel = new ReflectionClass(get_class($model));
+		
+		if($rModel->hasProperty($property)) {
+			$rProp = $rModel->getProperty($property);
+			$annotationHandler = new AnnotationHandler();
+			
+			if($annotationHandler->hasAnnotation('FormField', $rProp)) {
+				
+				$annotations = self::getFormFieldAnnotations($rProp);
+				print_r($annotations);
+				
+			}
+		}
 	}
 	
 	public static function renderPartial($view, $model) {
@@ -59,7 +81,22 @@ class Html {
 		}
 		$controller = "/".$controller;
 		
-		return $application->getApplicationRoot().$controller.$action;
+		$params = "";
+		if(isset($extras) && $extras->getLength() > 0) {
+			$params .= "?";
+			$i = 0;
+			foreach($extras->getIterator() as $var => $extra) {
+				$params.=$var."=".$extra;
+				$i++;
+				if($extras->getLength() > $i) {
+					$params.="&";
+				}
+			}
+		}
+		
+		$request = new Request();
+		
+		return $request->getApplicationRoot().$controller.$action.$params;
 	}
 	
 	public static function actionLink($text, $action, $controller = null, HashMap $extras = null) {
@@ -86,13 +123,22 @@ class Html {
 			}
 		}
 		
-		return "<a href=\"".$application->getApplicationRoot().$controller.$action.$params."\">".$text."</a>";
+		$request = new Request();
 		
+		return "<a href=\"".$request->getApplicationRoot().$controller.$action.$params."\">".$text."</a>";
+		
+	}
+	
+	public static function url($uri) {
+		$request = new Request();
+		
+		return $request->getApplicationRoot()."/".$uri;
 	}
 	
 	
 	public static function beginForm($action = "", $controller = "", HashMap $extras = null) {
 		global $application;
+		self::$uiState = Html::UI_STATE_EDIT;
 		self::$currentForm++;
 		self::$formStack[self::$currentForm] = array();
 		
@@ -146,6 +192,8 @@ class Html {
 	public static function beginFormFor($object, $action = "", $controller = "", HashMap $extras = null) {
 		global $application;
 		
+		self::$uiState = Html::UI_STATE_EDIT;
+		
 		if(!$application instanceof IApplication) {
 			throw new Exception();
 		}
@@ -161,12 +209,26 @@ class Html {
 			$postBack.=$action."/";
 		}
 		if($postBack != "") {
-			$postBack = $application->getApplicationRoot()."/".$postBack;
+			$request = new Request();
+			$postBack = $request->getApplicationRoot()."/".$postBack;
+		}
+		
+		$params = "";
+		if(isset($extras) && $extras->getLength() > 0) {
+			$params .= "?";
+			$i = 0;
+			foreach($extras->getIterator() as $var => $extra) {
+				$params.=$var."=".$extra;
+				$i++;
+				if($extras->getLength() > $i) {
+					$params.="&";
+				}
+			}
 		}
 		
 		$currentController = $application->getCurrentExecutingController();
 		
-		$output = "<form method=\"POST\" action=\"".$postBack."\">";
+		$output = "<form method=\"POST\" action=\"".$postBack.$params."\">";
 		
 		$annotationHandler = new AnnotationHandler();
 		$rClass = new \ReflectionClass(get_class($object));
@@ -193,16 +255,31 @@ class Html {
 				$output .= self::validationMessageFor($name);
 		
 				if($type == 'text') {
-					$output .= self::textfield($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
+					$output .= self::textfieldFor($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
 				} else if($type == 'password') {
-					$output .= self::password($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
+					$output .= self::passwordFor($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
 				} else if($type == 'textarea') {
-					$output .= self::textarea($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
-				} else if($type == 'boolean') {
-					$output .= self::checkbox($name, Boolean::parseValue($defaultValue));
+					$output .= self::textareaFor($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
+				} else if($type == 'boolean' || $type == 'checkbox') {
+					$output .= self::checkboxFor($name, Boolean::parseValue($defaultValue));
+				} else if($type == 'radiobutton') {
+					if($defaultValue instanceof HashMap || is_array($defaultValue)) {
+						if(is_array($defaultValue)) {
+							
+						} else {
+							foreach($defaultValue->getIterator() as $partName => $value) {
+								$nameLabel = explode("|", $partName);
+								$output .= self::checkboxFor($name."[".$nameLabel[0]."]", $value);
+								if(isset($nameLabel[1])) {
+									$output .= self::label($nameLabel[1], $name."[".$nameLabel[0]."]");
+								}
+							}
+						}
+					}
+					
+				} else if($type == 'hidden') {
+					$output .= self::hiddenFor($name, $defaultValue);
 				}
-		
-		
 			}
 		}
 		
@@ -210,6 +287,7 @@ class Html {
 	}
 	
 	public static function closeForm() {
+		self::$uiState = Html::UI_STATE_VIEW;
 		return "</form>";	
 	}
 	
@@ -217,27 +295,39 @@ class Html {
 		return "<label for=\"".$for."\">".$label."</label>";
 	}
 	
-	public static function textfield($name, $value = null, $placeholder = null, HashMap $extras = null) {
+	public static function textfieldFor($name, $value = null, $placeholder = null, HashMap $extras = null) {
 		return "<input type=\"text\" value=\"".$value."\" name=\"".$name."\" placeholder=\"".$placeholder."\">";
 	}
 	
-	public static function password($name, $value = null, $placeholder = null, HashMap $extras = null) {
+	public static function hiddenFor($name, $value = null) {
+		return "<input type=\"hidden\" value=\"".$value."\" name=\"".$name."\">";
+	}
+	
+	public static function radioFor($name, $value = null, HashMap $extras = null) {
+		$checked = "";
+		if($value) {
+			$checked = "CHECKED";
+		} 
+		
+		return "<input name=\"".$name."\" type=\"radio\" $checked value=\"1\"/>";
+	}
+	
+	public static function passwordFor($name, $value = null, $placeholder = null, HashMap $extras = null) {
 		return "<input type=\"password\" value=\"".$value."\" name=\"".$name."\" placeholder=\"".$placeholder."\">";
 	}
 	
-	public static function textarea($name, $value = null, HashMap $extras = null) {
+	public static function textareaFor($name, $value = null, HashMap $extras = null) {
 		return "<textarea name=\"".$name."\">".$value."</textarea>";
 	}
 	
-	public static function checkbox($name, $checked) {
+	public static function checkboxFor($name, $value) {
 		
-		if($checked) {
+		$checked = "";
+		if($value) {
 			$checked = "CHECKED";
-		} else {
-			$checked = "";
-		}
+		} 
 		
-		return "<input type=\"checkbox\" $checked value=\"1\"/>";
+		return "<input name=\"".$name."\" type=\"checkbox\" $checked value=\"1\"/>";
 	}
 	
 	public static function getFormFieldAnnotations (ReflectionProperty $property) {	
@@ -275,5 +365,7 @@ class Html {
 		
 		return null;
 	}
-	
+	const UI_STATE_VIEW = 'view';
+	const UI_STATE_EDIT = 'edit';
+	const UI_STATE_PREVIEW = 'preview';
 }

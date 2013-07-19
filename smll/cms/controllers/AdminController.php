@@ -1,5 +1,9 @@
 <?php
 namespace smll\cms\controllers;
+use smll\framework\security\interfaces\IRoleProvider;
+
+use smll\framework\utils\ArrayList;
+
 use smll\cms\models\PermissionsModel;
 
 use smll\cms\models\PageTypesModel;
@@ -22,6 +26,7 @@ use smll\framework\mvc\Controller;
 
 /**
  * [Authorize]
+ * [InRoles(Roles=Administrator)]
  * @author ksdkrol
  *
  */
@@ -30,9 +35,20 @@ class AdminController extends Controller {
 	protected $contentRepository = null;
 	protected $pageTypeBuilder = null;
 	
-	public function __construct(IContentRepository $loader, IPageTypeBuilder $pageTypeBuilder) {
+	/**
+	 * 
+	 * @var IRoleProvider 
+	 */
+	private $roleProvider;
+	
+	public function __construct(
+			IContentRepository $loader, 
+			IPageTypeBuilder $pageTypeBuilder, 
+			IRoleProvider $roleProvider) {
+		
 		$this->contentRepository = $loader;
 		$this->pageTypeBuilder = $pageTypeBuilder;
+		$this->roleProvider = $roleProvider;
 	}
 	
 	public function index() {
@@ -41,11 +57,36 @@ class AdminController extends Controller {
 	
 	public function users() {
 		
-		return $this->view();
+		$userModel = new ArrayList();
+		
+		$users = $this->membership->getAllUsers();
+		
+		
+		foreach($users->getIterator() as $user) {
+			$userData = array('membershipData' => '', 'roles' => '');
+			$userData['membershipData'] = $user;
+			
+			$userData['roles'] = array();
+			$roles = $this->roleProvider->getRolesForUser($user->getProviderName());
+			
+			if(isset($roles)) {
+				foreach($roles as $role) {
+					$userData['roles'][] = $role;
+				}
+			
+			}
+			$userModel->add((object)$userData);
+		}
+		
+		
+		
+		
+		
+		return $this->view($userModel);
 	}
 	
 	public function roles() {
-	
+		
 		return $this->view();
 	}
 	

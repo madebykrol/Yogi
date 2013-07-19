@@ -1,6 +1,8 @@
 <?php
 namespace smll\cms\framework\content\fieldtype;
 
+use smll\framework\utils\HashMap;
+
 use smll\cms\framework\content\fieldtype\interfaces\IFieldSettings;
 
 class FieldSettings implements IFieldSettings {
@@ -9,6 +11,14 @@ class FieldSettings implements IFieldSettings {
 	private $required;
 	private $maxInputValues = 1;
 	private $longStringSetting = 1024;
+	/**
+	 * @var HashMap
+	 */
+	private $settings;
+	
+	public function __construct() {
+		$this->settings = new HashMap();
+	}
 	
 	public function getMaxInputValues() {
 		return $this->maxInputValues;
@@ -22,4 +32,12 @@ class FieldSettings implements IFieldSettings {
 	
 	public function getLongStringSettings() {}
 	public function setLongStringSettings($length) {}
+	
+	public function add($setting, $value) {
+		$this->settings->add($setting, $value);
+	}
+	
+	public function get($setting) {
+		return $this->settings->get($setting);
+	}
 }

@@ -28,11 +28,11 @@ class CmsController extends Controller {
 	
 	/**
 	 * 
-	 * [InRole(Role=Editor|Administrator)]
+	 * [InRole(Role=Administrator)]
 	 */
 	public function admin() {
 	
-	
+		
 		return $this->view();
 	}
 	
