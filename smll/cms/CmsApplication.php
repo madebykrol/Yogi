@@ -132,7 +132,7 @@ abstract class CmsApplication extends HttpApplication {
 	}
 	
 	protected function bindPageData($contentType, ReflectionClass $class, IController $controller, HashMap $parameters) {
-		$guid = Guid::parse($parameters->get('id'));
+		$guid = Guid::parse($parameters->get('ident'));
 		
 		$contentRepository = $this->container->get('smll\cms\framework\content\utils\interfaces\IContentRepository');
 		$content = null;

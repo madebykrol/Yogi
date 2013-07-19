@@ -1,6 +1,10 @@
 <?php
 namespace smll\cms\framework\ui;
 
+use smll\cms\framework\ui\interfaces\IFieldInjector;
+
+use smll\cms\framework\ui\interfaces\IFieldInjecter;
+
 use smll\framework\di\interfaces\IDependencyContainer;
 
 use smll\cms\framework\content\files\interfaces\IFileRepository;
@@ -53,6 +57,14 @@ class FieldTypeFactory implements IFieldTypeFactory {
 	 * @var IDe
 	 */
 	private $container;
+
+	/**
+	 * 
+	 * @var ArrayList
+	 */
+	private $fieldInjecters;
+	
+	
 	
 	public function __construct(
 			IAnnotationHandler $annotationHandler, 
@@ -146,5 +158,7 @@ class FieldTypeFactory implements IFieldTypeFactory {
 		}
 		return $instance;
 	}
+	
+	public function attachFieldInjector(IFieldInjector $injector) {}
 	
 }

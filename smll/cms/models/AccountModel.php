@@ -1,5 +1,5 @@
 <?php
-namespace src\models;
+namespace smll\cms\models;
 class AccountModel {
 	/**
 	 * [FormField]

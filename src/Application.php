@@ -1,34 +1,27 @@
 <?php
 namespace src;
-use smll\framework\HttpApplication;
-use smll\framework\mvc\filter\AuthorizationFilter;
+use smll\framework\mvc\filter\OutputCacheFilter;
+
 use smll\framework\route\Route;
-class Application extends HttpApplication {
+
+use smll\cms\CmsApplication;
+
+class Application extends CmsApplication {
 	
-	protected function applicationStart() {	
+	protected function applicationStart() {
 		
-		$authorizationFilter = new AuthorizationFilter(
-				$this->container->get('IAnnotationHandler'));
-		$authorizationFilter->setMembership(
-				$this->container->get(
-						'smll\framework\security\interfaces\IMembershipProvider'));
 		
-		$this->filterConfig->addAuthorizationFilter($authorizationFilter);
-		
-		$this->container->register('src\models\ContentRepository', 
-				'src\models\IContentRepository')
-			->addMethodCall('init');
+		$this->filterConfig->addActionFilter(new OutputCacheFilter());
 		
 		/**
 		 * Default route
 		 */
 		$this->routerConfig->mapRoute(
-				new Route("Default", "{controller}/{action}/{id}", 
+				new Route("Streams", "Streams/{game}",
 						array(
-								"controller" => "Home", 
-								"action" => "index", 
-								"id" => Route::URLPARAMETER_OPTIONAL)));
-		
-			
+								"controller" => "Stream",
+								"action" => "index",
+								"game" => Route::URLPARAMETER_REQUIRED)));
 	}
+	
 }

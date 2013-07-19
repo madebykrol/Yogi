@@ -1,5 +1,14 @@
 @CHARSET "ISO-8859-1";
 
+body {
+	margin: 0;
+	font-family: 'Source Sans Pro',Arial,sans-serif;
+	font-size: 14px;
+	line-height: 20px;
+	color: #3c3b3b;
+	background-color: #ffffff;
+}
+
 #main-wrapper {
 	margin-top: 50px;
 }
@@ -7,4 +16,27 @@
 .validate-error {
   color: #ff0000;
   font-weight: bold;
+}
+
+.game-detail {
+	font-size: 12px;
+}
+
+.game-nav {
+  font-size: 12px;
+}
+
+.platform-nav {
+	font-size: 12px;
+	
+}
+
+
+.platform-navbar .brand {
+	font-size: 12px;
+}
+
+.navbar .nav > li > a {
+
+padding: 10px 10px 10px !important;
 }

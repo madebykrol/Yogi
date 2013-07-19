@@ -1,5 +1,5 @@
 <?php
-namespace src\models;
+namespace smll\cms\models;
 class RegisterModel {
 	
 	/**
@@ -8,7 +8,7 @@ class RegisterModel {
 	 * [InputType=text]
 	 * [Required]
 	 * [StringLength(MinLength=3)]
-	 * [ErrorMessage=Must be a atleast 3 chars long]
+	 * [ErrorMessage=Måste vara en giltig epost]
 	 * @var unknown
 	 */
 	public $username;

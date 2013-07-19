@@ -1,6 +1,8 @@
 <?php
 namespace smll\cms\framework\route;
 
+use smll\framework\utils\Guid;
+
 use smll\framework\mvc\Action;
 
 use smll\framework\io\db\DB;
@@ -32,7 +34,7 @@ class Router extends \smll\framework\route\Router {
 		if($path[0] == "") {
 			// Front page
 			$webSettings = $this->settings->get('web');
-			$path = explode("/", $webSettings['frontPage']['path']);
+			$path = explode("/", "page/".$webSettings['frontPage']['pageId']);
 		}
 		
 		if($this->pathIsInRouteTable($path)) {
@@ -44,20 +46,33 @@ class Router extends \smll\framework\route\Router {
 		if(strtolower($path[0]) == "page") {
 			
 			$ident = $path[1];
-			
-			$connectionStrings = $this->settings->get('connectionStrings');
-			$db = new DB($connectionStrings['Default']['connectionString']);
-			$pageType = $db->query('
-					SELECT pt.controller FROM page_type AS pt 
-					LEFT JOIN page AS p ON (pt.id = p.fkPageTypeId) WHERE p.ident = ?
-					', $ident);
-		
-			$controller = $pageType[0]->controller;
 			$action = new Action();
-			$action->setController($controller);
-			$action->setAction('index');
-			$action->addParameter('id', $ident);
-			
+			if($ident !== '0') {
+				
+				$connectionStrings = $this->settings->get('connectionStrings');
+				$db = new DB($connectionStrings['Default']['connectionString']);
+				if(($guid = Guid::parse($ident)) != null) {
+					
+				$pageType = $db->query('
+						SELECT pt.controller, p.ident FROM page_type AS pt 
+						LEFT JOIN page AS p ON (pt.id = p.fkPageTypeId) WHERE p.ident = ?
+						', $guid);
+				} else if(is_numeric($ident)) {
+					$pageType = $db->query('
+						SELECT pt.controller, p.ident FROM page_type AS pt
+						LEFT JOIN page AS p ON (pt.id = p.fkPageTypeId) WHERE p.id = ?
+						', $ident);
+				}
+				$controller = $pageType[0]->controller;
+				
+				$action->setController($controller);
+				$action->setAction('index');
+				$action->addParameter('ident', $pageType[0]->ident);
+				
+			} else {
+				$action->setController('RootPage');
+				$action->setAction('index');
+			}
 			return $action;
 		}
 		

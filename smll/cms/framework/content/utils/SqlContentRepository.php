@@ -647,6 +647,10 @@ class SqlContentRepository implements IContentRepository {
 		
 		$startPageId = $page->getId();
 		
+		foreach($criteriaCollection->getIterator() as $criteria) {
+				
+		}
+		
 		$query = "SELECT * FROM page ";
 		
 	}

@@ -1,22 +1,44 @@
 <?php 
+use smll\framework\utils\Url;
 use smll\framework\helpers\Html;
 ?>
 <div class="navbar navbar-fixed-top navbar-inverse" style="position: absolute;">
 	<div class="navbar-inner">
 		<div class="container">
-			<span class="brand">Smll MVC</span>
-			<ul class="nav">
-				<li>
-				<?php print Html::actionLink("Home", "index", "Home");?>
-				</li>
-			</ul>
-			<?php if($model->authenticated) {?>
-				<ul class="nav pull-right">
+			<span class="brand">Gamescom</span>
+			
+			<!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".main-nav">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+		  <div class="main-nav nav-collapse collapse">
+				<ul class="nav">
+				
+				<?php foreach($model->nav->getItems()->getIterator() as $item) {?>
 					<li>
-					<?php print Html::actionLink("Account", "index", "Account");?>
+					<a href="<?php print Url::navigationUrl($item->getLink());?>"><?php print $item->getTitle();?></a>
 					</li>
+				<?php }?>
+				
 				</ul>
-			<?php }?>
+				<?php if($model->authenticated) {?>
+					<ul class="nav pull-right">
+						<li>
+						<?php print Html::actionLink("Account", "index", "Account");?>
+						</li>
+					</ul>
+				<?php }?>
+				<?php if($model->isAdmin || $model->isEditor) {?>
+					<ul class="nav pull-right">
+						<li>
+						<?php print Html::actionLink("Cms", "index", "Cms");?>
+						</li>
+					</ul>
+				<?php }?>
+				
+			</div>
 		</div>
 	</div>
 </div>

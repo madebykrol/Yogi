@@ -1,0 +1,4 @@
+<FilesMatch ".(htaccess|htpasswd|php|js|exe|bat)$"> // list all extentions to block
+ Order Allow,Deny
+ Deny from all
+</FilesMatch> 

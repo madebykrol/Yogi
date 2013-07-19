@@ -103,7 +103,7 @@ class ContentAuthorizationFilter extends FilterAttribute implements IAuthorizati
 		} 
 		
 		if($context->getController() instanceof PageController) {
-			$pageId = $context->getParameters()->get('id');
+			$pageId = $context->getParameters()->get('ident');
 			$pageRef = null;
 			if(($guid = Guid::parse($pageId)) != null) {
 				$pageId = $guid;

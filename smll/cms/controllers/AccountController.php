@@ -1,8 +1,8 @@
 <?php
-namespace src\controllers;
+namespace smll\cms\controllers;
 use smll\framework\mvc\Controller;
-use src\models\AccountModel;
-use src\models\RegisterModel;
+use smll\cms\models\AccountModel;
+use smll\cms\models\RegisterModel;
 /**
  * [Authorize]
  */
@@ -57,7 +57,7 @@ class AccountController extends Controller {
 			} else {
 				$this->modelState->setErrorMessageFor('username', 'Username or Password was incorrect');
 			}
-		} 
+		}
 		
 		return $this->view($model);
 	}
