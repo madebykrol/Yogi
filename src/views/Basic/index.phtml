@@ -6,11 +6,8 @@ $layout = "src/views/Share/_layout.phtml";
 
 ?>
 <div class="row">
-	<div class="span3">	
-		<h2>Games</h2>
-		<?php print Html::renderAction('leftNav', 'Nav', new HashMap(array('currentPage' => $model)));?>
-	</div>
-	<div class="span9">
-		<h1><?php print $model->getTitle();?></h1>
+	<div class="span12">
+		<h1><?php print $model->title;?></h1>
+		<?php print $model->mainBody; ?>
 	</div>
 </div>

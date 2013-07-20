@@ -4,6 +4,10 @@ use smll\framework\utils\HashMap;
 use smll\framework\helpers\Html;
 use smll\cms\framework\helpers\CmsHtml;
 $layout = 'smll/cms/views/Share/_layout.phtml';
+
+use smll\framework\io\Request;
+
+$request = new Request();
 ?>
 
 <div class="row-fluid">
@@ -16,6 +20,6 @@ $layout = 'smll/cms/views/Share/_layout.phtml';
 		<?php print Html::renderAction('editContentTreeNav', 'AdminNav'); ?>
 	</div>
 	<div class="span8">
-		<iframe src="/gamescom/Page/<?php print $model->ident;?>" width="100%" height="600"></iframe>
+		<iframe src="<?php print $request->getApplicationRoot(); ?>/Page/<?php print $model->ident;?>" width="100%" height="600"></iframe>
 	</div>
 </div>
