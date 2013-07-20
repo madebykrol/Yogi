@@ -263,7 +263,7 @@ CREATE TABLE `page_type_permission` (
   `event` varchar(45) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=223 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=229 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -272,7 +272,7 @@ CREATE TABLE `page_type_permission` (
 
 LOCK TABLES `page_type_permission` WRITE;
 /*!40000 ALTER TABLE `page_type_permission` DISABLE KEYS */;
-INSERT INTO `page_type_permission` VALUES (188,2,'Editor','Delete'),(187,2,'Administrator','Edit'),(186,2,'Editor','Edit'),(185,2,'User','View'),(162,3,'Editor','Delete'),(161,3,'Administrator','Edit'),(160,3,'Editor','Edit'),(159,3,'User','View'),(168,4,'Editor','Delete'),(167,4,'Administrator','Edit'),(166,4,'Editor','Edit'),(165,4,'User','View'),(164,4,'Anonymous','View'),(184,2,'Anonymous','View'),(158,3,'Anonymous','View'),(222,1,'Administrator','Delete'),(189,2,'Administrator','Delete'),(163,3,'Administrator','Delete'),(169,4,'Administrator','Delete'),(221,1,'Editor','Delete'),(220,1,'Administrator','Edit'),(219,1,'Editor','Edit'),(218,1,'User','View'),(217,1,'Anonymous','View');
+INSERT INTO `page_type_permission` VALUES (188,2,'Editor','Delete'),(187,2,'Administrator','Edit'),(186,2,'Editor','Edit'),(185,2,'User','View'),(162,3,'Editor','Delete'),(161,3,'Administrator','Edit'),(160,3,'Editor','Edit'),(159,3,'User','View'),(168,4,'Editor','Delete'),(167,4,'Administrator','Edit'),(166,4,'Editor','Edit'),(165,4,'User','View'),(164,4,'Anonymous','View'),(184,2,'Anonymous','View'),(158,3,'Anonymous','View'),(228,1,'Administrator','Delete'),(189,2,'Administrator','Delete'),(163,3,'Administrator','Delete'),(169,4,'Administrator','Delete'),(227,1,'Editor','Delete'),(226,1,'Administrator','Edit'),(225,1,'Editor','Edit'),(224,1,'User','View'),(223,1,'Anonymous','View');
 /*!40000 ALTER TABLE `page_type_permission` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -475,4 +475,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-07-20  1:58:26
+-- Dump completed on 2013-07-20  2:06:06

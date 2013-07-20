@@ -7,7 +7,6 @@ Once the CMS is in a Release candidate state, development of the master branch w
 with Smll MVC and the framework.
 
 
-
 Smll framework and the CMS is currently bundled with Bootstrap 2.3.2 
 And jQuery 1.9.1
 
