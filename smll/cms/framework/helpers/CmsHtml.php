@@ -1,5 +1,6 @@
 <?php
 namespace smll\cms\framework\helpers;
+
 use smll\cms\framework\content\fieldtype\interfaces\ITaxonomyFieldType;
 
 use smll\framework\utils\HashMap;
@@ -26,163 +27,166 @@ use \ReflectionClass;
 use \ReflectionProperty;
 
 
-class CmsHtml {
-	public static function cmsFormForPage(IPageData $page) {
-		global $application;
-		
-		if(!$application instanceof IApplication) {
-			throw new Exception();
-		}
-		$contentRepository = $application->getContainer()->get(
-				'smll\cms\framework\content\utils\interfaces\IContentRepository');
-		
-		$annotationHandler = $application->getContainer()->get(
-				'smll\framework\utils\interfaces\IAnnotationHandler');
-		
-		$connectionStrings;
-		
-		$settings = $application->getContainer()->get(
-				'smll\framework\settings\interfaces\ISettingsRepository');
-		
-		$connectionStrings = $settings->get('connectionStrings');
-		$defaultConnectionString = $connectionStrings['Default']['connectionString'];
-		
-		if(!$annotationHandler instanceof IAnnotationHandler) {
-			throw new Exception();
-		}
-		
-		// Get field type
-		$fieldFactory = $application
-			->getContainer()
-				->get('smll\cms\framework\ui\interfaces\IFieldTypeFactory');
-		
-		$postBack = "";
-		
-		$reflectionPage = new ReflectionClass(get_class($page));
-				
-		$currentController = $application->getCurrentExecutingController();
-		
-		
-		
-		/**
-		 * @todo build in the damn contentRepository
-		 */
-		
-		$output = "<form method=\"POST\" action=\"".$postBack."\" enctype=\"multipart/form-data\">";
-                
-		$db = new DB($defaultConnectionString);
-		$type = $db->query('SELECT id FROM page_type WHERE name = ?', $reflectionPage->getShortName());
-		
-		$fields = $db->query('SELECT * FROM page_definition WHERE fkPageTypeId = ? ORDER BY weightOrder DESC', $type[0]->id);
-		
-		$tabs = array('Content' => array(), 'Settings' => array(), 'Menu' => array());
-		
-		foreach($fields as $i => $field) {
-			
-			$tab = 'Content';
-			if(isset($field->tab)) {
-				$tab = $field->tab;
-			}
-			
-			$typeId = $field->fkPageDefinitionTypeId;
-			$result = $db->query('SELECT * FROM page_definition_type WHERE id = ?',$typeId);
-			
-			$defType = $result[0];
-			
-			
-			//print_r($annotationHandler->getAnnotation('ContentField', $reflectionPage));
-			$defaultFieldSettings = $annotationHandler->getAnnotation("ContentField",$reflectionPage->getProperty($field->name));
-			$hashMap = new HashMap($defaultFieldSettings[1]);
-			
-			foreach((array)$field as $prop => $val) {
-				$hashMap->add($prop, $val);
-			}
-			$rField = $fieldFactory->buildFieldType($defType->assembler, $hashMap);
-			
-			//print_r($rField);
-			
-			$rField->setName($field->name);
-			
-			$value = $reflectionPage->getProperty($field->name)->getValue($page);
-			if($rField instanceof IFileFieldType) {
-				if(is_array($value)) {
-					foreach($value as $index => $val) {
-						if(($guid = Guid::parse($val)) != null) {
-							// get FileReference
-								
-							$db->where(array('ident', '=', $guid));
-							$ref = $db->get('file_reference');
-							$db->flushResult();
-							$db->clearCache();
-								
-							$reference = new FileReference();
-							$reference->setIdent($guid);
-							$reference->setId($ref[0]->id);
-							$reference->setFilename($ref[0]->filename);
-							$reference->setFilesize($ref[0]->size);
-							$reference->setMime($ref[0]->mime);
-								
-							$value[$index] = $reference;
-						}
-					}
-				} else {
-					if(($guid = Guid::parse($value)) != null) {
-						$db->where(array('ident', '=', $guid));
-						$ref = $db->get('file_reference');
-						$db->flushResult();
-						$db->clearCache();
-						
-						$reference = new FileReference();
-						$reference->setIdent($guid);
-						$reference->setId($ref[0]->id);
-						$reference->setFilename($ref[0]->filename);
-						$reference->setFilesize($ref[0]->size);
-						$reference->setMime($ref[0]->mime);
-						
-						$value = $reference;
-					}
-				}
-			}
-			
-			$tabs[$tab][] = '<label>'.$field->displayName.'</label>'.$rField->renderField($value);
-		} 
+class CmsHtml
+{
+    public static function cmsFormForPage(IPageData $page)
+    {
+        global $application;
 
-		
-		$output .= '<div class="tabbable" style="margin-bottom: 18px;">
-              <ul class="nav nav-tabs">
-							';
-		$i = 1;
-		foreach($tabs as $title => $tab) {
-			$class = "";
-			if($i == 1) {
-				$class = "active";
-			}
-    	$output .='<li class="'.$class.'"><a href="#tab'.$i.'" data-toggle="tab">'.$title.'</a></li>';
-    	$i++;
-		}
-    $output .='</ul>
-    		<div class="tab-content" style="padding-bottom: 9px; border-bottom: 1px solid #ddd;">';
-    $i = 1;
-    foreach($tabs as $title => $tab) {
-    	
-    	$class = "";
-    	if($i == 1) {
-    		$class = "active";
-    	}
-    	
-    	$output .='<div class="'.$class.' tab-pane" id="tab'.$i.'">';
-    		foreach($tab as $field) {
-    			$output .= $field;
-    		}
-    	$output .='</div>';
-    	$i++;
+        if (!$application instanceof IApplication) {
+            throw new Exception();
+        }
+        $contentRepository = $application->getContainer()->get(
+                'smll\cms\framework\content\utils\interfaces\IContentRepository');
+
+        $annotationHandler = $application->getContainer()->get(
+                'smll\framework\utils\interfaces\IAnnotationHandler');
+
+        $connectionStrings;
+
+        $settings = $application->getContainer()->get(
+                'smll\framework\settings\interfaces\ISettingsRepository');
+
+        $connectionStrings = $settings->get('connectionStrings');
+        $defaultConnectionString = $connectionStrings['Default']['connectionString'];
+
+        if (!$annotationHandler instanceof IAnnotationHandler) {
+            throw new Exception();
+        }
+
+        // Get field type
+        $fieldFactory = $application
+        ->getContainer()
+        ->get('smll\cms\framework\ui\interfaces\IFieldTypeFactory');
+
+        $postBack = "";
+
+        $reflectionPage = new ReflectionClass(get_class($page));
+
+        $currentController = $application->getCurrentExecutingController();
+
+
+
+        /**
+         * @todo build in the damn contentRepository
+        */
+
+        $output = "<form method=\"POST\" action=\"".$postBack."\" enctype=\"multipart/form-data\">";
+
+        $db = new DB($defaultConnectionString);
+        $type = $db->query('SELECT id FROM page_type WHERE name = ?', $reflectionPage->getShortName());
+
+        $fields = $db->query('SELECT * FROM page_definition WHERE fkPageTypeId = ? ORDER BY weightOrder DESC', $type[0]->id);
+
+        $tabs = array('Content' => array(), 'Settings' => array(), 'Menu' => array());
+
+        foreach ($fields as $i => $field) {
+             
+            $tab = 'Content';
+            if (isset($field->tab)) {
+                $tab = $field->tab;
+            }
+             
+            $typeId = $field->fkPageDefinitionTypeId;
+            $result = $db->query('SELECT * FROM page_definition_type WHERE id = ?',$typeId);
+             
+            $defType = $result[0];
+             
+             
+            //print_r($annotationHandler->getAnnotation('ContentField', $reflectionPage));
+            $defaultFieldSettings = $annotationHandler->getAnnotation("ContentField",$reflectionPage->getProperty($field->name));
+            $hashMap = new HashMap($defaultFieldSettings[1]);
+             
+            foreach ((array)$field as $prop => $val) {
+                $hashMap->add($prop, $val);
+            }
+            $rField = $fieldFactory->buildFieldType($defType->assembler, $hashMap);
+             
+            //print_r($rField);
+             
+            $rField->setName($field->name);
+             
+            $value = $reflectionPage->getProperty($field->name)->getValue($page);
+            if ($rField instanceof IFileFieldType) {
+                if (is_array($value)) {
+                    foreach ($value as $index => $val) {
+                        if (($guid = Guid::parse($val)) != null) {
+                            // get FileReference
+
+                            $db->where(array('ident', '=', $guid));
+                            $ref = $db->get('file_reference');
+                            $db->flushResult();
+                            $db->clearCache();
+
+                            $reference = new FileReference();
+                            $reference->setIdent($guid);
+                            $reference->setId($ref[0]->id);
+                            $reference->setFilename($ref[0]->filename);
+                            $reference->setFilesize($ref[0]->size);
+                            $reference->setMime($ref[0]->mime);
+
+                            $value[$index] = $reference;
+                        }
+                    }
+                } else {
+                    if (($guid = Guid::parse($value)) != null) {
+                        $db->where(array('ident', '=', $guid));
+                        $ref = $db->get('file_reference');
+                        $db->flushResult();
+                        $db->clearCache();
+
+                        $reference = new FileReference();
+                        $reference->setIdent($guid);
+                        $reference->setId($ref[0]->id);
+                        $reference->setFilename($ref[0]->filename);
+                        $reference->setFilesize($ref[0]->size);
+                        $reference->setMime($ref[0]->mime);
+
+                        $value = $reference;
+                    }
+                }
+            }
+             
+            $tabs[$tab][] = '<label>'.$field->displayName.'</label>'.$rField->renderField($value);
+        }
+
+
+        $output .= '<div class="tabbable" style="margin-bottom: 18px;">
+                <ul class="nav nav-tabs">
+                ';
+        $i = 1;
+        foreach ($tabs as $title => $tab) {
+            $class = "";
+            if ($i == 1) {
+                $class = "active";
+            }
+            $output .='<li class="'.$class.'"><a href="#tab'.$i.'" data-toggle="tab">'.$title.'</a></li>';
+            $i++;
+        }
+        $output .='</ul>
+                <div class="tab-content" style="padding-bottom: 9px; border-bottom: 1px solid #ddd;">';
+        $i = 1;
+        foreach ($tabs as $title => $tab) {
+             
+            $class = "";
+            if($i == 1) {
+                $class = "active";
+            }
+             
+            $output .='<div class="'.$class.' tab-pane" id="tab'.$i.'">';
+            foreach ($tab as $field) {
+                $output .= $field;
+            }
+            $output .='</div>';
+            $i++;
+        }
+        $output .= '</div></div>';
+        $output .= '<input type="hidden" name="page" value="'.$reflectionPage->getShortName().'" />';
+        return $output;
     }
-		$output .= '</div></div>';
-		$output .= '<input type="hidden" name="page" value="'.$reflectionPage->getShortName().'" />';
-		return $output;
-	}
-	
-	public static function cmsFormForBlock(IBlockData $block) {
-		global $application;
-	}
+
+    public static function cmsFormForBlock(IBlockData $block)
+    {
+        global $application;
+    }
 }

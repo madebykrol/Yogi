@@ -1,6 +1,7 @@
 <?php
 namespace smll\cms\framework\ui\interfaces;
 
-interface IFieldInjector {
-	public function onFieldInjection();
+interface IFieldInjector
+{
+    public function onFieldInjection();
 }

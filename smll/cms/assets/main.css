@@ -5,18 +5,18 @@
 }
 
 .validate-error {
-  color: #ff0000;
-  font-weight: bold;
+	color: #ff0000;
+	font-weight: bold;
 }
 
 iframe {
 	border: 0px;
 }
 
-.ui-state-highlight { 
+.ui-state-highlight {
 	height: 15px;
-  border: solid 1px #ccc;
-  -webkit-border-radius: 5px;
+	border: solid 1px #ccc;
+	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 }
@@ -25,7 +25,7 @@ ul.targetMenu {
 	min-height: 10px;
 }
 
-ul.collapsible.closed li.menuItem{
+ul.collapsible.closed li.menuItem {
 	display: none;
 }
 
@@ -37,64 +37,42 @@ ul.collapsible.closed li.menuItem{
 	width: 20px;
 }
 
-
-
-
-
-
 /* Smartphones (portrait and landscape) ----------- */
-@media only screen 
-and (min-device-width : 320px) 
-and (max-device-width : 480px) {
-/* Styles */
+@media only screen and (min-device-width : 320px) and (max-device-width
+	: 480px) { /* Styles */
 }
 
 /* Smartphones (landscape) ----------- */
-@media only screen 
-and (min-width : 321px) {
-/* Styles */
+@media only screen and (min-width : 321px) { /* Styles */
 }
 
 /* Smartphones (portrait) ----------- */
-@media only screen 
-and (max-width : 320px) {
-/* Styles */
+@media only screen and (max-width : 320px) { /* Styles */
 }
 
 /* iPads (portrait and landscape) ----------- */
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px) {
-/* Styles */
+@media only screen and (min-device-width : 768px) and (max-device-width
+	: 1024px) { /* Styles */
 }
 
 /* iPads (landscape) ----------- */
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px) 
-and (orientation : landscape) {
-/* Styles */
+@media only screen and (min-device-width : 768px) and (max-device-width
+	: 1024px) and (orientation : landscape) { /* Styles */
 }
 
 /* iPads (portrait) ----------- */
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px) 
-and (orientation : portrait) {
-/* Styles */
+@media only screen and (min-device-width : 768px) and (max-device-width
+	: 1024px) and (orientation : portrait) { /* Styles */
 }
 
 /* Desktops and laptops ----------- */
-@media only screen 
-and (min-width : 1000px) {
-  #browser {
-    width: 900px;
-    margin-left: -450px;
-  }
+@media only screen and (min-width : 1000px) {
+	#browser {
+		width: 900px;
+		margin-left: -450px;
+	}
 }
 
 /* Large screens ----------- */
-@media only screen 
-and (min-width : 1824px) {
-/* Styles */
+@media only screen and (min-width : 1824px) { /* Styles */
 }

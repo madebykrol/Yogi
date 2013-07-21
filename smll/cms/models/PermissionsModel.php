@@ -1,6 +1,7 @@
 <?php
 namespace smll\cms\models;
 
-class PermissionsModel {
-	public $permissions;
+class PermissionsModel
+{
+    public $permissions;
 }

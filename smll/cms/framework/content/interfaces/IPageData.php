@@ -1,6 +1,7 @@
 <?php
 namespace smll\cms\framework\content\interfaces;
 
-interface IPageData {
-	public function getPageReference();
+interface IPageData
+{
+    public function getPageReference();
 }

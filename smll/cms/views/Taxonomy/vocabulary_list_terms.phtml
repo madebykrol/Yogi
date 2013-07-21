@@ -29,21 +29,23 @@ $layout = 'smll/cms/views/Share/_layout.phtml';
 				</tr>
 			</thead>
 			<tbody>
-			<?php
+				<?php
 				foreach($model->terms as $term) {
 			?>
 				<tr>
-					<td><a href="<?php print Html::actionUrl('vocabulary-list-terms', 'Taxonomy', new HashMap(array('vocabulary' => $term->id)));?>"><?php print $term->term;?></a></td>
+					<td><a
+						href="<?php print Html::actionUrl('vocabulary-list-terms', 'Taxonomy', new HashMap(array('vocabulary' => $term->id)));?>"><?php print $term->term;?>
+					</a></td>
 					<td><?php print $term->description;?></td>
 					<td></td>
 				</tr>
-			<?php }?>
+				<?php }?>
 			</tbody>
 		</table>
 		<div class="span8">
 			<?php 
 			$r = new Request();
-			
+
 			print Html::renderAction('add-term', 'Taxonomy', new HashMap(array('vocabulary' => $model->vocabularyId, 'returnUrl' => $r->getCurrentUri())));?>
 		</div>
 	</div>

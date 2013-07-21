@@ -6,22 +6,21 @@ use smll\framework\io\Request;
 $request = new Request();
 
 ?>
-<div class="navbar navbar-fixed-top navbar-inverse" style="position: absolute;">
+<div class="navbar navbar-fixed-top navbar-inverse"
+	style="position: absolute;">
 	<div class="navbar-inner">
 		<div class="container-fluid">
-			<span class="brand"><a href="<?php print $request->getApplicationRoot();?>">Smll CMS</a></span>
+			<span class="brand"><a
+				href="<?php print $request->getApplicationRoot();?>">Smll CMS</a> </span>
 			<ul class="nav">
-				<li>
-				<?php print Html::actionLink("Edit mode", "edit", "Cms");?>
+				<li><?php print Html::actionLink("Edit mode", "edit", "Cms");?>
 				</li>
-				<li>
-				<?php print Html::actionLink("Admin mode ", "admin", "Cms");?>
+				<li><?php print Html::actionLink("Admin mode ", "admin", "Cms");?>
 				</li>
 			</ul>
-			
+
 			<ul class="nav pull-right">
-				<li>
-				<?php print Html::actionLink("Account ", "index", "Account");?>
+				<li><?php print Html::actionLink("Account ", "index", "Account");?>
 				</li>
 			</ul>
 		</div>

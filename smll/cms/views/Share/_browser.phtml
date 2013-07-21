@@ -5,29 +5,31 @@ use smll\framework\helpers\Styles;
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title><?php print $viewBag['title']?></title>
-	<?php print Styles::style('~/smll/cms/assets/bootstrap/css/bootstrap.css');?>
-	<?php print Styles::style('~/smll/cms/assets/bootstrap/css/bootstrap-responsive.css');?>
-	<?php print Styles::style('~/smll/cms/assets/prettify.css');?>
-	<?php print Styles::style('~/smll/cms/assets/main.css');?>
-	<?php print Styles::style('~/smll/cms/assets/datepicker/css/datepicker.css');?>
-	
+<title><?php print $viewBag['title']?></title>
+<?php print Styles::style('~/smll/cms/assets/bootstrap/css/bootstrap.css');?>
+<?php print Styles::style('~/smll/cms/assets/bootstrap/css/bootstrap-responsive.css');?>
+<?php print Styles::style('~/smll/cms/assets/prettify.css');?>
+<?php print Styles::style('~/smll/cms/assets/main.css');?>
+<?php print Styles::style('~/smll/cms/assets/datepicker/css/datepicker.css');?>
+
 </head>
 <body>
 	<div class="container-fluid" id="main-wrapper">
 		<?php
-		
-			print $content;
-		
+
+		print $content;
+
 		?>
 	</div>
-<script src="/gamescom/smll/cms/scripts/jquery.js"></script>
-<script src="/gamescom/smll/cms/scripts/jquery-ui.js"></script>
-<script src="/gamescom/smll/cms/scripts/bootstrap/js/bootstrap.js"></script>
-<script src="/gamescom/smll/cms/scripts/prettify.js"></script>
-<script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
-<script src="/gamescom/smll/cms/scripts/tinymce/js/tinymce/jquery.tinymce.min"></script>
-<script src="/gamescom/smll/cms/assets/datepicker/js/bootstrap-datepicker.js"></script>
-<script src="/gamescom/smll/cms/scripts/main.js"></script>
+	<script src="/gamescom/smll/cms/scripts/jquery.js"></script>
+	<script src="/gamescom/smll/cms/scripts/jquery-ui.js"></script>
+	<script src="/gamescom/smll/cms/scripts/bootstrap/js/bootstrap.js"></script>
+	<script src="/gamescom/smll/cms/scripts/prettify.js"></script>
+	<script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
+	<script
+		src="/gamescom/smll/cms/scripts/tinymce/js/tinymce/jquery.tinymce.min"></script>
+	<script
+		src="/gamescom/smll/cms/assets/datepicker/js/bootstrap-datepicker.js"></script>
+	<script src="/gamescom/smll/cms/scripts/main.js"></script>
 </body>
 </html>

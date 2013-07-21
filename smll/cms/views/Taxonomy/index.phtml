@@ -25,21 +25,35 @@ $layout = 'smll/cms/views/Share/_layout.phtml';
 				</tr>
 			</thead>
 			<tbody>
-			<?php
+				<?php
 				foreach($model as $vocab) {
 			?>
 				<tr>
-					<td><a href="<?php print Html::actionUrl('vocabulary-list-terms', 'Taxonomy', new HashMap(array('vocabulary' =>$vocab->id)));?>"><?php print $vocab->name;?></a></td>
+					<td><a
+						href="<?php print Html::actionUrl('vocabulary-list-terms', 'Taxonomy', new HashMap(array('vocabulary' =>$vocab->id)));?>"><?php print $vocab->name;?>
+					</a></td>
 					<td><?php print $vocab->description;?></td>
 					<td>
 						<div class="btn-group pull-right">
-						  <a href="<?php print Html::actionUrl('vocabulary-list-terms', 'Taxonomy', new HashMap(array('vocabulary' =>$vocab->id)));?>" class="btn btn-primary has-tooltip" data-toggle="tooltip" data-placement="top" data-original-title="List terms"><i class="icon-list"></i></a>
-						  <a href="<?php print Html::actionUrl('edit-vocabulary', 'Taxonomy', new HashMap(array('vocabulary' =>$vocab->id)));?>" class="btn btn-warning has-tooltip" data-toggle="tooltip" data-placement="top" data-original-title="Edit vocabulary"><i class="icon-edit"></i></a>
-						  <a href="<?php print Html::actionUrl('remove-vocabulary', 'Taxonomy', new HashMap(array('vocabulary' =>$vocab->id)));?>" class="btn btn-danger btn-confirm has-tooltip" data-confirm="You are about to remove <?php print $vocab->name;?>" data-toggle="tooltip" data-placement="top" data-original-title="Remove vocabulary"><i class="icon-trash"></i></a>
+							<a
+								href="<?php print Html::actionUrl('vocabulary-list-terms', 'Taxonomy', new HashMap(array('vocabulary' =>$vocab->id)));?>"
+								class="btn btn-primary has-tooltip" data-toggle="tooltip"
+								data-placement="top" data-original-title="List terms"><i
+								class="icon-list"></i> </a> <a
+								href="<?php print Html::actionUrl('edit-vocabulary', 'Taxonomy', new HashMap(array('vocabulary' =>$vocab->id)));?>"
+								class="btn btn-warning has-tooltip" data-toggle="tooltip"
+								data-placement="top" data-original-title="Edit vocabulary"><i
+								class="icon-edit"></i> </a> <a
+								href="<?php print Html::actionUrl('remove-vocabulary', 'Taxonomy', new HashMap(array('vocabulary' =>$vocab->id)));?>"
+								class="btn btn-danger btn-confirm has-tooltip"
+								data-confirm="You are about to remove <?php print $vocab->name;?>"
+								data-toggle="tooltip" data-placement="top"
+								data-original-title="Remove vocabulary"><i class="icon-trash"></i>
+							</a>
 						</div>
 					</td>
 				</tr>
-			<?php }?>
+				<?php }?>
 			</tbody>
 		</table>
 	</div>

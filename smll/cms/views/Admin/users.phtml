@@ -22,7 +22,7 @@ use smll\framework\helpers\Html;
 				</tr>
 			</thead>
 			<tbody>
-			<?php foreach($model->getIterator() as $user) {?>
+				<?php foreach($model->getIterator() as $user) {?>
 				<tr>
 					<td><?php print $user->membershipData->getProviderName();?></td>
 					<td></td>
@@ -30,7 +30,8 @@ use smll\framework\helpers\Html;
 					<td>
 						<div class="user-actions">
 							<div class="btn-group pull-right">
-							  <a href="<?php print Html::actionUrl(
+								<a
+									href="<?php print Html::actionUrl(
 							  		'edit',
 							  		'User', 
 							  		new HashMap(
@@ -38,9 +39,11 @@ use smll\framework\helpers\Html;
 												'id' => 
 												$user->membershipData->getProviderIdent()
 											)
-										));?>" class="btn btn-primary"><i class="icon-edit"></i></a>
-							  <a href="" class="btn btn-warning"><i class="icon-remove-sign"></i></a>
-							  <a href="" class="btn btn-danger"><i class="icon-trash"></i></a>
+										));?>"
+									class="btn btn-primary"><i class="icon-edit"></i> </a> <a
+									href="" class="btn btn-warning"><i class="icon-remove-sign"></i>
+								</a> <a href="" class="btn btn-danger"><i class="icon-trash"></i>
+								</a>
 							</div>
 						</div>
 					</td>
@@ -49,7 +52,5 @@ use smll\framework\helpers\Html;
 			</tbody>
 		</table>
 	</div>
-	<div class="span2">
-		
-	</div>
+	<div class="span2"></div>
 </div>

@@ -13,7 +13,7 @@ use smll\framework\helpers\Html;
 <div class="row-fluid">
 	<div class="span12">
 		<h2>Installed page types</h2>
-		
+
 		<table class="table table-striped">
 			<thead>
 				<th>Page type</th>
@@ -21,24 +21,24 @@ use smll\framework\helpers\Html;
 				<th class="pull-right">Actions</th>
 			</thead>
 			<tbody>
-			<?php foreach($model->installed->getIterator() as $pageType) {?>
+				<?php foreach($model->installed->getIterator() as $pageType) {?>
 				<tr>
 					<td><?php print $pageType->name;?></td>
-					<td>
-						<?php print $pageType->description;?>
+					<td><?php print $pageType->description;?>
 					</td>
 					<td class="">
 						<div class="btn-group pull-right">
-						  <a href="" class="btn btn-primary">Edit</a>
-						  <a href="<?php print Html::actionUrl('rebuild-page-type', 'Admin', new HashMap(array('type' => $pageType->name)));?>" class="btn btn-warning">Rebuild</a>
-						  <a href="" class="btn btn-danger">Delete</a>
+							<a href="" class="btn btn-primary">Edit</a> <a
+								href="<?php print Html::actionUrl('rebuild-page-type', 'Admin', new HashMap(array('type' => $pageType->name)));?>"
+								class="btn btn-warning">Rebuild</a> <a href=""
+								class="btn btn-danger">Delete</a>
 						</div>
 					</td>
 				</tr>
-			<?php }?>
+				<?php }?>
 			</tbody>
 		</table>
-		
+
 		<h2>Uninstalled page types</h2>
 		<table class="table">
 			<thead>
@@ -47,17 +47,19 @@ use smll\framework\helpers\Html;
 				<th class="pull-right">Actions</th>
 			</thead>
 			<tbody>
-			<?php foreach($model->uninstalled->getIterator() as $pageType) {?>
+				<?php foreach($model->uninstalled->getIterator() as $pageType) {?>
 				<tr>
 					<td><?php print $pageType->name;?></td>
 
 					<td class="">
 						<div class="btn-group pull-right">
-						  <a href="<?php print Html::actionUrl('build-page-type', 'Admin', new HashMap(array('type' => $pageType->name)));?>" class="btn btn-warning">Build</a>
+							<a
+								href="<?php print Html::actionUrl('build-page-type', 'Admin', new HashMap(array('type' => $pageType->name)));?>"
+								class="btn btn-warning">Build</a>
 						</div>
 					</td>
 				</tr>
-			<?php }?>
+				<?php }?>
 			</tbody>
 		</table>
 	</div>
