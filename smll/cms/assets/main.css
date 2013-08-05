@@ -21,6 +21,23 @@ iframe {
 	border-radius: 5px;
 }
 
+.free-float {
+	position: absolute;
+}
+
+.free-float.left {
+	left: 0px;
+}
+
+.free-float.right {
+	right: 0px;
+}
+
+.free-float.blocks {
+	background-color: #fff;
+	height: auto;
+}
+
 ul.targetMenu {
 	min-height: 10px;
 }

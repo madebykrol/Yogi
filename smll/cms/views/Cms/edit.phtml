@@ -13,26 +13,33 @@ use smll\framework\helpers\Html;
 		<?php print Html::renderAction('editContentTreeNav', 'AdminNav'); ?>
 	</div>
 	<div class="span8">
-		<h2>Dashboard</h2>
-		<div class="container">
-			<div class="span4">
-				<h3>Recent content</h3>
-				<?php print Html::renderAction('recentContent', 'Content');?>
-			</div>
-			<div class="span4">
-				<h3>Recent user</h3>
-				<?php print Html::renderAction('recentContent', 'Content');?>
-			</div>
-			<div class="span4">
-				<h3>Recent comments</h3>
-				<?php print Html::renderAction('recentContent', 'Content');?>
-			</div>
-		</div>
-	</div>
-	<div class="span2">
-		<h5>Number of pages</h5>
-		12
-		<h5>Number of Users</h5>
-		12
+	    <h2>Pages</h2>
+	    <form>
+	        
+	    </form>
+		<table class="table table-striped">
+	        <thead>
+	            <tr>
+	                <th>Title</th>
+	                <th>Type</th>
+	                <th>Author</th>
+	                <th>Status</th>
+	                <th>Updated</th>
+	                <th>Language</th>
+	                <th>Actions</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            <tr>
+	                <td>Lorem Ipsum Dolor</td>
+	                <td>GamePage</td>
+	                <td>Kw33l</td>
+	                <td>Published</td>
+	                <td></td>
+	                <td>sv-se</td>
+	                <td></td>
+	            </tr>
+	        </tbody>
+	    </table>
 	</div>
 </div>

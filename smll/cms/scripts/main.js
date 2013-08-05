@@ -39,7 +39,7 @@ $(document).ready(function() {
 	}).disableSelection();
 	
 	$('.collapse-toggle').on('click', function(event) {
-		$($(this).data('target')+" li.menuItem").toggle();
+		$($(this).data('target')+" > li.menuItem").toggle();
 		var icon = $(this).find('i');
 		changeToggleIcon(icon);
 	});

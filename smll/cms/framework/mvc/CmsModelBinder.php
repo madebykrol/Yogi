@@ -1,5 +1,7 @@
 <?php
 namespace smll\cms\framework\mvc;
+use smll\cms\framework\content\utils\interfaces\IContentTypeRepository;
+
 use smll\cms\framework\content\files\interfaces\IFileRepository;
 
 use smll\framework\io\file\FileReference;
@@ -10,7 +12,7 @@ use smll\cms\framework\content\fieldtype\interfaces\IFileFieldType;
 
 use smll\cms\framework\ui\interfaces\IFieldTypeFactory;
 
-use smll\cms\framework\content\utils\interfaces\IContentRepository;
+use smll\cms\framework\content\utils\interfaces\IPageDataRepository;
 
 use smll\framework\mvc\interfaces\IModelBinder;
 use smll\framework\mvc\interfaces\IController;
@@ -36,17 +38,17 @@ class CmsModelBinder implements IModelBinder
     private $currentFields;
 
     /**
-     * [Inject(smll\cms\framework\content\utils\interfaces\IContentRepository)]
-     * @var IContentRepository
-     */
-    private $contentRepository;
-
-    /**
      * [Inject(smll\cms\framework\content\files\interfaces\IFileRepository)]
      * @var IFileRepository
      */
     private $fileRepository;
 
+    /**
+     * [Inject(smll\cms\framework\content\utils\interfaces\IContentTypeRepository)]
+     * @var IContentTypeRepository
+     */
+    private $contentTypeRepository;
+    
     /**
      * [Inject(smll\cms\framework\ui\interfaces\IFieldTypeFactory)]
      * @var IFieldTypeFactory
@@ -65,9 +67,9 @@ class CmsModelBinder implements IModelBinder
         $this->formFieldHandler = $handler;
     }
 
-    public function setContentRepository(IContentRepository $repo)
+    public function setContentTypeRepository(IContentTypeRepository $repo)
     {
-        $this->contentRepository = $repo;
+        $this->contentTypeRepository = $repo;
     }
 
     public function setFileRepository(IFileRepository $repo)
@@ -82,7 +84,6 @@ class CmsModelBinder implements IModelBinder
     public function bindModel(ReflectionClass $class, 
             IController &$controller, HashMap $parameters)
     {
-
         $obj = $class->newInstance();
         $modelState = &$controller->getModelState();
 
@@ -91,10 +92,10 @@ class CmsModelBinder implements IModelBinder
         foreach ($this->currentFields as $name => $value) {
             if ($class->hasProperty($name)) {
                 $prop = $class->getProperty($name);
-
+                
                 if ($this->annotationHandler->hasAnnotation('ContentField', $prop)) {
                     $annotation = $this->annotationHandler->getAnnotation('ContentField', $prop);
-                    $contentField = $this->contentRepository->getPageDefinitionTypeByName($annotation[1]['Type']);
+                    $contentField = $this->contentTypeRepository->getContentDefinitionTypeByName($annotation[1]['Type']);
                      
                     $settings = $this->fieldTypeFactory->buildFieldSettings(new HashMap());
                      
@@ -113,7 +114,6 @@ class CmsModelBinder implements IModelBinder
                                 if ($val != null) {
                                     // Don't process guids... They are already set.
                                     if (($fileGuid = Guid::parse($val)) == null) {
-
                                         $value[$index] = $this->processFileReference($val, $field, $index);
                                     }
                                 }

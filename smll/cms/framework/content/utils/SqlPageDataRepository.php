@@ -435,17 +435,12 @@ class SqlPageDataRepository implements IPageDataRepository
         
         $contentCriteria = array();
         
-        $where = "";
+        $where  = "";
         foreach ($criteriaCollection->getIterator() as $criteria) {
             $condition = "=";
-            $value = $criteria->getValue();
-            
             switch ($criteria->getCondition()) {
                 case PropertyCriteria::CRITERIA_COMPARE_CONDITION_EQUALS :
                     $condition = '=';
-                    break;
-                case PropertyCriteria::CRITERIA_COMPARE_CONDITION_IN : 
-                    $condition = 'in';
                     break;
             }
             
@@ -459,20 +454,8 @@ class SqlPageDataRepository implements IPageDataRepository
                    }
                }
                 
-               $where .= "c.".$criteria->getName()." ".$condition." ".$this->getValuePlaceHolder($criteria->getValue());
-               $value = 
+               $where .= "c.".$criteria->getName()." ".$condition." ?";
                $contentCriteria[] = $criteria->getValue();
-            } else if ($criteria->getType() == PropertyCriteria::CRITERIA_PROPERTY_CONTENT_TYPE_NAME) {
-                if($where != "") {
-                    if($criteria->isRequired()) {
-                        $where.= " AND ";
-                    } else {
-                        $where .= " OR ";
-                    }
-                }
-                
-                $where .= "c_t.name"." ".$condition." ".$this->getValuePlaceHolder($criteria->getValue());
-                $contentCriteria[] = $criteria->getValue();
             } else {
                
                 if($where != "") {
@@ -482,7 +465,7 @@ class SqlPageDataRepository implements IPageDataRepository
                         $where .= " OR ";
                     }
                 }
-                $where .= '('.'c_d.name = ? AND p.'.$criteria->getType().' = '.$this->getValuePlaceHolder($criteria->getValue()).')';
+                $where .= '('.'c_d.name = ? AND p.'.$criteria->getType().' = ?'.')';
                 $contentCriteria[] = $criteria->getName();
                 $contentCriteria[] = $criteria->getValue();
             }
@@ -490,31 +473,20 @@ class SqlPageDataRepository implements IPageDataRepository
         
         $db = $this->db;
         
-        $method = new \ReflectionMethod('smll\framework\io\db\DB', 'query');
-        
-        
-        $query = array();
-        $query[] = "SELECT DISTINCT(c.id), c.ident FROM content AS c 
-                JOIN property AS p 
+        $contentResult = $db->query("
+                SELECT c.id, c.ident FROM content AS c 
+                JOIN gamescom.property AS p 
                     ON (p.fkContentId = c.id) 
-                JOIN content_definition as c_d 
-                    ON (p.fkContentDefinitionId = c_d.id)
-                JOIN content_type AS c_t
-                    ON (c.fkContentTypeId = c_t.id)
-                WHERE ".$where." AND c.type = 'ContentData'";
-        
-        foreach($contentCriteria as $criteria) {
-            $query[] = $criteria;
-        }
-        
-        $contentResult = $method->invokeArgs($db, $query);
+                JOIN gamescom.content_definition as c_d 
+                    ON (p.fkContentDefinitionId = c_d.id) 
+                WHERE ".$where, $contentCriteria);
         
         if(is_array($contentResult) && count($contentResult) > 0) {
             foreach ($contentResult as $index => $content) {
-                $contentResult[$index] = $this->getContent(Guid::parse($content->ident));
+                $contentResult[$index] = $this->getPageReference(Guid::parse($content->ident));
             }
             
-            return new ContentDataCollection($contentResult);
+            return $contentResult;
         } else {
             return false;
         }

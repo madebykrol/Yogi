@@ -1,5 +1,5 @@
 <?php
 interface IControllerFactory {
-	public function createController($controllerName);
-	
+    public function createController($controllerName);
+
 }

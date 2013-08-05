@@ -24,6 +24,10 @@ class CmsContainerModule implements IContainerModule
                 'smll\framework\io\file\interfaces\IFileUploadManager')
                 ->addArgument($_FILES)
                 ->inRequestScope();
+        
+        $this->register(
+                'smll\framework\io\BrowserContext',
+                'smll\framework\io\interfaces\IBrowserContext');
          
         $this->register(
                 'smll\cms\framework\content\taxonomy\SqlTaxonomyRepository',
@@ -38,6 +42,11 @@ class CmsContainerModule implements IContainerModule
         $this->register('smll\cms\framework\ui\FieldTypeFactory',
                 'smll\cms\framework\ui\interfaces\IFieldTypeFactory')
                 ->inRequestScope();
+        
+        $this->register(
+                'smll\cms\framework\content\utils\SqlContentRepository',
+                'smll\cms\framework\content\utils\interfaces\IContentRepository')
+                ->inRequestScope();
 
         $this->register('smll\framework\utils\AnnotationHandler',
                 'smll\framework\utils\interfaces\IAnnotationHandler');
@@ -49,8 +58,12 @@ class CmsContainerModule implements IContainerModule
         $this->register('smll\framework\security\SqlRoleProvider',
                 'smll\framework\security\interfaces\IRoleProvider');
          
-        $this->register('smll\cms\framework\content\utils\SqlContentRepository',
-                'smll\cms\framework\content\utils\interfaces\IContentRepository')
+        $this->register('smll\cms\framework\content\utils\SqlPageDataRepository',
+                'smll\cms\framework\content\utils\interfaces\IPageDataRepository')
+                ->inRequestScope();
+        
+        $this->register('smll\cms\framework\content\utils\SqlContentTypeRepository',
+                'smll\cms\framework\content\utils\interfaces\IContentTypeRepository')
                 ->inRequestScope();
          
         $this->register('smll\cms\framework\security\SqlContentPermissionHandler',
@@ -70,6 +83,8 @@ class CmsContainerModule implements IContainerModule
         $this->register('smll\framework\mvc\ModelState',
                 'smll\framework\mvc\interfaces\IModelState')
                 ->inRequestScope();
+        
+        
          
         $this->register('smll\framework\io\XmlSettingsLoader',
                 'smll\framework\settings\interfaces\ISettingsLoader')
@@ -111,8 +126,8 @@ class CmsContainerModule implements IContainerModule
                 'smll\framework\mvc\interfaces\IViewEngineRepository');
          
         $this->register(
-                'smll\cms\framework\PageTypeBuilder',
-                'smll\cms\framework\interfaces\IPageTypeBuilder'
+                'smll\cms\framework\ContentTypeBuilder',
+                'smll\cms\framework\interfaces\IContentTypeBuilder'
         );
          
         $this->register(

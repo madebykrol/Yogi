@@ -1,6 +1,8 @@
 <?php
 namespace smll\cms\controllers;
 
+use smll\cms\framework\content\utils\interfaces\IContentTypeRepository;
+
 use smll\framework\utils\Guid;
 
 use smll\framework\utils\JsonConverter;
@@ -10,7 +12,7 @@ use smll\cms\framework\ui\interfaces\IMenuItem;
 use smll\cms\framework\ui\MenuItem;
 use smll\cms\framework\ui\MenuTree;
 use smll\cms\framework\interfaces\IPageTypeBuilder;
-use smll\cms\framework\content\utils\interfaces\IContentRepository;
+use smll\cms\framework\content\utils\interfaces\IPageDataRepository;
 use smll\framework\utils\HashMap;
 use smll\framework\mvc\Controller;
 use smll\cms\models\AdminNavModel;
@@ -24,11 +26,14 @@ use smll\cms\models\EditorTool;
 class AdminNavController extends Controller
 {
 
-    private $contentRepository;
+    private $pageDataRepository;
+    private $contentTypeRepository;
 
-    public function __construct(IContentRepository $repo)
+    public function __construct(IPageDataRepository $repo, 
+            IContentTypeRepository $contentTypeRepository)
     {
-        $this->contentRepository = $repo;
+        $this->pageDataRepository = $repo;
+        $this->contentTypeRepository = $contentTypeRepository;
     }
 
     public function topNav()
@@ -40,29 +45,68 @@ class AdminNavController extends Controller
     {
         $adminNav = new AdminNavModel();
 
-        $editTool = new EditorTool("edit", "Content", new HashMap(array('id' => $id)), 'icon-edit', true, false);
+        $editTool = new EditorTool("edit", "Pages", new HashMap(array('id' => $id)), 'icon-edit', true, false);
         if (!isset($id) && $id == "") {
             $editTool->active = false;
         }
         $adminNav->tools->add('edit', $editTool);
+        
+        $copyTool = new EditorTool("copy", "Pages", new HashMap(array('id' => $id)), 'icon-copy', true, false);
+        if (!isset($id) && $id == "") {
+            $editTool->active = false;
+        }
+        $adminNav->tools->add('copy', $copyTool);
 
-        $removeTool = new EditorTool("remove", "Content", new HashMap(array('id' => $id)), 'icon-trash', true, false);
+        $removeTool = new EditorTool("remove", "Pages", new HashMap(array('id' => $id)), 'icon-trash', true, false);
         if (!isset($id) && $id == "") {
             $removeTool->active = false;
         }
         $adminNav->tools->add('remove', $removeTool);
 
-        $publishTool = new EditorTool("publish", "Content", new HashMap(array('id' => $id)), 'icon-thumbs-up', true, false);
+        $publishTool = new EditorTool("publish", "Pages", new HashMap(array('id' => $id)), 'icon-thumbs-up', true, false);
         if (!isset($id) && $id == "") {
             $publishTool->active = false;
         }
         $adminNav->tools->add('publish', $publishTool);
 
 
-        foreach ($this->contentRepository->getPageTypes()->getIterator() as $pageType) {
-            $adminNav->contentTypes->add($pageType->name, $pageType->displayName);
+        foreach ($this->contentTypeRepository->getContentTypes('PageData')->getIterator() as $pageType) {
+            $adminNav->pageTypes->add($pageType->name, $pageType->displayName);
         }
 
+        return $this->view($adminNav);
+    }
+    
+    public function contentToolsNav($id = null)
+    {
+        $adminNav = new AdminNavModel();
+        
+        foreach ($this->contentTypeRepository->getContentTypes('PageData')->getIterator() as $pageType) {
+            $adminNav->pageTypes->add($pageType->name, $pageType->displayName);
+        }
+    
+        return $this->view($adminNav);
+    }
+    
+    public function taxonomyToolsNav($id = null)
+    {
+        $adminNav = new AdminNavModel();
+    
+        foreach ($this->contentTypeRepository->getContentTypes('PageData')->getIterator() as $pageType) {
+            $adminNav->pageTypes->add($pageType->name, $pageType->displayName);
+        }
+    
+        return $this->view($adminNav);
+    }
+    
+    public function blockToolsNav($id = null)
+    {
+        $adminNav = new AdminNavModel();
+    
+        foreach ($this->contentTypeRepository->getContentTypes('PageData')->getIterator() as $pageType) {
+            $adminNav->pageTypes->add($pageType->name, $pageType->displayName);
+        }
+    
         return $this->view($adminNav);
     }
 
@@ -74,18 +118,17 @@ class AdminNavController extends Controller
     public function editContentTreeNav($active = null)
     {
         $adminNav = new AdminNavModel();
-
+        
         $tree = new MenuTree();
-
-
-        $rootPage = $this->contentRepository->getRootPage();
-        foreach ($rootPage->getChildren()->getIterator() as $id => $page) {
+        $rootPage = $this->pageDataRepository->getRootPage();
+        
+        foreach ($rootPage->getChildren()->getIterator() as $index => $page) {
             $item = new MenuItem();
             $item->setTitle($page->getTitle());
-            $item->setLink('display/'.$page->getId());
+            $item->setLink('display/'.$page->getIdent());
             $item->setId($page->getIdent());
-
-            if ($active == $page->getId()) {
+            
+            if ($active == $page->getIdent()) {
                 $item->isActive(true);
             }
 
@@ -106,15 +149,15 @@ class AdminNavController extends Controller
         $parent = 0;
         if (isset($menu)) {
             if ($menu->parent != "menu-root") {
-                $parent = $this->contentRepository->getPageReference(
+                $parent = $this->pageDataRepository->getPageReference(
                         Guid::parse(str_replace('parent-', '', $menu->parent)))
                 ->getId();
             }
              
             foreach ($menu->menu as $order => $pageId) {
                 $pageId = Guid::parse($pageId);
-                $this->contentRepository->setPageParent($pageId, $parent);
-                $this->contentRepository->setPeerOrderWeight($pageId, $order);
+                $this->pageDataRepository->setPageParent($pageId, $parent);
+                $this->pageDataRepository->setPeerOrderWeight($pageId, $order);
             }
              
         }
@@ -129,7 +172,7 @@ class AdminNavController extends Controller
         foreach ($page->getChildren()->getIterator() as $index => $child) {
             $cItem = new MenuItem();
             $cItem->setTitle($child->getTitle());
-            $cItem->setLink('display/'.$child->getId());
+            $cItem->setLink('display/'.$child->getIdent());
             $cItem->setId($child->getIdent());
              
             if ($active == $child->getId()) {
@@ -147,8 +190,8 @@ class AdminNavController extends Controller
     {
         $adminNav = new AdminNavModel();
 
-        $adminNav->contentTypes->add('GamePage', 'Game');
-        $adminNav->contentTypes->add('BasicPage', 'Basic page');
+        $adminNav->pageTypes->add('GamePage', 'Game');
+        $adminNav->pageTypes->add('BasicPage', 'Basic page');
 
         return $this->view($adminNav);
     }
@@ -165,6 +208,11 @@ class AdminNavController extends Controller
     public function adminNav()
     {
         return $this->view();
+    }
+    
+    public function secondLevel(MenuItem $item) {
+        
+        return $this->view($item);
     }
 
 }

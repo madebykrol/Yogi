@@ -18,54 +18,54 @@
  * however possible, won't do anything (AES has a fixed block length whereas Rijndael has a variable one).
  *
  * Here's a short example of how to use this library:
- * <code>
- * <?php
- *    include('Crypt/AES.php');
- *
- *    $aes = new Crypt_AES();
- *
- *    $aes->setKey('abcdefghijklmnop');
- *
- *    $size = 10 * 1024;
- *    $plaintext = '';
- *    for ($i = 0; $i < $size; $i++) {
- *        $plaintext.= 'a';
- *    }
- *
- *    echo $aes->decrypt($aes->encrypt($plaintext));
- * ?>
- * </code>
- *
- * LICENSE: Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @category   Crypt
- * @package    Crypt_AES
- * @author     Jim Wigginton <terrafrost@php.net>
- * @copyright  MMVIII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @version    $Id: AES.php,v 1.7 2010/02/09 06:10:25 terrafrost Exp $
- * @link       http://phpseclib.sourceforge.net
- */
+* <code>
+* <?php
+*    include('Crypt/AES.php');
+*
+*    $aes = new Crypt_AES();
+*
+*    $aes->setKey('abcdefghijklmnop');
+*
+*    $size = 10 * 1024;
+*    $plaintext = '';
+*    for ($i = 0; $i < $size; $i++) {
+*        $plaintext.= 'a';
+*    }
+*
+*    echo $aes->decrypt($aes->encrypt($plaintext));
+* ?>
+* </code>
+*
+* LICENSE: Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+* @category   Crypt
+* @package    Crypt_AES
+* @author     Jim Wigginton <terrafrost@php.net>
+* @copyright  MMVIII Jim Wigginton
+* @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+* @version    $Id: AES.php,v 1.7 2010/02/09 06:10:25 terrafrost Exp $
+* @link       http://phpseclib.sourceforge.net
+*/
 
 /**
  * Include Crypt_Rijndael
- */
+*/
 if (!class_exists('Crypt_Rijndael')) {
     require_once 'Rijndael.php';
 }
@@ -87,39 +87,39 @@ define('CRYPT_AES_MODE_CTR', -1);
  * Encrypt / decrypt using the Electronic Code Book mode.
  *
  * @link http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation#Electronic_codebook_.28ECB.29
- */
+*/
 define('CRYPT_AES_MODE_ECB', 1);
 /**
  * Encrypt / decrypt using the Code Book Chaining mode.
  *
  * @link http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation#Cipher-block_chaining_.28CBC.29
- */
+*/
 define('CRYPT_AES_MODE_CBC', 2);
 /**
  * Encrypt / decrypt using the Cipher Feedback mode.
  *
  * @link http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation#Cipher_feedback_.28CFB.29
- */
+*/
 define('CRYPT_AES_MODE_CFB', 3);
 /**
  * Encrypt / decrypt using the Cipher Feedback mode.
  *
  * @link http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation#Output_feedback_.28OFB.29
- */
+*/
 define('CRYPT_AES_MODE_OFB', 4);
 /**#@-*/
 
 /**#@+
  * @access private
  * @see Crypt_AES::Crypt_AES()
- */
+*/
 /**
  * Toggles the internal implementation
- */
+*/
 define('CRYPT_AES_MODE_INTERNAL', 1);
 /**
  * Toggles the mcrypt implementation
- */
+*/
 define('CRYPT_AES_MODE_MCRYPT', 2);
 /**#@-*/
 
@@ -130,7 +130,7 @@ define('CRYPT_AES_MODE_MCRYPT', 2);
  * @version 0.1.0
  * @access  public
  * @package Crypt_AES
- */
+*/
 class Crypt_AES extends Crypt_Rijndael {
     /**
      * mcrypt resource for encryption
@@ -298,14 +298,14 @@ class Crypt_AES extends Crypt_Rijndael {
             $changed = $this->changed;
             $this->_mcryptSetup();
             /*
-            if ($this->mode == CRYPT_AES_MODE_CTR) {
-                $iv = $this->encryptIV;
-                $xor = mcrypt_generic($this->enmcrypt, $this->_generate_xor(strlen($plaintext), $iv));
-                $ciphertext = $plaintext ^ $xor;
-                if ($this->continuousBuffer) {
-                    $this->encryptIV = $iv;
-                }
-                return $ciphertext;
+             if ($this->mode == CRYPT_AES_MODE_CTR) {
+            $iv = $this->encryptIV;
+            $xor = mcrypt_generic($this->enmcrypt, $this->_generate_xor(strlen($plaintext), $iv));
+            $ciphertext = $plaintext ^ $xor;
+            if ($this->continuousBuffer) {
+            $this->encryptIV = $iv;
+            }
+            return $ciphertext;
             }
             */
             // re: http://phpseclib.sourceforge.net/cfb-demo.phps
@@ -376,14 +376,14 @@ class Crypt_AES extends Crypt_Rijndael {
             $changed = $this->changed;
             $this->_mcryptSetup();
             /*
-            if ($this->mode == CRYPT_AES_MODE_CTR) {
-                $iv = $this->decryptIV;
-                $xor = mcrypt_generic($this->enmcrypt, $this->_generate_xor(strlen($ciphertext), $iv));
-                $plaintext = $ciphertext ^ $xor;
-                if ($this->continuousBuffer) {
-                    $this->decryptIV = $iv;
-                }
-                return $plaintext;
+             if ($this->mode == CRYPT_AES_MODE_CTR) {
+            $iv = $this->decryptIV;
+            $xor = mcrypt_generic($this->enmcrypt, $this->_generate_xor(strlen($ciphertext), $iv));
+            $plaintext = $ciphertext ^ $xor;
+            if ($this->continuousBuffer) {
+            $this->decryptIV = $iv;
+            }
+            return $plaintext;
             }
             */
             if ($this->mode == 'ncfb') {
@@ -517,10 +517,10 @@ class Crypt_AES extends Crypt_Rijndael {
 
         // addRoundKey and reindex $state
         $state = array(
-            $state['word1'] ^ $w[0][0],
-            $state['word2'] ^ $w[0][1],
-            $state['word3'] ^ $w[0][2],
-            $state['word4'] ^ $w[0][3]
+                $state['word1'] ^ $w[0][0],
+                $state['word2'] ^ $w[0][1],
+                $state['word3'] ^ $w[0][2],
+                $state['word4'] ^ $w[0][3]
         );
 
         // shiftRows + subWord + mixColumns + addRoundKey
@@ -528,28 +528,28 @@ class Crypt_AES extends Crypt_Rijndael {
         // only a marginal improvement.  since that also, imho, hinders the readability of the code, i've opted not to do it.
         for ($round = 1; $round < $this->Nr; $round++) {
             $state = array(
-                $t0[$state[0] & 0xFF000000] ^ $t1[$state[1] & 0x00FF0000] ^ $t2[$state[2] & 0x0000FF00] ^ $t3[$state[3] & 0x000000FF] ^ $w[$round][0],
-                $t0[$state[1] & 0xFF000000] ^ $t1[$state[2] & 0x00FF0000] ^ $t2[$state[3] & 0x0000FF00] ^ $t3[$state[0] & 0x000000FF] ^ $w[$round][1],
-                $t0[$state[2] & 0xFF000000] ^ $t1[$state[3] & 0x00FF0000] ^ $t2[$state[0] & 0x0000FF00] ^ $t3[$state[1] & 0x000000FF] ^ $w[$round][2],
-                $t0[$state[3] & 0xFF000000] ^ $t1[$state[0] & 0x00FF0000] ^ $t2[$state[1] & 0x0000FF00] ^ $t3[$state[2] & 0x000000FF] ^ $w[$round][3]
+                    $t0[$state[0] & 0xFF000000] ^ $t1[$state[1] & 0x00FF0000] ^ $t2[$state[2] & 0x0000FF00] ^ $t3[$state[3] & 0x000000FF] ^ $w[$round][0],
+                    $t0[$state[1] & 0xFF000000] ^ $t1[$state[2] & 0x00FF0000] ^ $t2[$state[3] & 0x0000FF00] ^ $t3[$state[0] & 0x000000FF] ^ $w[$round][1],
+                    $t0[$state[2] & 0xFF000000] ^ $t1[$state[3] & 0x00FF0000] ^ $t2[$state[0] & 0x0000FF00] ^ $t3[$state[1] & 0x000000FF] ^ $w[$round][2],
+                    $t0[$state[3] & 0xFF000000] ^ $t1[$state[0] & 0x00FF0000] ^ $t2[$state[1] & 0x0000FF00] ^ $t3[$state[2] & 0x000000FF] ^ $w[$round][3]
             );
 
         }
 
         // subWord
         $state = array(
-            $this->_subWord($state[0]),
-            $this->_subWord($state[1]),
-            $this->_subWord($state[2]),
-            $this->_subWord($state[3])
+                $this->_subWord($state[0]),
+                $this->_subWord($state[1]),
+                $this->_subWord($state[2]),
+                $this->_subWord($state[3])
         );
 
         // shiftRows + addRoundKey
         $state = array(
-            ($state[0] & 0xFF000000) ^ ($state[1] & 0x00FF0000) ^ ($state[2] & 0x0000FF00) ^ ($state[3] & 0x000000FF) ^ $this->w[$this->Nr][0],
-            ($state[1] & 0xFF000000) ^ ($state[2] & 0x00FF0000) ^ ($state[3] & 0x0000FF00) ^ ($state[0] & 0x000000FF) ^ $this->w[$this->Nr][1],
-            ($state[2] & 0xFF000000) ^ ($state[3] & 0x00FF0000) ^ ($state[0] & 0x0000FF00) ^ ($state[1] & 0x000000FF) ^ $this->w[$this->Nr][2],
-            ($state[3] & 0xFF000000) ^ ($state[0] & 0x00FF0000) ^ ($state[1] & 0x0000FF00) ^ ($state[2] & 0x000000FF) ^ $this->w[$this->Nr][3]
+                ($state[0] & 0xFF000000) ^ ($state[1] & 0x00FF0000) ^ ($state[2] & 0x0000FF00) ^ ($state[3] & 0x000000FF) ^ $this->w[$this->Nr][0],
+                ($state[1] & 0xFF000000) ^ ($state[2] & 0x00FF0000) ^ ($state[3] & 0x0000FF00) ^ ($state[0] & 0x000000FF) ^ $this->w[$this->Nr][1],
+                ($state[2] & 0xFF000000) ^ ($state[3] & 0x00FF0000) ^ ($state[0] & 0x0000FF00) ^ ($state[1] & 0x000000FF) ^ $this->w[$this->Nr][2],
+                ($state[3] & 0xFF000000) ^ ($state[0] & 0x00FF0000) ^ ($state[1] & 0x0000FF00) ^ ($state[2] & 0x000000FF) ^ $this->w[$this->Nr][3]
         );
 
         return pack('N*', $state[0], $state[1], $state[2], $state[3]);
@@ -578,29 +578,29 @@ class Crypt_AES extends Crypt_Rijndael {
 
         // addRoundKey and reindex $state
         $state = array(
-            $state['word1'] ^ $dw[$this->Nr][0],
-            $state['word2'] ^ $dw[$this->Nr][1],
-            $state['word3'] ^ $dw[$this->Nr][2],
-            $state['word4'] ^ $dw[$this->Nr][3]
+                $state['word1'] ^ $dw[$this->Nr][0],
+                $state['word2'] ^ $dw[$this->Nr][1],
+                $state['word3'] ^ $dw[$this->Nr][2],
+                $state['word4'] ^ $dw[$this->Nr][3]
         );
 
 
         // invShiftRows + invSubBytes + invMixColumns + addRoundKey
         for ($round = $this->Nr - 1; $round > 0; $round--) {
             $state = array(
-                $dt0[$state[0] & 0xFF000000] ^ $dt1[$state[3] & 0x00FF0000] ^ $dt2[$state[2] & 0x0000FF00] ^ $dt3[$state[1] & 0x000000FF] ^ $dw[$round][0],
-                $dt0[$state[1] & 0xFF000000] ^ $dt1[$state[0] & 0x00FF0000] ^ $dt2[$state[3] & 0x0000FF00] ^ $dt3[$state[2] & 0x000000FF] ^ $dw[$round][1],
-                $dt0[$state[2] & 0xFF000000] ^ $dt1[$state[1] & 0x00FF0000] ^ $dt2[$state[0] & 0x0000FF00] ^ $dt3[$state[3] & 0x000000FF] ^ $dw[$round][2],
-                $dt0[$state[3] & 0xFF000000] ^ $dt1[$state[2] & 0x00FF0000] ^ $dt2[$state[1] & 0x0000FF00] ^ $dt3[$state[0] & 0x000000FF] ^ $dw[$round][3]
+                    $dt0[$state[0] & 0xFF000000] ^ $dt1[$state[3] & 0x00FF0000] ^ $dt2[$state[2] & 0x0000FF00] ^ $dt3[$state[1] & 0x000000FF] ^ $dw[$round][0],
+                    $dt0[$state[1] & 0xFF000000] ^ $dt1[$state[0] & 0x00FF0000] ^ $dt2[$state[3] & 0x0000FF00] ^ $dt3[$state[2] & 0x000000FF] ^ $dw[$round][1],
+                    $dt0[$state[2] & 0xFF000000] ^ $dt1[$state[1] & 0x00FF0000] ^ $dt2[$state[0] & 0x0000FF00] ^ $dt3[$state[3] & 0x000000FF] ^ $dw[$round][2],
+                    $dt0[$state[3] & 0xFF000000] ^ $dt1[$state[2] & 0x00FF0000] ^ $dt2[$state[1] & 0x0000FF00] ^ $dt3[$state[0] & 0x000000FF] ^ $dw[$round][3]
             );
         }
 
         // invShiftRows + invSubWord + addRoundKey
         $state = array(
-            $this->_invSubWord(($state[0] & 0xFF000000) ^ ($state[3] & 0x00FF0000) ^ ($state[2] & 0x0000FF00) ^ ($state[1] & 0x000000FF)) ^ $dw[0][0],
-            $this->_invSubWord(($state[1] & 0xFF000000) ^ ($state[0] & 0x00FF0000) ^ ($state[3] & 0x0000FF00) ^ ($state[2] & 0x000000FF)) ^ $dw[0][1],
-            $this->_invSubWord(($state[2] & 0xFF000000) ^ ($state[1] & 0x00FF0000) ^ ($state[0] & 0x0000FF00) ^ ($state[3] & 0x000000FF)) ^ $dw[0][2],
-            $this->_invSubWord(($state[3] & 0xFF000000) ^ ($state[2] & 0x00FF0000) ^ ($state[1] & 0x0000FF00) ^ ($state[0] & 0x000000FF)) ^ $dw[0][3]
+                $this->_invSubWord(($state[0] & 0xFF000000) ^ ($state[3] & 0x00FF0000) ^ ($state[2] & 0x0000FF00) ^ ($state[1] & 0x000000FF)) ^ $dw[0][0],
+                $this->_invSubWord(($state[1] & 0xFF000000) ^ ($state[0] & 0x00FF0000) ^ ($state[3] & 0x0000FF00) ^ ($state[2] & 0x000000FF)) ^ $dw[0][1],
+                $this->_invSubWord(($state[2] & 0xFF000000) ^ ($state[1] & 0x00FF0000) ^ ($state[0] & 0x0000FF00) ^ ($state[3] & 0x000000FF)) ^ $dw[0][2],
+                $this->_invSubWord(($state[3] & 0xFF000000) ^ ($state[2] & 0x00FF0000) ^ ($state[1] & 0x0000FF00) ^ ($state[0] & 0x000000FF)) ^ $dw[0][3]
         );
 
         return pack('N*', $state[0], $state[1], $state[2], $state[3]);

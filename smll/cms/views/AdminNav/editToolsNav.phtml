@@ -10,12 +10,24 @@ use smll\framework\utils\HashMap;
 					data-toggle="dropdown"><i class="icon-file"></i><b class="caret"></b>
 				</a>
 					<ul class="dropdown-menu">
-						<?php foreach($model->contentTypes->getIterator() as $type => $displayName) {?>
+						<?php foreach($model->pageTypes->getIterator() as $type => $displayName) {?>
 						<li><a
-							href="<?php print Html::actionUrl('new/'.$type, 'Content');?>">Create
+							href="<?php print Html::actionUrl('new/'.$type, 'Pages');?>">Create
 								<?php print $displayName?>
 						</a></li>
 						<?php }?>
+					</ul>
+				</li>
+				<li class="divider-vertical"></li>
+				<li class="dropdown"><a href="#" class="dropdown-toggle"
+					data-toggle="dropdown"><i class="icon-list-alt"></i><b class="caret"></b>
+				</a>
+					<ul class="dropdown-menu">
+						<li><a href="<?php print Html::actionUrl('index', 'Content');?>"><i
+								class="icon-list-ul"></i> Content</a></li>
+						<li><a
+							href="<?php print Html::actionUrl('index', 'Blocks');?>"><i
+								class="icon-th"></i> Blocks</a></li>
 					</ul>
 				</li>
 				<li class="divider-vertical"></li>
@@ -32,9 +44,14 @@ use smll\framework\utils\HashMap;
 				</li>
 				<li class="divider-vertical"></li>
 				<?php foreach($model->tools->getIterator() as $id => $tool) {?>
-				<li><?php if($tool->active) { ?> <?php print Html::actionLink('<i class="'.$tool->icon.'"></i>', $tool->action, $tool->controller, $tool->extras);?>
-					<?} else {?> <a href="#"><i class="<?php print $tool->icon; ?>"></i>
-				</a> <?php }?>
+				<li><?php 
+				        if($tool->active) { 
+                    ?> 
+                    <?php 
+                        print '<a href="'.Html::actionUrl($tool->action, $tool->controller, $tool->extras).'"><i class="'.$tool->icon.'" id="tool-'.$id.'"></i></a>';
+                    ?>
+					<?} else {?> <a href="#"><i class="<?php print $tool->icon; ?>"></i></a> 
+					<?php }?>
 				</li>
 				<?php }?>
 			</ul>

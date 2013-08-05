@@ -16,6 +16,8 @@ abstract class BaseFieldType implements IFieldType
     protected $multifield = false;
     protected $renderer = null;
     protected $error = "";
+    
+    protected $uiState = null;
 
     /**
      *
@@ -90,5 +92,10 @@ abstract class BaseFieldType implements IFieldType
         }
 
         return $this->multifield;
+    }
+    
+    public function setUIState($state)
+    {
+        $this->uiState = $state;
     }
 }

@@ -3,15 +3,15 @@ namespace smll\framework\route\interfaces;
 use smll\framework\route\interfaces\IRoute;
 
 interface IRouterConfig {
-	public function ignoreRoute($string);
-	
-	/**
-	 * @return HashMap
-	 */
-	public function getRoutes();
-	
-	/**
-	 * @param Route $route
-	 */
-	public function mapRoute(IRoute $route);
+    public function ignoreRoute($string);
+
+    /**
+     * @return HashMap
+    */
+    public function getRoutes();
+
+    /**
+     * @param Route $route
+    */
+    public function mapRoute(IRoute $route);
 }

@@ -10,12 +10,11 @@ class CmsController extends Controller
 {
 
     /**
-     *
+     * [InRole(Role=Editor|Administrator)]
      * @return \smll\framework\mvc\ViewResult
      */
     public function index()
     {
-
         return $this->view();
     }
 
@@ -25,8 +24,6 @@ class CmsController extends Controller
      */
     public function edit()
     {
-
-
         return $this->view();
     }
 
@@ -38,7 +35,5 @@ class CmsController extends Controller
     {
         return $this->view();
     }
-
-
 
 }

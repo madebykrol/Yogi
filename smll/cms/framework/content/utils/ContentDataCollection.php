@@ -51,7 +51,7 @@ class ContentDataCollection implements IContentDataCollection
     
     public function get($index)
     {
-        
+        return $this->contentData[$index];
     }
     
     

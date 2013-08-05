@@ -33,9 +33,9 @@ class SqlContentPermissionHandler implements IContentPermissionHandler
     {
         $db = $this->db;
 
-        $db->where(array('fkPageTypeId', '=', $id));
+        $db->where(array('fkContentTypeId', '=', $id));
         $db->where(array('event', '=', $event));
-        $permissions = $db->get('page_type_permission');
+        $permissions = $db->get('content_type_permission');
 
         $db->flushResult();
         $db->clearCache();

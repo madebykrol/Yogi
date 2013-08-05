@@ -1,4 +1,6 @@
 <?php 
+use smll\framework\utils\HashMap;
+
 use smll\framework\helpers\Html;
 ?>
 <div class="">
@@ -11,28 +13,22 @@ use smll\framework\helpers\Html;
 				<?php
 		foreach($model->getItems()->getIterator() as $index => $item) {?>
 				<li class="ui-state-default menuItem"
-					id="<?php print $item->getId(); ?>"><?php if($item->hasChildren()) {?>
+					id="<?php print $item->getId(); ?>">
 					<span class="collapse-toggle"
-					data-target="#parent-<?php print $item->getId(); ?>"><a href="#"><i
-							class="icon-folder-close"></i> </a> </span> <?php } else {?> <span
-					class="collapse-toggle"
-					data-target="#parent-<?php print $item->getId(); ?>"><a href="#"><i
-							class="icon-minus"></i> </a> </span> <?php }?> <span class="item"><a
-						href="<?php print Html::actionUrl($item->getLink(), 'Content');?>"><?php print $item->getTitle();?>
+					data-target="#parent-<?php print $item->getId(); ?>"><a href="#">
+					<?php if($item->hasChildren()) {?>
+					<i class="icon-folder-close"></i>  
+					<?php } else {?><i class="icon-minus"></i>
+							
+					<?php }?> 
+					</a> </span>
+					<span class="item"><a
+						href="<?php print Html::actionUrl($item->getLink(), 'Pages');?>"><?php print $item->getTitle();?>
 					</a> </span> <span class="actions"></span>
 					<ul
-						class="sub-nav nav nav-list collapsible closed adminContentMenu"
-						id="parent-<?php print $item->getId(); ?>">
-						<?php if($item->hasChildren()) {?>
-						<?php
-							foreach($item->getChildren()->getIterator() as $index => $child) {?>
-						<li class="ui-state-default menuItem"
-							id="<?php print $child->getId();?>"><span class="item"><a
-								href="<?php print Html::actionUrl($child->getLink(), 'Content');?>"><?php print $child->getTitle();?>
-							</a> </span> <span class="actions"></span>
-						</li>
-						<?php }?>
-						<?php }?>
+                    	class="sub-nav nav nav-list collapsible closed adminContentMenu"
+                    	id="parent-<?php print $item->getId(); ?>">
+					<?php if($item->hasChildren()) { print Html::renderAction('secondLevel', 'AdminNav', new HashMap(array('item' => $item))); }?>
 					</ul>
 				</li>
 				<?php }?>

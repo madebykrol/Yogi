@@ -30,33 +30,33 @@
  *
  * LICENSE: Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @category   Net
- * @package    Net_SFTP
- * @author     Jim Wigginton <terrafrost@php.net>
- * @copyright  MMIX Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @link       http://phpseclib.sourceforge.net
- */
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+* @category   Net
+* @package    Net_SFTP
+* @author     Jim Wigginton <terrafrost@php.net>
+* @copyright  MMIX Jim Wigginton
+* @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+* @link       http://phpseclib.sourceforge.net
+*/
 
 /**
  * Include Net_SSH2
- */
+*/
 if (!class_exists('Net_SSH2')) {
     require_once('Net/SSH2.php');
 }
@@ -71,11 +71,11 @@ if (!class_exists('Net_SSH2')) {
 define('NET_SFTP_LOG_SIMPLE',  NET_SSH2_LOG_SIMPLE);
 /**
  * Returns the message content
- */
+*/
 define('NET_SFTP_LOG_COMPLEX', NET_SSH2_LOG_COMPLEX);
 /**
  * Outputs the message content in real-time.
- */
+*/
 define('NET_SFTP_LOG_REALTIME', 3);
 /**#@-*/
 
@@ -87,25 +87,25 @@ define('NET_SFTP_LOG_REALTIME', 3);
  * @see Net_SSH2::_send_channel_packet()
  * @see Net_SSH2::_get_channel_packet()
  * @access private
- */
+*/
 define('NET_SFTP_CHANNEL', 2);
 
 /**#@+
  * @access public
  * @see Net_SFTP::put()
- */
+*/
 /**
  * Reads data from a local file.
- */
+*/
 define('NET_SFTP_LOCAL_FILE', 1);
 /**
  * Reads data from a string.
- */
+*/
 // this value isn't really used anymore but i'm keeping it reserved for historical reasons
 define('NET_SFTP_STRING',  2);
 /**
  * Resumes an upload
- */
+*/
 define('NET_SFTP_RESUME',  4);
 /**#@-*/
 
@@ -116,7 +116,7 @@ define('NET_SFTP_RESUME',  4);
  * @version 0.1.0
  * @access  public
  * @package Net_SFTP
- */
+*/
 class Net_SFTP extends Net_SSH2 {
     /**
      * Packet Types
@@ -133,7 +133,7 @@ class Net_SFTP extends Net_SSH2 {
      * @see Net_SFTP::Net_SFTP()
      * @var Array
      * @access private
-     */
+    */
     var $status_codes = array();
 
     /**
@@ -145,7 +145,7 @@ class Net_SFTP extends Net_SSH2 {
      * @var Integer
      * @see Net_SFTP::_send_sftp_packet()
      * @access private
-     */
+    */
     var $request_id = false;
 
     /**
@@ -184,7 +184,7 @@ class Net_SFTP extends Net_SSH2 {
      * @var Integer
      * @see Net_SFTP::_initChannel()
      * @access private
-     */
+    */
     var $version;
 
     /**
@@ -212,7 +212,7 @@ class Net_SFTP extends Net_SSH2 {
      * @see Net_SFTP::getLog()
      * @var Array
      * @access private
-     */
+    */
     var $packet_log = array();
 
     /**
@@ -222,7 +222,7 @@ class Net_SFTP extends Net_SSH2 {
      * @see Net_SFTP::getLastSFTPError()
      * @var String
      * @access private
-     */
+    */
     var $sftp_errors = array();
 
     /**
@@ -231,14 +231,14 @@ class Net_SFTP extends Net_SSH2 {
      * @see Net_SFTP::_parseLongname()
      * @var Integer
      * @access private
-     */
+    */
     var $fileType = 0;
 
     /**
      * Directory Cache
      *
      * Rather than always having to open a directory and close it immediately there after to see if a file is a directory or
-     * rather than always 
+     * rather than always
      *
      * @see Net_SFTP::_save_dir()
      * @see Net_SFTP::_remove_dir()
@@ -258,94 +258,94 @@ class Net_SFTP extends Net_SSH2 {
      * @param optional Integer $timeout
      * @return Net_SFTP
      * @access public
-     */
+    */
     function Net_SFTP($host, $port = 22, $timeout = 10)
     {
         parent::Net_SSH2($host, $port, $timeout);
         $this->packet_types = array(
-            1  => 'NET_SFTP_INIT',
-            2  => 'NET_SFTP_VERSION',
-            /* the format of SSH_FXP_OPEN changed between SFTPv4 and SFTPv5+:
-                   SFTPv5+: http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.1.1
-               pre-SFTPv5 : http://tools.ietf.org/html/draft-ietf-secsh-filexfer-04#section-6.3 */
-            3  => 'NET_SFTP_OPEN',
-            4  => 'NET_SFTP_CLOSE',
-            5  => 'NET_SFTP_READ',
-            6  => 'NET_SFTP_WRITE',
-            7  => 'NET_SFTP_LSTAT',
-            9  => 'NET_SFTP_SETSTAT',
-            11 => 'NET_SFTP_OPENDIR',
-            12 => 'NET_SFTP_READDIR',
-            13 => 'NET_SFTP_REMOVE',
-            14 => 'NET_SFTP_MKDIR',
-            15 => 'NET_SFTP_RMDIR',
-            16 => 'NET_SFTP_REALPATH',
-            17 => 'NET_SFTP_STAT',
-            /* the format of SSH_FXP_RENAME changed between SFTPv4 and SFTPv5+:
-                   SFTPv5+: http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.3
-               pre-SFTPv5 : http://tools.ietf.org/html/draft-ietf-secsh-filexfer-04#section-6.5 */
-            18 => 'NET_SFTP_RENAME',
+                1  => 'NET_SFTP_INIT',
+                2  => 'NET_SFTP_VERSION',
+                /* the format of SSH_FXP_OPEN changed between SFTPv4 and SFTPv5+:
+                 SFTPv5+: http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.1.1
+        pre-SFTPv5 : http://tools.ietf.org/html/draft-ietf-secsh-filexfer-04#section-6.3 */
+                3  => 'NET_SFTP_OPEN',
+                4  => 'NET_SFTP_CLOSE',
+                5  => 'NET_SFTP_READ',
+                6  => 'NET_SFTP_WRITE',
+                7  => 'NET_SFTP_LSTAT',
+                9  => 'NET_SFTP_SETSTAT',
+                11 => 'NET_SFTP_OPENDIR',
+                12 => 'NET_SFTP_READDIR',
+                13 => 'NET_SFTP_REMOVE',
+                14 => 'NET_SFTP_MKDIR',
+                15 => 'NET_SFTP_RMDIR',
+                16 => 'NET_SFTP_REALPATH',
+                17 => 'NET_SFTP_STAT',
+                /* the format of SSH_FXP_RENAME changed between SFTPv4 and SFTPv5+:
+                 SFTPv5+: http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.3
+        pre-SFTPv5 : http://tools.ietf.org/html/draft-ietf-secsh-filexfer-04#section-6.5 */
+                18 => 'NET_SFTP_RENAME',
 
-            101=> 'NET_SFTP_STATUS',
-            102=> 'NET_SFTP_HANDLE',
-            /* the format of SSH_FXP_NAME changed between SFTPv3 and SFTPv4+:
-                   SFTPv4+: http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-9.4
-               pre-SFTPv4 : http://tools.ietf.org/html/draft-ietf-secsh-filexfer-02#section-7 */
-            103=> 'NET_SFTP_DATA',
-            104=> 'NET_SFTP_NAME',
-            105=> 'NET_SFTP_ATTRS',
+                101=> 'NET_SFTP_STATUS',
+                102=> 'NET_SFTP_HANDLE',
+                /* the format of SSH_FXP_NAME changed between SFTPv3 and SFTPv4+:
+                 SFTPv4+: http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-9.4
+        pre-SFTPv4 : http://tools.ietf.org/html/draft-ietf-secsh-filexfer-02#section-7 */
+                103=> 'NET_SFTP_DATA',
+                104=> 'NET_SFTP_NAME',
+                105=> 'NET_SFTP_ATTRS',
 
-            200=> 'NET_SFTP_EXTENDED'
+                200=> 'NET_SFTP_EXTENDED'
         );
         $this->status_codes = array(
-            0 => 'NET_SFTP_STATUS_OK',
-            1 => 'NET_SFTP_STATUS_EOF',
-            2 => 'NET_SFTP_STATUS_NO_SUCH_FILE',
-            3 => 'NET_SFTP_STATUS_PERMISSION_DENIED',
-            4 => 'NET_SFTP_STATUS_FAILURE',
-            5 => 'NET_SFTP_STATUS_BAD_MESSAGE',
-            6 => 'NET_SFTP_STATUS_NO_CONNECTION',
-            7 => 'NET_SFTP_STATUS_CONNECTION_LOST',
-            8 => 'NET_SFTP_STATUS_OP_UNSUPPORTED'
+                0 => 'NET_SFTP_STATUS_OK',
+                1 => 'NET_SFTP_STATUS_EOF',
+                2 => 'NET_SFTP_STATUS_NO_SUCH_FILE',
+                3 => 'NET_SFTP_STATUS_PERMISSION_DENIED',
+                4 => 'NET_SFTP_STATUS_FAILURE',
+                5 => 'NET_SFTP_STATUS_BAD_MESSAGE',
+                6 => 'NET_SFTP_STATUS_NO_CONNECTION',
+                7 => 'NET_SFTP_STATUS_CONNECTION_LOST',
+                8 => 'NET_SFTP_STATUS_OP_UNSUPPORTED'
         );
         // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-7.1
         // the order, in this case, matters quite a lot - see Net_SFTP::_parseAttributes() to understand why
         $this->attributes = array(
-            0x00000001 => 'NET_SFTP_ATTR_SIZE',
-            0x00000002 => 'NET_SFTP_ATTR_UIDGID', // defined in SFTPv3, removed in SFTPv4+
-            0x00000004 => 'NET_SFTP_ATTR_PERMISSIONS',
-            0x00000008 => 'NET_SFTP_ATTR_ACCESSTIME',
-            // 0x80000000 will yield a floating point on 32-bit systems and converting floating points to integers
-            // yields inconsistent behavior depending on how php is compiled.  so we left shift -1 (which, in 
-            // two's compliment, consists of all 1 bits) by 31.  on 64-bit systems this'll yield 0xFFFFFFFF80000000.
-            // that's not a problem, however, and 'anded' and a 32-bit number, as all the leading 1 bits are ignored.
-              -1 << 31 => 'NET_SFTP_ATTR_EXTENDED'
-        );
-        // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-04#section-6.3
-        // the flag definitions change somewhat in SFTPv5+.  if SFTPv5+ support is added to this library, maybe name
-        // the array for that $this->open5_flags and similarily alter the constant names.
-        $this->open_flags = array(
-            0x00000001 => 'NET_SFTP_OPEN_READ',
-            0x00000002 => 'NET_SFTP_OPEN_WRITE',
-            0x00000004 => 'NET_SFTP_OPEN_APPEND',
-            0x00000008 => 'NET_SFTP_OPEN_CREATE',
-            0x00000010 => 'NET_SFTP_OPEN_TRUNCATE'
-        );
-        // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-04#section-5.2
-        // see Net_SFTP::_parseLongname() for an explanation
-        $this->file_types = array(
-            1 => 'NET_SFTP_TYPE_REGULAR',
-            2 => 'NET_SFTP_TYPE_DIRECTORY',
-            3 => 'NET_SFTP_TYPE_SYMLINK',
-            4 => 'NET_SFTP_TYPE_SPECIAL'
-        );
-        $this->_define_array(
-            $this->packet_types,
-            $this->status_codes,
-            $this->attributes,
-            $this->open_flags,
-            $this->file_types
-        );
+                0x00000001 => 'NET_SFTP_ATTR_SIZE',
+                0x00000002 => 'NET_SFTP_ATTR_UIDGID', // defined in SFTPv3, removed in SFTPv4+
+                0x00000004 => 'NET_SFTP_ATTR_PERMISSIONS',
+                0x00000008 => 'NET_SFTP_ATTR_ACCESSTIME',
+                // 0x80000000 will yield a floating point on 32-bit systems and converting floating points to integers
+                // yields inconsistent behavior depending on how php is compiled.  so we left shift -1 (which, in
+                // two's compliment, consists of all 1 bits) by 31.  on 64-bit systems this'll yield 0xFFFFFFFF80000000.
+                // that's not a problem, however, and 'anded' and a 32-bit number, as all the leading 1 bits are ignored.
+                -1 << 31 => 'NET_SFTP_ATTR_EXTENDED'
+                        );
+                        // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-04#section-6.3
+                        // the flag definitions change somewhat in SFTPv5+.  if SFTPv5+ support is added to this library, maybe name
+                        // the array for that $this->open5_flags and similarily alter the constant names.
+                        $this->open_flags = array(
+                                0x00000001 => 'NET_SFTP_OPEN_READ',
+                                0x00000002 => 'NET_SFTP_OPEN_WRITE',
+                                0x00000004 => 'NET_SFTP_OPEN_APPEND',
+                                0x00000008 => 'NET_SFTP_OPEN_CREATE',
+                                0x00000010 => 'NET_SFTP_OPEN_TRUNCATE'
+                        );
+                        // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-04#section-5.2
+                        // see Net_SFTP::_parseLongname() for an explanation
+                        $this->file_types = array(
+                                1 => 'NET_SFTP_TYPE_REGULAR',
+                                2 => 'NET_SFTP_TYPE_DIRECTORY',
+                                3 => 'NET_SFTP_TYPE_SYMLINK',
+                                4 => 'NET_SFTP_TYPE_SPECIAL'
+                        );
+                        $this->_define_array(
+                                $this->packet_types,
+                                $this->status_codes,
+                                $this->attributes,
+                                $this->open_flags,
+                                $this->file_types
+                        );
     }
 
     /**
@@ -365,7 +365,7 @@ class Net_SFTP extends Net_SSH2 {
         $this->window_size_client_to_server[NET_SFTP_CHANNEL] = $this->window_size;
 
         $packet = pack('CNa*N3',
-            NET_SSH2_MSG_CHANNEL_OPEN, strlen('session'), 'session', NET_SFTP_CHANNEL, $this->window_size, 0x4000);
+                NET_SSH2_MSG_CHANNEL_OPEN, strlen('session'), 'session', NET_SFTP_CHANNEL, $this->window_size, 0x4000);
 
         if (!$this->_send_binary_packet($packet)) {
             return false;
@@ -379,7 +379,7 @@ class Net_SFTP extends Net_SSH2 {
         }
 
         $packet = pack('CNNa*CNa*',
-            NET_SSH2_MSG_CHANNEL_REQUEST, $this->server_channels[NET_SFTP_CHANNEL], strlen('subsystem'), 'subsystem', 1, strlen('sftp'), 'sftp');
+                NET_SSH2_MSG_CHANNEL_REQUEST, $this->server_channels[NET_SFTP_CHANNEL], strlen('subsystem'), 'subsystem', 1, strlen('sftp'), 'sftp');
         if (!$this->_send_binary_packet($packet)) {
             return false;
         }
@@ -415,15 +415,15 @@ class Net_SFTP extends Net_SSH2 {
 
         /*
          SFTPv4+ defines a 'newline' extension.  SFTPv3 seems to have unofficial support for it via 'newline@vandyke.com',
-         however, I'm not sure what 'newline@vandyke.com' is supposed to do (the fact that it's unofficial means that it's
-         not in the official SFTPv3 specs) and 'newline@vandyke.com' / 'newline' are likely not drop-in substitutes for
-         one another due to the fact that 'newline' comes with a SSH_FXF_TEXT bitmask whereas it seems unlikely that
-         'newline@vandyke.com' would.
+        however, I'm not sure what 'newline@vandyke.com' is supposed to do (the fact that it's unofficial means that it's
+                not in the official SFTPv3 specs) and 'newline@vandyke.com' / 'newline' are likely not drop-in substitutes for
+        one another due to the fact that 'newline' comes with a SSH_FXF_TEXT bitmask whereas it seems unlikely that
+        'newline@vandyke.com' would.
         */
         /*
-        if (isset($this->extensions['newline@vandyke.com'])) {
-            $this->extensions['newline'] = $this->extensions['newline@vandyke.com'];
-            unset($this->extensions['newline@vandyke.com']);
+         if (isset($this->extensions['newline@vandyke.com'])) {
+        $this->extensions['newline'] = $this->extensions['newline@vandyke.com'];
+        unset($this->extensions['newline@vandyke.com']);
         }
         */
 
@@ -431,26 +431,26 @@ class Net_SFTP extends Net_SSH2 {
 
         /*
          A Note on SFTPv4/5/6 support:
-         <http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-5.1> states the following:
+        <http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-5.1> states the following:
 
-         "If the client wishes to interoperate with servers that support noncontiguous version
-          numbers it SHOULD send '3'"
+        "If the client wishes to interoperate with servers that support noncontiguous version
+        numbers it SHOULD send '3'"
 
-         Given that the server only sends its version number after the client has already done so, the above
-         seems to be suggesting that v3 should be the default version.  This makes sense given that v3 is the
-         most popular.
+        Given that the server only sends its version number after the client has already done so, the above
+        seems to be suggesting that v3 should be the default version.  This makes sense given that v3 is the
+        most popular.
 
-         <http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-5.5> states the following;
+        <http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-5.5> states the following;
 
-         "If the server did not send the "versions" extension, or the version-from-list was not included, the
-          server MAY send a status response describing the failure, but MUST then close the channel without
-          processing any further requests."
+        "If the server did not send the "versions" extension, or the version-from-list was not included, the
+        server MAY send a status response describing the failure, but MUST then close the channel without
+        processing any further requests."
 
-         So what do you do if you have a client whose initial SSH_FXP_INIT packet says it implements v3 and
-         a server whose initial SSH_FXP_VERSION reply says it implements v4 and only v4?  If it only implements
-         v4, the "versions" extension is likely not going to have been sent so version re-negotiation as discussed
-         in draft-ietf-secsh-filexfer-13 would be quite impossible.  As such, what Net_SFTP would do is close the
-         channel and reopen it with a new and updated SSH_FXP_INIT packet.
+        So what do you do if you have a client whose initial SSH_FXP_INIT packet says it implements v3 and
+        a server whose initial SSH_FXP_VERSION reply says it implements v4 and only v4?  If it only implements
+        v4, the "versions" extension is likely not going to have been sent so version re-negotiation as discussed
+        in draft-ietf-secsh-filexfer-13 would be quite impossible.  As such, what Net_SFTP would do is close the
+        channel and reopen it with a new and updated SSH_FXP_INIT packet.
         */
         switch ($this->version) {
             case 2:
@@ -518,16 +518,16 @@ class Net_SFTP extends Net_SSH2 {
         }
 
         /*
-        "This protocol represents file names as strings.  File names are
-         assumed to use the slash ('/') character as a directory separator.
+         "This protocol represents file names as strings.  File names are
+        assumed to use the slash ('/') character as a directory separator.
 
-         File names starting with a slash are "absolute", and are relative to
-         the root of the file system.  Names starting with any other character
-         are relative to the user's default directory (home directory).  Note
-         that identifying the user is assumed to take place outside of this
-         protocol."
+        File names starting with a slash are "absolute", and are relative to
+        the root of the file system.  Names starting with any other character
+        are relative to the user's default directory (home directory).  Note
+        that identifying the user is assumed to take place outside of this
+        protocol."
 
-         -- http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-6
+        -- http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-6
         */
         $file = '';
         if ($this->pwd !== false) {
@@ -559,10 +559,10 @@ class Net_SFTP extends Net_SSH2 {
 
         /*
          that SSH_FXP_REALPATH returns SSH_FXP_NAME does not necessarily mean that anything actually exists at the
-         specified path.  generally speaking, no attributes are returned with this particular SSH_FXP_NAME packet
-         regardless of whether or not a file actually exists.  and in SFTPv3, the longname field and the filename
-         field match for this particular SSH_FXP_NAME packet.  for other SSH_FXP_NAME packets, this will likely
-         not be the case, but for this one, it is.
+        specified path.  generally speaking, no attributes are returned with this particular SSH_FXP_NAME packet
+        regardless of whether or not a file actually exists.  and in SFTPv3, the longname field and the filename
+        field match for this particular SSH_FXP_NAME packet.  for other SSH_FXP_NAME packets, this will likely
+        not be the case, but for this one, it is.
         */
         // http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.9
         if (!$this->_send_sftp_packet(NET_SFTP_REALPATH, pack('Na*', strlen($dir), $dir))) {
@@ -918,8 +918,8 @@ class Net_SFTP extends Net_SSH2 {
 
         $pwd = $this->pwd;
         $stat['type'] = $this->chdir($filename) ?
-            NET_SFTP_TYPE_DIRECTORY :
-            NET_SFTP_TYPE_REGULAR;
+        NET_SFTP_TYPE_DIRECTORY :
+        NET_SFTP_TYPE_REGULAR;
         $this->pwd = $pwd;
 
         return $stat;
@@ -957,8 +957,8 @@ class Net_SFTP extends Net_SSH2 {
 
         $pwd = $this->pwd;
         $lstat['type'] = $this->chdir($filename) ?
-            NET_SFTP_TYPE_DIRECTORY :
-            NET_SFTP_TYPE_REGULAR;
+        NET_SFTP_TYPE_DIRECTORY :
+        NET_SFTP_TYPE_REGULAR;
         $this->pwd = $pwd;
 
         return $lstat;
@@ -1020,8 +1020,8 @@ class Net_SFTP extends Net_SSH2 {
 
         $pwd = $this->pwd;
         $stat1['type'] = $this->chdir($path) ?
-            NET_SFTP_TYPE_DIRECTORY :
-            NET_SFTP_TYPE_REGULAR;
+        NET_SFTP_TYPE_DIRECTORY :
+        NET_SFTP_TYPE_REGULAR;
         $this->pwd = $pwd;
 
         return $stat1;
@@ -1081,11 +1081,11 @@ class Net_SFTP extends Net_SSH2 {
         }
 
         /*
-         "Because some systems must use separate system calls to set various attributes, it is possible that a failure 
-          response will be returned, but yet some of the attributes may be have been successfully modified.  If possible,
-          servers SHOULD avoid this situation; however, clients MUST be aware that this is possible."
+         "Because some systems must use separate system calls to set various attributes, it is possible that a failure
+        response will be returned, but yet some of the attributes may be have been successfully modified.  If possible,
+        servers SHOULD avoid this situation; however, clients MUST be aware that this is possible."
 
-          -- http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.6
+        -- http://tools.ietf.org/html/draft-ietf-secsh-filexfer-13#section-8.6
         */
         $response = $this->_get_sftp_packet();
         if ($this->packet_type != NET_SFTP_STATUS) {
@@ -1241,7 +1241,7 @@ class Net_SFTP extends Net_SSH2 {
      */
     function _mkdir_helper($dir)
     {
-        // by not providing any permissions, hopefully the server will use the logged in users umask - their 
+        // by not providing any permissions, hopefully the server will use the logged in users umask - their
         // default permissions.
         if (!$this->_send_sftp_packet(NET_SFTP_MKDIR, pack('Na*N', strlen($dir), $dir, 0))) {
             return false;
@@ -1311,7 +1311,7 @@ class Net_SFTP extends Net_SSH2 {
      * So, for example, if you set $data to 'filename.ext' and then do Net_SFTP::get(), you will get a file, twelve bytes
      * long, containing 'filename.ext' as its contents.
      *
-     * Setting $mode to NET_SFTP_LOCAL_FILE will change the above behavior.  With NET_SFTP_LOCAL_FILE, $remote_file will 
+     * Setting $mode to NET_SFTP_LOCAL_FILE will change the above behavior.  With NET_SFTP_LOCAL_FILE, $remote_file will
      * contain as many bytes as filename.ext does on your local filesystem.  If your filename.ext is 1MB then that is how
      * large $remote_file will be, as well.
      *
@@ -1781,7 +1781,7 @@ class Net_SFTP extends Net_SSH2 {
                         extract(unpack('Nlength', $this->_string_shift($response, 4)));
                         $key = $this->_string_shift($response, $length);
                         extract(unpack('Nlength', $this->_string_shift($response, 4)));
-                        $attr[$key] = $this->_string_shift($response, $length);                        
+                        $attr[$key] = $this->_string_shift($response, $length);
                     }
             }
         }
@@ -1838,16 +1838,16 @@ class Net_SFTP extends Net_SSH2 {
     function _send_sftp_packet($type, $data)
     {
         $packet = $this->request_id !== false ?
-            pack('NCNa*', strlen($data) + 5, $type, $this->request_id, $data) :
-            pack('NCa*',  strlen($data) + 1, $type, $data);
+        pack('NCNa*', strlen($data) + 5, $type, $this->request_id, $data) :
+        pack('NCa*',  strlen($data) + 1, $type, $data);
 
         $start = strtok(microtime(), ' ') + strtok(''); // http://php.net/microtime#61838
         $result = $this->_send_channel_packet(NET_SFTP_CHANNEL, $packet);
         $stop = strtok(microtime(), ' ') + strtok('');
 
         if (defined('NET_SFTP_LOGGING')) {
-            $packet_type = '-> ' . $this->packet_types[$type] . 
-                           ' (' . round($stop - $start, 4) . 's)';
+            $packet_type = '-> ' . $this->packet_types[$type] .
+            ' (' . round($stop - $start, 4) . 's)';
             if (NET_SFTP_LOGGING == NET_SFTP_LOG_REALTIME) {
                 echo "<pre>\r\n" . $this->_format_log(array($data), array($packet_type)) . "\r\n</pre>\r\n";
                 flush();
@@ -1922,8 +1922,8 @@ class Net_SFTP extends Net_SSH2 {
         $packet = $this->_string_shift($this->packet_buffer, $length);
 
         if (defined('NET_SFTP_LOGGING')) {
-            $packet_type = '<- ' . $this->packet_types[$this->packet_type] . 
-                           ' (' . round($stop - $start, 4) . 's)';
+            $packet_type = '<- ' . $this->packet_types[$this->packet_type] .
+            ' (' . round($stop - $start, 4) . 's)';
             if (NET_SFTP_LOGGING == NET_SFTP_LOG_REALTIME) {
                 echo "<pre>\r\n" . $this->_format_log(array($packet), array($packet_type)) . "\r\n</pre>\r\n";
                 flush();
@@ -1957,7 +1957,7 @@ class Net_SFTP extends Net_SSH2 {
             case NET_SFTP_LOG_COMPLEX:
                 return $this->_format_log($this->packet_log, $this->packet_type_log);
                 break;
-            //case NET_SFTP_LOG_SIMPLE:
+                //case NET_SFTP_LOG_SIMPLE:
             default:
                 return $this->packet_type_log;
         }

@@ -21,42 +21,42 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @category   Crypt
- * @package    Crypt_Random
- * @author     Jim Wigginton <terrafrost@php.net>
- * @copyright  MMVII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @version    $Id: Random.php,v 1.9 2010/04/24 06:40:48 terrafrost Exp $
- * @link       http://phpseclib.sourceforge.net
- */
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+* @category   Crypt
+* @package    Crypt_Random
+* @author     Jim Wigginton <terrafrost@php.net>
+* @copyright  MMVII Jim Wigginton
+* @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+* @version    $Id: Random.php,v 1.9 2010/04/24 06:40:48 terrafrost Exp $
+* @link       http://phpseclib.sourceforge.net
+*/
 
 /**
  * Generate a random value.
- *
- * On 32-bit machines, the largest distance that can exist between $min and $max is 2**31.
- * If $min and $max are farther apart than that then the last ($max - range) numbers.
- *
- * Depending on how this is being used, it may be worth while to write a replacement.  For example,
- * a PHP-based web app that stores its data in an SQL database can collect more entropy than this function
- * can.
- *
- * @param optional Integer $min
- * @param optional Integer $max
- * @return Integer
- * @access public
- */
+*
+* On 32-bit machines, the largest distance that can exist between $min and $max is 2**31.
+* If $min and $max are farther apart than that then the last ($max - range) numbers.
+*
+* Depending on how this is being used, it may be worth while to write a replacement.  For example,
+* a PHP-based web app that stores its data in an SQL database can collect more entropy than this function
+* can.
+*
+* @param optional Integer $min
+* @param optional Integer $max
+* @return Integer
+* @access public
+*/
 function crypt_random($min = 0, $max = 0x7FFFFFFF)
 {
     if ($min == $max) {
@@ -69,7 +69,7 @@ function crypt_random($min = 0, $max = 0x7FFFFFFF)
         if ((PHP_OS & "\xDF\xDF\xDF") !== 'WIN') { // PHP_OS & "\xDF\xDF\xDF" == strtoupper(substr(PHP_OS, 0, 3)), but a lot faster
             extract(unpack('Nrandom', openssl_random_pseudo_bytes(4)));
 
-            return abs($random) % ($max - $min) + $min; 
+            return abs($random) % ($max - $min) + $min;
         }
     }
 
@@ -89,14 +89,14 @@ function crypt_random($min = 0, $max = 0x7FFFFFFF)
     }
 
     /* Prior to PHP 4.2.0, mt_srand() had to be called before mt_rand() could be called.
-       Prior to PHP 5.2.6, mt_rand()'s automatic seeding was subpar, as elaborated here:
+     Prior to PHP 5.2.6, mt_rand()'s automatic seeding was subpar, as elaborated here:
 
-       http://www.suspekt.org/2008/08/17/mt_srand-and-not-so-random-numbers/
+    http://www.suspekt.org/2008/08/17/mt_srand-and-not-so-random-numbers/
 
-       The seeding routine is pretty much ripped from PHP's own internal GENERATE_SEED() macro:
+    The seeding routine is pretty much ripped from PHP's own internal GENERATE_SEED() macro:
 
-       http://svn.php.net/viewvc/php/php-src/tags/php_5_3_2/ext/standard/php_rand.h?view=markup */
-    if (version_compare(PHP_VERSION, '5.2.5', '<=')) { 
+    http://svn.php.net/viewvc/php/php-src/tags/php_5_3_2/ext/standard/php_rand.h?view=markup */
+    if (version_compare(PHP_VERSION, '5.2.5', '<=')) {
         static $seeded;
         if (!isset($seeded)) {
             $seeded = true;

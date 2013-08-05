@@ -3,10 +3,13 @@ use smll\framework\helpers\Html;
 $layout = "src/views/Share/_layout.phtml";
 
 ?>
-<h1>Login</h1>
+
 <div class="row">
-	<?php print Html::beginFormFor($model);?>
-	<input class="btn" type="submit" value="sign in">
-	<?php print Html::actionLink("Register", "register", 'Account'); ?>
-	<?php print Html::closeForm();?>
+    <div class="span12">
+        <h1>Login</h1>
+    	<?php print Html::beginFormFor($model);?>
+    	<input class="btn" type="submit" value="sign in">
+    	<?php print Html::actionLink("Register", "register", 'Account'); ?>
+    	<?php print Html::closeForm();?>
+	</div>
 </div>

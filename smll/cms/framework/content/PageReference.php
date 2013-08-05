@@ -2,7 +2,7 @@
 namespace smll\cms\framework\content;
 use smll\framework\utils\ArrayList;
 
-use smll\cms\framework\content\utils\interfaces\IContentRepository;
+use smll\cms\framework\content\utils\interfaces\IPageDataRepository;
 
 use smll\cms\framework\content\interfaces\IPageData;
 
@@ -23,6 +23,7 @@ class PageReference implements IPageReference
     private $author;
     private $parent;
     private $pageTypeId;
+    private $published;
 
 
     public function __construct()
@@ -115,5 +116,14 @@ class PageReference implements IPageReference
     public function setAuthor($author)
     {
         $this->author = $author;
+    }
+    
+    public function isPublished($boolean = null)
+    {
+        if (is_bool($boolean)) {
+            $this->published = $boolean;
+        }
+        
+        return $this->published;
     }
 }

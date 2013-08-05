@@ -23,4 +23,7 @@ interface IFieldType
 
     public function getErrorMessage();
     public function isMultifield($boolean = null);
+    
+    public function setUIState($state);
+    
 }

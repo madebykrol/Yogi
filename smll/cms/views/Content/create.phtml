@@ -1,12 +1,15 @@
 <?php
-use smll\framework\helpers\Html;
 use smll\cms\framework\helpers\CmsHtml;
-$layout = 'smll/cms/views/Share/_layout.phtml';
-?>
 
+use smll\framework\utils\HashMap;
+
+$layout = 'smll/cms/views/Share/_layout.phtml';
+
+use smll\framework\helpers\Html;
+?>
 <div class="row-fluid">
 	<div class="span12">
-		<?php print Html::renderAction('editToolsNav', 'AdminNav');?>
+		<?php print Html::renderAction('contentToolsNav', 'AdminNav');?>
 	</div>
 </div>
 <div class="row-fluid">
@@ -14,11 +17,10 @@ $layout = 'smll/cms/views/Share/_layout.phtml';
 		<?php print Html::renderAction('editContentTreeNav', 'AdminNav'); ?>
 	</div>
 	<div class="span8">
-
-		<?php print CmsHtml::cmsFormForPage($model);?>
-
-		<input type="submit" class="btn" value="save" />
-
-		<?php print Html::closeForm();?>
+	    <?php print CmsHtml::cmsFormForPage($model);?>
+	    
+	        <input type="submit" value="Save" class="btn"/>
+	    
+	    <?php print CmsHtml::closeForm();?>
 	</div>
 </div>

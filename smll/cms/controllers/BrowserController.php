@@ -1,7 +1,7 @@
 <?php
 namespace smll\cms\controllers;
 
-use smll\cms\framework\content\utils\interfaces\IContentRepository;
+use smll\cms\framework\content\utils\interfaces\IPageDataRepository;
 
 use smll\framework\mvc\Controller;
 
@@ -9,18 +9,18 @@ class BrowserController extends Controller
 {
 
     /**
-     * @var IContentRepository
+     * @var IPageDataRepository
      */
-    private $contentRepository;
+    private $pageDataRepository;
 
-    public function __construct(IContentRepository $contentRepository)
+    public function __construct(IPageDataRepository $pageDataRepository)
     {
-        $this->contentRepository = $contentRepository;
+        $this->pageDataRepository = $pageDataRepository;
     }
 
     public function page($type = null)
     {
-        $this->contentRepository->getRootPage();
+        $this->pageDataRepository->getRootPage();
         return $this->view();
     }
 }

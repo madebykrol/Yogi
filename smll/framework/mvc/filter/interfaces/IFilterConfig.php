@@ -9,26 +9,26 @@ use smll\framework\mvc\filter\interfaces\IAuthorizationFilter;
  *
  */
 interface IFilterConfig {
-	/**
-	 * Add an actionfilter to the stack.
-	 * @param IActionFilter $filter
-	 */
-	public function addActionFilter(IActionFilter $filter);
-	
-	/**
-	 * Get the action filter stack
-	 */
-	public function getActionFilters();
-	
-	/**
-	 * Add an authorization filter to the stack
-	 * @param IAuthorizationFilter $filter
-	 */
-	public function addAuthorizationFilter(IAuthorizationFilter $filter);
-	
-	/**
-	 * Get the authorization filter stack
-	 */
-	public function getAuthorizationFilters();
-	
+    /**
+     * Add an actionfilter to the stack.
+     * @param IActionFilter $filter
+     */
+    public function addActionFilter(IActionFilter $filter);
+
+    /**
+     * Get the action filter stack
+    */
+    public function getActionFilters();
+
+    /**
+     * Add an authorization filter to the stack
+     * @param IAuthorizationFilter $filter
+    */
+    public function addAuthorizationFilter(IAuthorizationFilter $filter);
+
+    /**
+     * Get the authorization filter stack
+    */
+    public function getAuthorizationFilters();
+
 }

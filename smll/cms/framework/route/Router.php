@@ -34,6 +34,8 @@ class Router extends \smll\framework\route\Router
 
         $path = $request->getPath();
 
+        
+        
         if ($path[0] == "") {
             // Front page
             $webSettings = $this->settings->get('web');
@@ -57,13 +59,13 @@ class Router extends \smll\framework\route\Router
                 if (($guid = Guid::parse($ident)) != null) {
                      
                     $pageType = $db->query('
-                            SELECT pt.controller, p.ident FROM page_type AS pt
-                            LEFT JOIN page AS p ON (pt.id = p.fkPageTypeId) WHERE p.ident = ?
+                            SELECT pt.controller, p.ident FROM content_type AS pt
+                            LEFT JOIN content AS p ON (pt.id = p.fkContentTypeId) WHERE p.ident = ?
                             ', $guid);
                 } else if (is_numeric($ident)) {
                     $pageType = $db->query('
-                            SELECT pt.controller, p.ident FROM page_type AS pt
-                            LEFT JOIN page AS p ON (pt.id = p.fkPageTypeId) WHERE p.id = ?
+                            SELECT pt.controller, p.ident FROM content_type AS pt
+                            LEFT JOIN content AS p ON (pt.id = p.fkContentTypeId) WHERE p.id = ?
                             ', $ident);
                 }
                 $controller = $pageType[0]->controller;
@@ -79,7 +81,7 @@ class Router extends \smll\framework\route\Router
             return $action;
         }
 
-
+        
 
         $request->setPath($path);
 
@@ -103,7 +105,7 @@ class Router extends \smll\framework\route\Router
         $db->flushResult();
 
         $db->where(array('externalUrl', '=', join('/', $path)));
-        if ($db->get('page')){
+        if ($db->get('content')){
             $result = $db->getResult();
             if (count($result) == 1) {
                 return true;
@@ -128,7 +130,7 @@ class Router extends \smll\framework\route\Router
         $db->flushResult();
 
         $db->where(array('externalUrl', '=', join('/', $path)));
-        if ($db->get('page')){
+        if ($db->get('content')){
             $result = $db->getResult();
             if (count($result) > 0) {
                 return array('page', $result[0]->ident);

@@ -1,6 +1,10 @@
 <?php
 namespace smll\cms\controllers;
 
+use smll\cms\framework\interfaces\IContentTypeBuilder;
+
+use smll\cms\framework\content\utils\interfaces\IContentTypeRepository;
+
 use smll\framework\security\interfaces\IRoleProvider;
 
 use smll\framework\utils\ArrayList;
@@ -8,8 +12,6 @@ use smll\framework\utils\ArrayList;
 use smll\cms\models\PermissionsModel;
 
 use smll\cms\models\PageTypesModel;
-
-use smll\cms\framework\interfaces\IPageTypeBuilder;
 
 use smll\framework\utils\Boolean;
 
@@ -21,7 +23,7 @@ use smll\framework\utils\interfaces\IAnnotationHandler;
 
 use smll\cms\framework\content\interfaces\IPageData;
 use smll\framework\utils\HashMap;
-use smll\cms\framework\content\utils\interfaces\IContentRepository;
+use smll\cms\framework\content\utils\interfaces\IPageDataRepository;
 use smll\cms\framework\content\PageData;
 use smll\framework\mvc\Controller;
 
@@ -34,7 +36,7 @@ use smll\framework\mvc\Controller;
 class AdminController extends Controller
 {
 
-    protected $contentRepository = null;
+    protected $contentTypeRepository = null;
     protected $pageTypeBuilder = null;
 
     /**
@@ -44,12 +46,12 @@ class AdminController extends Controller
     private $roleProvider;
 
     public function __construct(
-            IContentRepository $loader,
-            IPageTypeBuilder $pageTypeBuilder,
+            IContentTypeRepository $loader,
+            IContentTypeBuilder $pageTypeBuilder,
             IRoleProvider $roleProvider)
     {
 
-        $this->contentRepository = $loader;
+        $this->contentTypeRepository = $loader;
         $this->pageTypeBuilder = $pageTypeBuilder;
         $this->roleProvider = $roleProvider;
     }
@@ -107,11 +109,11 @@ class AdminController extends Controller
     {
 
         $pageTypes = new PageTypesModel();
-        $pageTypes->installed = $this->contentRepository->getPageTypes();
+        $pageTypes->installed = $this->contentTypeRepository->getContentTypes('PageData');
 
-        $uninstalled = $this->pageTypeBuilder->findPageTypes();
+        $uninstalled = $this->pageTypeBuilder->findPageTypes('PageData');
         foreach ($uninstalled->getIterator() as $index => $pageType) {
-            if ($this->contentRepository->getPageTypeByName($pageType->name) != null) {
+            if ($this->contentTypeRepository->getContentTypeByName($pageType->name) != null) {
                 $uninstalled->remove($index);
             }
         }
@@ -119,26 +121,81 @@ class AdminController extends Controller
 
         return $this->view($pageTypes);
     }
-
-    public function rebuild_page_type($type) 
+    
+    public function content_types()
     {
-
-        $pageType = $this->contentRepository->getPageTypeByName($type);
-
-        $this->pageTypeBuilder->rebuildPageType($pageType);
-
-        return $this->redirectToAction('page-types');
+    
+        $pageTypes = new PageTypesModel();
+        $pageTypes->installed = $this->contentTypeRepository->getContentTypes('ContentData');
+    
+        $uninstalled = $this->pageTypeBuilder->findPageTypes('ContentData');
+        foreach ($uninstalled->getIterator() as $index => $pageType) {
+            if ($this->contentTypeRepository->getContentTypeByName($pageType->name) != null) {
+                $uninstalled->remove($index);
+            }
+        }
+        $pageTypes->uninstalled = $uninstalled;
+    
+        return $this->view($pageTypes);
+    }
+    
+    public function block_types()
+    {
+    
+        $pageTypes = new PageTypesModel();
+        $pageTypes->installed = $this->contentTypeRepository->getContentTypes('BlockData');
+    
+        $uninstalled = $this->pageTypeBuilder->findPageTypes('BlockData');
+        foreach ($uninstalled->getIterator() as $index => $pageType) {
+            if ($this->contentTypeRepository->getContentTypeByName($pageType->name) != null) {
+                $uninstalled->remove($index);
+            }
+        }
+        $pageTypes->uninstalled = $uninstalled;
+    
+        return $this->view($pageTypes);
     }
 
-    public function build_page_type($type) 
+    public function rebuild_content_type($type, $dataType = 'PageData') 
     {
 
-        $rClass = new \ReflectionClass($this->pageTypeBuilder->findPageType($type));
+        $pageType = $this->contentTypeRepository->getContentTypeByName($type);
 
-        $this->pageTypeBuilder->buildPageType($rClass->newInstance());
+        $this->pageTypeBuilder->rebuildPageType($pageType, $dataType);
 
+        return $this->redirectAction($dataType);
+    }
 
-        return $this->redirectToAction('page-types');
+    public function build_content_type($type, $dataType = 'PageData') 
+    {
+        $rClass = new \ReflectionClass($this->pageTypeBuilder->findPageType($type, $dataType));
+        $this->pageTypeBuilder->buildPageType($rClass->newInstance(), $dataType);
+        return $this->redirectAction($dataType);
+    }
+    
+    protected function redirectAction($dataType) {
+        
+        $action = 'page-types';
+        
+        switch($dataType) {
+            case 'PageData' :
+                $action = 'page-types';
+                break;
+            
+            case 'BlockData' :
+                $action = 'block-types';
+                break;
+                
+            case 'ContentData' : 
+                $action = 'content-types';
+                break;
+        }
+        return $this->redirectToAction($action);
+    }
+    
+    public function fields()
+    {
+        return $this->view();
     }
 
 }

@@ -33,53 +33,53 @@
  *
  *    echo $rc4->decrypt($rc4->encrypt($plaintext));
  * ?>
- * </code>
- *
- * LICENSE: Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @category   Crypt
- * @package    Crypt_RC4
- * @author     Jim Wigginton <terrafrost@php.net>
- * @copyright  MMVII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @version    $Id: RC4.php,v 1.8 2009/06/09 04:00:38 terrafrost Exp $
- * @link       http://phpseclib.sourceforge.net
- */
+* </code>
+*
+* LICENSE: Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+* @category   Crypt
+* @package    Crypt_RC4
+* @author     Jim Wigginton <terrafrost@php.net>
+* @copyright  MMVII Jim Wigginton
+* @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+* @version    $Id: RC4.php,v 1.8 2009/06/09 04:00:38 terrafrost Exp $
+* @link       http://phpseclib.sourceforge.net
+*/
 
 /**#@+
  * @access private
- * @see Crypt_RC4::Crypt_RC4()
- */
+* @see Crypt_RC4::Crypt_RC4()
+*/
 /**
  * Toggles the internal implementation
- */
+*/
 define('CRYPT_RC4_MODE_INTERNAL', 1);
 /**
  * Toggles the mcrypt implementation
- */
+*/
 define('CRYPT_RC4_MODE_MCRYPT', 2);
 /**#@-*/
 
 /**#@+
  * @access private
  * @see Crypt_RC4::_crypt()
- */
+*/
 define('CRYPT_RC4_ENCRYPT', 0);
 define('CRYPT_RC4_DECRYPT', 1);
 /**#@-*/
@@ -91,7 +91,7 @@ define('CRYPT_RC4_DECRYPT', 1);
  * @version 0.1.0
  * @access  public
  * @package Crypt_RC4
- */
+*/
 class Crypt_RC4 {
     /**
      * The Key
@@ -190,7 +190,7 @@ class Crypt_RC4 {
                         $this->mode = MCRYPT_ARCFOUR;
                         break;
                     case defined('MCRYPT_RC4');
-                        $this->mode = MCRYPT_RC4;
+                    $this->mode = MCRYPT_RC4;
                 }
         }
     }

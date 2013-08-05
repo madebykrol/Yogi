@@ -17,35 +17,35 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @category   File
- * @package    File_ANSI
- * @author     Jim Wigginton <terrafrost@php.net>
- * @copyright  MMXII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @version    $Id$
- * @link       htp://phpseclib.sourceforge.net
- */
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+* @category   File
+* @package    File_ANSI
+* @author     Jim Wigginton <terrafrost@php.net>
+* @copyright  MMXII Jim Wigginton
+* @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+* @version    $Id$
+* @link       htp://phpseclib.sourceforge.net
+*/
 
 /**
  * Pure-PHP ANSI Decoder
- *
- * @author  Jim Wigginton <terrafrost@php.net>
- * @version 0.3.0
- * @access  public
- * @package File_ANSI
- */
+*
+* @author  Jim Wigginton <terrafrost@php.net>
+* @version 0.3.0
+* @access  public
+* @package File_ANSI
+*/
 class File_ANSI {
     /**
      * Max Width
@@ -463,10 +463,10 @@ class File_ANSI {
                     break;
                 default:
                     $this->screen[$this->y] = substr_replace(
-                        $this->screen[$this->y],
-                        $source[$i],
-                        $this->x,
-                        1
+                    $this->screen[$this->y],
+                    $source[$i],
+                    $this->x,
+                    1
                     );
 
                     if ($this->x > $this->max_x) {

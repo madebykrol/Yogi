@@ -1,0 +1,33 @@
+<?php 
+use smll\framework\utils\HashMap;
+
+use smll\framework\helpers\Html;
+$item = $model;
+
+$layout = null;
+?>
+<?php if($item->hasChildren()) {?>
+   <?php
+	foreach($item->getChildren()->getIterator() as $index => $child) {?>
+		<li class="ui-state-default menuItem"
+			id="<?php print $child->getId(); ?>">
+			<span class="collapse-toggle"
+			data-target="#parent-<?php print $child->getId(); ?>"><a href="#">
+			<?php if($child->hasChildren()) {?>
+			<i class="icon-folder-close"></i>  
+			<?php } else {?><i class="icon-minus"></i>
+					
+			<?php }?> 
+			</a> </span>
+			<span class="item"><a
+				href="<?php print Html::actionUrl($child->getLink(), 'Pages');?>"><?php print $child->getTitle();?>
+			</a> </span> <span class="actions"></span>
+			<ul
+            	class="sub-nav nav nav-list collapsible closed adminContentMenu"
+            	id="parent-<?php print $child->getId(); ?>">
+            
+			<?php if($child->hasChildren()) { print Html::renderAction('secondLevel', 'AdminNav', new HashMap(array('item' => $child))); }?>
+			</ul>
+        </li>
+    <?php }?>
+<?php }?>

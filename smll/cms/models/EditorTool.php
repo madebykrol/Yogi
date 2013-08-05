@@ -12,13 +12,15 @@ class EditorTool
     public $controller = "";
     public $extras = null;
     public $icon = "";
+    public $confirm = false;
 
     public function __construct($action = "", 
             $controller = "", 
             HashMap $extras = null, 
             $icon = "", 
             $active = false, 
-            $enabled = true)
+            $enabled = true,
+            $confirm = false)
     {
         $this->action = $action;
         $this->controller = $controller;
@@ -26,6 +28,7 @@ class EditorTool
         $this->icon = $icon;
         $this->active = $active;
         $this->enabled = $enabled;
+        $this->confirm = $confirm;
     }
 
 }

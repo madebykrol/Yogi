@@ -3,7 +3,7 @@ namespace smll\cms\framework\content\fieldtype;
 
 use smll\framework\io\file\FileReference;
 
-use smll\cms\framework\content\utils\interfaces\IContentRepository;
+use smll\cms\framework\content\utils\interfaces\IPageDataRepository;
 
 use smll\framework\io\Request;
 
@@ -37,7 +37,6 @@ class ImageField extends BaseFieldType implements IFileFieldType
 
     public function renderField($data, $parameters = null)
     {
-
         $output = '';
         $r = new Request();
         $i = 0;
@@ -108,7 +107,6 @@ class ImageField extends BaseFieldType implements IFileFieldType
                 }
             } else {
                 if (($guid = Guid::parse($data)) != null) {
-
                     $data = $this->fileRepository->getFileReference($guid);
                 }
             }

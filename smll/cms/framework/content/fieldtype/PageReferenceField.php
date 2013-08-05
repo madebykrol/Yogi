@@ -21,7 +21,7 @@ use smll\cms\framework\content\fieldtype\interfaces\IFieldType;
 class PageReferenceField extends BaseFieldType
 {
 
-    protected $dataType = "pageRef";
+    protected $dataType = "contentRef";
 
     public function __construct()
     {

@@ -1,6 +1,8 @@
 <?php
 namespace smll\cms\framework\ui;
 
+use smll\framework\utils\ArrayList;
+
 use smll\cms\framework\ui\interfaces\IFieldInjector;
 
 use smll\cms\framework\ui\interfaces\IFieldInjecter;
@@ -17,7 +19,7 @@ use smll\framework\io\file\interfaces\IFileUploadManager;
 
 use smll\cms\framework\content\fieldtype\FieldSettings;
 
-use smll\cms\framework\content\utils\interfaces\IContentRepository;
+use smll\cms\framework\content\utils\interfaces\IPageDataRepository;
 
 use smll\cms\framework\content\fieldtype\interfaces\IFieldSettings;
 
@@ -39,9 +41,9 @@ class FieldTypeFactory implements IFieldTypeFactory
     private $annotationHandler;
 
     /**
-     * @var IContentRepository
+     * @var IPageDataRepository
      */
-    private $contentRepository;
+    private $pageDataRepository;
 
     /**
      * @var IFileUploadManager
@@ -63,7 +65,7 @@ class FieldTypeFactory implements IFieldTypeFactory
      *
      * @var ArrayList
      */
-    private $fieldInjecters;
+    private $fieldInjectors;
 
 
 
@@ -77,6 +79,8 @@ class FieldTypeFactory implements IFieldTypeFactory
         $this->fileRepository = $fileRepository;
         $this->uploadManager = $manager;
         $this->taxonomyRepository = $taxonomyRepository;
+        
+        $this->fieldInjectors = new ArrayList();
     }
 
     /**
@@ -97,15 +101,15 @@ class FieldTypeFactory implements IFieldTypeFactory
             // Ignore primary and foreign keys
             if (
                     $setting != "id"
-                    && $setting != "fkPageTypeId"
+                    && $setting != "fkContentTypeId"
                     && $setting != "fkPageTypeDefinitionId"
-                    && $setting != "fkPageDefinitionTypeRenderer"
+                    && $setting != "fkContentDefinitionTypeRenderer"
                     && $setting != "name") {
 
                 $tmpSettings->add($setting, $value);
             }
         }
-
+        
         return $tmpSettings;
     }
 
@@ -116,11 +120,19 @@ class FieldTypeFactory implements IFieldTypeFactory
         // prototype;
         $instance->setFieldSettings(new HashMap());
 
-        $rendererClass =  $this->annotationHandler->getAnnotation('DefaultRenderer', $rClass);
+        
         $renderer = null;
-        if (isset($rendererClass)) {
-            $renderer = new ReflectionClass($rendererClass[1][0]);
+        
+        
+        if($settings->get('renderer')) {
+            $renderer = new ReflectionClass($settings->get('renderer'));
             $renderer = $renderer->newInstance();
+        } else {
+            $rendererClass =  $this->annotationHandler->getAnnotation('DefaultRenderer', $rClass);
+            if (isset($rendererClass)) {
+                $renderer = new ReflectionClass($rendererClass[1][0]);
+                $renderer = $renderer->newInstance();
+            }
         }
 
         // If it's a "file input field" we need to provide a IFileUploadManager
@@ -166,6 +178,7 @@ class FieldTypeFactory implements IFieldTypeFactory
 
     public function attachFieldInjector(IFieldInjector $injector)
     {
+        $this->fieldInjectors->add($injector);
     }
 
 }

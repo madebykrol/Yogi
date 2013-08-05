@@ -8,14 +8,15 @@ class PropertyCriteria implements IPropertyCriteria
 
     private $condition;
     private $name;
-    private $type;
+    private $type     = self::CRITERIA_PROPERTY_CONTENT_FIELD;
     private $required = true;
+    private $value = "";
 
     /**
      * (non-PHPdoc)
      * @see \smll\cms\framework\content\interfaces\IPropertyCriteria::setCondition()
      */
-    public function setCondition(int $condition)
+    public function setCondition($condition)
     {
         $this->condition = $condition;
     }
@@ -35,7 +36,7 @@ class PropertyCriteria implements IPropertyCriteria
      */
     public function setName($propertyName)
     {
-        $this->name = $propertyname;
+        $this->name = $propertyName;
     }
 
     /**
@@ -45,6 +46,16 @@ class PropertyCriteria implements IPropertyCriteria
     public function getName()
     {
         return $this->name;
+    }
+    
+    public function getValue()
+    {
+        return $this->value;
+    }
+    
+    public function setValue($value)
+    {
+        $this->value = $value;
     }
 
     /**
@@ -75,7 +86,7 @@ class PropertyCriteria implements IPropertyCriteria
             $this->required = $boolean;
         }
 
-        return $this->boolean;
+        return $this->required;
     }
 
     const CRITERIA_COMPARE_CONDITION_EQUALS                = 1;
@@ -88,4 +99,9 @@ class PropertyCriteria implements IPropertyCriteria
     const CRITERIA_COMPARE_CONDITION_GREATER_THAN          = 5;
     const CRITERIA_COMPARE_CONDITION_LESSER_THAN           = 6;
     const CRITERIA_COMPARE_CONDITION_BETWEEN               = 7;
+    
+    const CRITERIA_COMPARE_CONDITION_IN                    = 8;
+    
+    const CRITERIA_PROPERTY_CONTENT_FIELD                  = 'content-field';
+    const CRITERIA_PROPERTY_CONTENT_TYPE_NAME              = 'content-type-name';
 }

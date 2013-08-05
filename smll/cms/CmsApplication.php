@@ -1,6 +1,10 @@
 <?php
 namespace smll\cms;
 
+use smll\cms\controllers\BlocksController;
+
+use smll\cms\controllers\ContentController;
+
 use smll\cms\framework\mvc\filters\ContentAuthorizationFilter;
 
 use smll\cms\framework\BlockController;
@@ -17,8 +21,8 @@ use smll\framework\route\Route;
 use smll\framework\utils\HashMap;
 use smll\framework\mvc\interfaces\IController;
 use smll\cms\framework\PageController;
-use smll\cms\controllers\ContentController;
-use smll\cms\framework\content\utils\interfaces\IContentRepository;
+use smll\cms\controllers\PagesController;
+use smll\cms\framework\content\utils\interfaces\IPageDataRepository;
 use smll\framework\utils\Guid;
 use \ReflectionMethod;
 use \ReflectionClass;
@@ -40,13 +44,13 @@ abstract class CmsApplication extends HttpApplication
 
         $args = array();
         $methodParameters = $method->getParameters();
-
+        
         $annotationHandler = $this->getAnnotationHandler();
         if ($controller instanceof PageController) {
-             
+                 
             $reflectClass = new ReflectionClass(get_class($controller));
              
-            $annotation = $annotationHandler->getAnnotation('ContentType', $reflectClass);
+            $annotation = $annotationHandler->getAnnotation('PageType', $reflectClass);
             $contentType = $annotation[1][0];
             foreach ($methodParameters as $index => $parameter) {
 
@@ -71,6 +75,7 @@ abstract class CmsApplication extends HttpApplication
         }
 
         if ($controller instanceof BlockController) {
+            
             $reflectClass = new ReflectionClass(get_class($controller));
 
             $annotation = $annotationHandler->getAnnotation('BlockType', $reflectClass);
@@ -91,35 +96,44 @@ abstract class CmsApplication extends HttpApplication
             }
              
         }
-
-        if ($controller instanceof ContentController) {
+        
+        if ($controller instanceof PagesController 
+                || $controller instanceof ContentController
+                || $controller instanceof BlocksController) {
+            
             foreach ($methodParameters as $index => $parameter) {
 
                 if ($parameter instanceof ReflectionParameter) {
                      
                     if ($parameter->getClass() != "" && $parameter->getClass()->isInterface()) {
-                        if ($parameter->getClass()->getShortName() == "IPageData") {
-                            $contentRepository = $this->container->get('smll\cms\framework\content\utils\interfaces\IContentRepository');
-                             
+                        $pageDataRepository = $this->container->get('smll\cms\framework\content\utils\interfaces\IContentTypeRepository');
+                        $pagetType;
+                        $class;
+                        if ($parameter->getClass()->getShortName() == "IPageData" 
+                                || $parameter->getClass()->getShortName() == "IContent") {
+                            
                             $pageType = $parameters->get($parameter->getName());
-                             
-                            $class = new ReflectionClass($contentRepository->getPageTypeNamespaceClass($pageType));
-
-                             
-                            $args[] = $this->getModelBinder()->bindModel($class, $controller, $parameters);
-                            unset($methodParameters[$index]);
+                            
+                            $class = new ReflectionClass($pageDataRepository->getContentTypeNamespaceClass($pageType));
                         }
+                        $args[] = $this->getModelBinder()->bindModel($class, $controller, $parameters);
+                        unset($methodParameters[$index]);
+                        
                     }
                 }
             }
         }
-
+        
         if (isset($parameters)) {
+            
             foreach ($methodParameters as $index => $parameter) {
+                
                 $name = $parameter->getName();
                 $class = $parameter->getClass();
+                
                 if ($class != null) {
                     $className = $class->getName();
+                    
                 }
                 if ((is_object($parameters->get($name)) && $class != null) && $parameters->get($name) instanceof $className) {
                     $args[] = $parameters->get($name);
@@ -138,10 +152,10 @@ abstract class CmsApplication extends HttpApplication
     {
         $guid = Guid::parse($parameters->get('ident'));
 
-        $contentRepository = $this->container->get('smll\cms\framework\content\utils\interfaces\IContentRepository');
+        $pageDataRepository = $this->container->get('smll\cms\framework\content\utils\interfaces\IPageDataRepository');
         $content = null;
-        if ($contentRepository instanceof IContentRepository) {
-            return $contentRepository->getPageReference($guid);
+        if ($pageDataRepository instanceof IPageDataRepository) {
+            return $pageDataRepository->getPageReference($guid);
         }
 
     }
@@ -165,19 +179,20 @@ abstract class CmsApplication extends HttpApplication
                 $this->container->get(
                         'smll\framework\security\interfaces\IMembershipProvider'));
 
-        $contentAuthorizationFilter->setContentRepository(
+        $contentAuthorizationFilter->setPageDataRepository(
                 $this->container->get(
-                        'smll\cms\framework\content\utils\interfaces\IContentRepository'));
+                        'smll\cms\framework\content\utils\interfaces\IPageDataRepository'));
 
         $contentAuthorizationFilter->setContentPermissionHandler(
                 $this->container->get('smll\cms\framework\security\interfaces\IContentPermissionHandler'));
-
+        $contentAuthorizationFilter->setContentTypeRepository($this->container->get('smll\cms\framework\content\utils\interfaces\IContentTypeRepository'));
         $this->filterConfig->addAuthorizationFilter($authorizationFilter);
         $this->filterConfig->addAuthorizationFilter($contentAuthorizationFilter);
 
         $this->viewEngines->clearEngines();
 
-        $engine = new SmllViewEngine();
+        $engine = new SmllViewEngine(null, $this->container->get('smll\framework\io\interfaces\IBrowserContext'));
+        
         $engine->addPartialViewLocation('smll/cms/views/{0}/{1}.phtml');
         $engine->addPartialViewLocation('smll/cms/views/Share/{1}.phtml');
 
@@ -199,9 +214,9 @@ abstract class CmsApplication extends HttpApplication
 
 
         $this->routerConfig->mapRoute(
-                new Route("Content route", "Content/new/{type}",
+                new Route("Content route", "Pages/new/{type}",
                         array(
-                                "controller" => "Content",
+                                "controller" => "Pages",
                                 "action" => "create",
                                 "type" => Route::URLPARAMETER_REQUIRED)));
 

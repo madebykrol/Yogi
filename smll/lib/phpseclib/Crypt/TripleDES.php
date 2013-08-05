@@ -31,32 +31,32 @@
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @category   Crypt
- * @package    Crypt_TripleDES
- * @author     Jim Wigginton <terrafrost@php.net>
- * @copyright  MMVII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @version    $Id: TripleDES.php,v 1.13 2010/02/26 03:40:25 terrafrost Exp $
- * @link       http://phpseclib.sourceforge.net
- */
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+* @category   Crypt
+* @package    Crypt_TripleDES
+* @author     Jim Wigginton <terrafrost@php.net>
+* @copyright  MMVII Jim Wigginton
+* @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+* @version    $Id: TripleDES.php,v 1.13 2010/02/26 03:40:25 terrafrost Exp $
+* @link       http://phpseclib.sourceforge.net
+*/
 
 /**
  * Include Crypt_DES
- */
+*/
 if (!class_exists('Crypt_DES')) {
     require_once('DES.php');
 }
@@ -72,7 +72,7 @@ define('CRYPT_DES_MODE_3CBC', -2);
  * Encrypt / decrypt using outer chaining
  *
  * Outer chaining is used by SSH-2 and when the mode is set to CRYPT_DES_MODE_CBC.
- */
+*/
 define('CRYPT_DES_MODE_CBC3', CRYPT_DES_MODE_CBC);
 
 /**
@@ -82,7 +82,7 @@ define('CRYPT_DES_MODE_CBC3', CRYPT_DES_MODE_CBC);
  * @version 0.1.0
  * @access  public
  * @package Crypt_TerraDES
- */
+*/
 class Crypt_TripleDES {
     /**
      * The Three Keys
@@ -261,9 +261,9 @@ class Crypt_TripleDES {
         if ( $mode == CRYPT_DES_MODE_3CBC ) {
             $this->mode = CRYPT_DES_MODE_3CBC;
             $this->des = array(
-                new Crypt_DES(CRYPT_DES_MODE_CBC),
-                new Crypt_DES(CRYPT_DES_MODE_CBC),
-                new Crypt_DES(CRYPT_DES_MODE_CBC)
+                    new Crypt_DES(CRYPT_DES_MODE_CBC),
+                    new Crypt_DES(CRYPT_DES_MODE_CBC),
+                    new Crypt_DES(CRYPT_DES_MODE_CBC)
             );
             $this->paddable = true;
 
@@ -300,11 +300,11 @@ class Crypt_TripleDES {
                 break;
             default:
                 $this->des = array(
-                    new Crypt_DES(CRYPT_DES_MODE_ECB),
-                    new Crypt_DES(CRYPT_DES_MODE_ECB),
-                    new Crypt_DES(CRYPT_DES_MODE_ECB)
+                new Crypt_DES(CRYPT_DES_MODE_ECB),
+                new Crypt_DES(CRYPT_DES_MODE_ECB),
+                new Crypt_DES(CRYPT_DES_MODE_ECB)
                 );
- 
+
                 // we're going to be doing the padding, ourselves, so disable it in the Crypt_DES objects
                 $this->des[0]->disablePadding();
                 $this->des[1]->disablePadding();
@@ -562,7 +562,7 @@ class Crypt_TripleDES {
                     $block = substr($plaintext, $i, 8);
                     // all of these _processBlock calls could, in theory, be put in a function - say Crypt_TripleDES::_ede_encrypt() or something.
                     // only problem with that: it would slow encryption and decryption down.  $this->des would have to be called every time that
-                    // function is called, instead of once for the whole string of text that's being encrypted, which would, in turn, make 
+                    // function is called, instead of once for the whole string of text that's being encrypted, which would, in turn, make
                     // encryption and decryption take more time, per this:
                     //
                     // http://blog.libssh2.org/index.php?/archives/21-Compiled-Variables.html
@@ -638,8 +638,8 @@ class Crypt_TripleDES {
                     $iv = $block ^ $xor;
                     if ($continuousBuffer && strlen($iv) != 8) {
                         $buffer = array(
-                            'encrypted' => $iv,
-                            'xor' => substr($xor, strlen($iv))
+                                'encrypted' => $iv,
+                                'xor' => substr($xor, strlen($iv))
                         );
                     }
                     $ciphertext.= $iv;
@@ -672,7 +672,7 @@ class Crypt_TripleDES {
                 if ($this->continuousBuffer) {
                     $this->encryptIV = $xor;
                     if ($start = strlen($plaintext) & 7) {
-                         $buffer = substr($key, $start) . $buffer;
+                        $buffer = substr($key, $start) . $buffer;
                     }
                 }
         }
@@ -880,7 +880,7 @@ class Crypt_TripleDES {
                 if ($this->continuousBuffer) {
                     $this->decryptIV = $xor;
                     if ($start = strlen($ciphertext) & 7) {
-                         $buffer = substr($key, $start) . $buffer;
+                        $buffer = substr($key, $start) . $buffer;
                     }
                 }
         }

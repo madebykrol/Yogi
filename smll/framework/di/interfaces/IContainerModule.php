@@ -7,9 +7,9 @@ namespace smll\framework\di\interfaces;
  *
  */
 interface IContainerModule {
-	/**
-	 * Get registry containing all registered services that this module
-	 * has.
-	 */
-	public function getRegister();
+    /**
+     * Get registry containing all registered services that this module
+     * has.
+     */
+    public function getRegister();
 }

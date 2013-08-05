@@ -9,6 +9,7 @@ class PropertyCriteriaCollection implements IPropertyCriteriaCollection
 {
 
     private $criterias = array();
+    
 
     public function getIterator()
     {

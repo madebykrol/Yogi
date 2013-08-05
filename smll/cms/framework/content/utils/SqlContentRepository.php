@@ -487,9 +487,9 @@ class SqlContentRepository implements IContentRepository
         
         $query = array();
         $query[] = "SELECT DISTINCT(c.id), c.ident FROM content AS c 
-                JOIN gamescom.property AS p 
+                JOIN property AS p 
                     ON (p.fkContentId = c.id) 
-                JOIN gamescom.content_definition as c_d 
+                JOIN content_definition as c_d 
                     ON (p.fkContentDefinitionId = c_d.id)
                 JOIN content_type AS c_t
                     ON (c.fkContentTypeId = c_t.id)

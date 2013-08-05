@@ -15,65 +15,65 @@ use smll\framework\utils\Guid;
  *
  */
 class FileReference implements IFileReference {
-	
-	private $filename;
-	private $path;
-	private $filesize;
-	private $ident;
-	private $id;
-	private $mime;
-	
-	
-	public function getFileInfo() {
-		return array("Filename" => '', 'Filesize' => '', 'Mime' => '', 'Ident' => '');
-	}
-	
-	public function setFilename($filename) {
-		$this->filename = $filename;
-	}
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see \smll\framework\io\file\interfaces\IFileReference::getFilename()
-	 */
-	public function getFilename() {
-		return $this->filename;
-	}
-	
-	public function setFilesize($filesize) {
-		$this->filesize = $filesize;
-	}
-	
-	public function getFilesize() {
-		return $this->filesize;
-	}
-	
-	public function setIdent(Guid $ident) {
-		$this->ident = $ident;
-	}
-	
-	public function getIdent() {
-		return $this->ident;
-	}
-	
-	public function setMime($mime) {
-		$this->mime = $mime;
-	}
-	
-	public function getMime() {
-		return $this->mime;
-	}
-	
-	public function setId($id) {
-		$this->id = $id;
-	}
-	
-	public function getId() {
-		return $this->id;
-	}
-	
-	public function __toString() {
-		return $this->ident->getString();
-	}
-	
+
+    private $filename;
+    private $path;
+    private $filesize;
+    private $ident;
+    private $id;
+    private $mime;
+
+
+    public function getFileInfo() {
+        return array("Filename" => '', 'Filesize' => '', 'Mime' => '', 'Ident' => '');
+    }
+
+    public function setFilename($filename) {
+        $this->filename = $filename;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \smll\framework\io\file\interfaces\IFileReference::getFilename()
+     */
+    public function getFilename() {
+        return $this->filename;
+    }
+
+    public function setFilesize($filesize) {
+        $this->filesize = $filesize;
+    }
+
+    public function getFilesize() {
+        return $this->filesize;
+    }
+
+    public function setIdent(Guid $ident) {
+        $this->ident = $ident;
+    }
+
+    public function getIdent() {
+        return $this->ident;
+    }
+
+    public function setMime($mime) {
+        $this->mime = $mime;
+    }
+
+    public function getMime() {
+        return $this->mime;
+    }
+
+    public function setId($id) {
+        $this->id = $id;
+    }
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function __toString() {
+        return $this->ident->getString();
+    }
+
 }

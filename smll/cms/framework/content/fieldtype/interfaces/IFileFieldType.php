@@ -3,7 +3,7 @@ namespace smll\cms\framework\content\fieldtype\interfaces;
 
 use smll\cms\framework\content\files\interfaces\IFileRepository;
 
-use smll\cms\framework\content\utils\interfaces\IContentRepository;
+use smll\cms\framework\content\utils\interfaces\IPageDataRepository;
 
 use smll\framework\io\file\interfaces\IFileUploadManager;
 

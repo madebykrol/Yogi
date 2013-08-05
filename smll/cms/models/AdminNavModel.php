@@ -6,12 +6,12 @@ use smll\framework\utils\HashMap;
 class AdminNavModel
 {
 
-    public $contentTypes;
+    public $pageTypes;
     public $tools;
 
     public function __construct()
     {
-        $this->contentTypes = new HashMap();
+        $this->pageTypes = new HashMap();
         $this->tools = new HashMap();
     }
 

@@ -11,7 +11,7 @@ interface IPropertyCriteria
      * @see PropertyCriteria for a list conditions.
      * @param int $condition
      */
-    public function setCondition(int $condition);
+    public function setCondition($condition);
 
     /**
      * Get criteria condition
@@ -40,6 +40,10 @@ interface IPropertyCriteria
     */
     public function getType();
 
+    public function getValue();
+    
+    public function setValue($value);
+    
     /**
      * Sets and / or gets if this property is required when filtering.
      * @param string $boolean

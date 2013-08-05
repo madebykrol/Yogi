@@ -1,13 +1,15 @@
 <?php
 namespace smll\cms\framework\mvc\filters;
 
+use smll\cms\framework\content\utils\interfaces\IContentTypeRepository;
+
 use smll\cms\framework\security\interfaces\IContentPermissionHandler;
 use smll\framework\exceptions\AccessDeniedException;
 use smll\framework\utils\Guid;
 use smll\cms\framework\PageController;
 use smll\framework\utils\interfaces\IAnnotationHandler;
-use smll\cms\controllers\ContentController;
-use smll\cms\framework\content\utils\interfaces\IContentRepository;
+use smll\cms\controllers\PagesController;
+use smll\cms\framework\content\utils\interfaces\IPageDataRepository;
 use smll\framework\mvc\filter\FilterAttribute;
 use smll\framework\mvc\filter\interfaces\IAuthorizationFilter;
 use smll\framework\security\interfaces\IMembershipProvider;
@@ -25,7 +27,9 @@ class ContentAuthorizationFilter extends FilterAttribute implements IAuthorizati
      */
     private $membership;
 
-    private $contentRepository;
+    private $pageDataRepository;
+    
+    private $contentTypeRepository;
 
     private $permissionHandler;
 
@@ -34,9 +38,14 @@ class ContentAuthorizationFilter extends FilterAttribute implements IAuthorizati
         $this->membership = $membership;
     }
 
-    public function setContentRepository(IContentRepository $contentRepo)
+    public function setPageDataRepository(IPageDataRepository $contentRepo)
     {
-        $this->contentRepository = $contentRepo;
+        $this->pageDataRepository = $contentRepo;
+    }
+    
+    public function setContentTypeRepository(IContentTypeRepository $contentRepo)
+    {
+        $this->contentTypeRepository = $contentRepo;
     }
 
     public function setContentPermissionHandler(
@@ -66,23 +75,27 @@ class ContentAuthorizationFilter extends FilterAttribute implements IAuthorizati
             }
         }
 
+        
+        
         $hasPermission = false;
         $pagePermissions = array();
         $event = "View";
 
-        if ($context->getController() instanceof ContentController) {
+        if ($context->getController() instanceof PagesController) {
             // Assume the user is either trying to edit a page some way.
+            
             if ($context->getParameters() != null) {
 
-                $event = $context->getAction()->getName();
-
+                $event = str_replace('post_', "", $context->getAction()->getName());
+                
                 $pageTypeId = null;
                 if ($event == self::CMS_ACTION_CREATE) {
-                     
-                    $pageTypeId = $this->contentRepository->getPageTypeId($context->getParameters()->get('type'));
+                    
+                    $pageTypeId = $this->contentTypeRepository->getContentTypeId($context->getParameters()->get('type'));
                      
                     $event = self::PERMISSION_EVENT_CREATE;
                 } else {
+                    
                     if ($event == self::CMS_ACTION_VIEW) {
                         $event = self::PERMISSION_EVENT_VIEW;
                     }
@@ -92,7 +105,9 @@ class ContentAuthorizationFilter extends FilterAttribute implements IAuthorizati
                     if (($guid = Guid::parse($pageId)) != null) {
                         $pageId = $guid;
                     }
-                    $pageRef = $this->contentRepository->getPageReference($pageId);
+                    
+                    
+                    $pageRef = $this->pageDataRepository->getPageReference($pageId);
 
                     $pageTypeId = $pageRef->getPageTypeId();
                 }
@@ -112,8 +127,8 @@ class ContentAuthorizationFilter extends FilterAttribute implements IAuthorizati
             }
              
             $event = ucfirst(self::PERMISSION_EVENT_VIEW);
-             
-            $pageRef = $this->contentRepository->getPageReference($pageId);
+            
+            $pageRef = $this->pageDataRepository->getPageReference($pageId);
             if ($pageRef->getAuthor() == $context->getController()->getPrincipal()->getIdentity()->getName()) {
 
             }
@@ -121,8 +136,8 @@ class ContentAuthorizationFilter extends FilterAttribute implements IAuthorizati
         }
 
 
-
-        if ($context->getController() instanceof ContentController
+        
+        if ($context->getController() instanceof PagesController
                 || $context->getController() instanceof PageController)  {
 
             if (is_array($pagePermissions)) {

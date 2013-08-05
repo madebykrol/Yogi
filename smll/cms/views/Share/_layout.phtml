@@ -1,4 +1,6 @@
 <?php 
+use smll\framework\helpers\Scripts;
+
 use smll\framework\helpers\Html;
 use smll\framework\helpers\Styles;
 ?>
@@ -34,15 +36,14 @@ use smll\framework\helpers\Styles;
 		<div class="modal-footer"></div>
 	</div>
 
-	<script src="/gamescom/smll/cms/scripts/jquery.js"></script>
-	<script src="/gamescom/smll/cms/scripts/jquery-ui.js"></script>
-	<script src="/gamescom/smll/cms/scripts/bootstrap/js/bootstrap.js"></script>
-	<script src="/gamescom/smll/cms/scripts/prettify.js"></script>
-	<script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
-	<script
-		src="/gamescom/smll/cms/scripts/tinymce/js/tinymce/jquery.tinymce.min"></script>
-	<script
-		src="/gamescom/smll/cms/assets/datepicker/js/bootstrap-datepicker.js"></script>
-	<script src="/gamescom/smll/cms/scripts/main.js"></script>
+	<?php print Scripts::script('~/smll/cms/scripts/jquery.js'); ?>
+	<?php print Scripts::script('~/smll/cms/scripts/jquery-ui.js'); ?>
+	<?php print Scripts::script('~/smll/cms/scripts/bootstrap/js/bootstrap.js'); ?>
+	<?php print Scripts::script('~/smll/cms/scripts/typeahead.js/typeahead.js'); ?>
+	<?php print Scripts::script('~/smll/cms/scripts/prettify.js'); ?>
+	<?php print Scripts::script('//tinymce.cachefly.net/4.0/tinymce.min.js'); ?>
+	<?php print Scripts::script('~/smll/cms/scripts/tinymce/js/tinymce/jquery.tinymce.min'); ?>
+	<?php print Scripts::script('~/smll/cms/assets/datepicker/js/bootstrap-datepicker.js'); ?>
+	<?php print Scripts::script('~/smll/cms/scripts/main.js'); ?>
 </body>
 </html>

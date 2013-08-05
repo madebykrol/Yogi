@@ -30,7 +30,7 @@ abstract class PageData implements IPageData
      * @var unknown
      */
     public $id;
-
+    
     /**
      * [Editable]
      * [ContentField(Type=Text, DisplayName=External URL, Required=true, Tab=Settings)]
@@ -50,10 +50,10 @@ abstract class PageData implements IPageData
      * @var unknown
      */
     public $ident;
-
+    
     /**
      * [Editable]
-     * [ContentField(Type=Boolean, DisplayName=Visible in menu, Required=false, Tab=Menu)]
+     * [ContentField(Type=Boolean, DisplayName=Visible in menu, Required=false, Tab=Menu, WeightOrder=-100)]
      * @var unknown
      */
     public $visibleInMenu;

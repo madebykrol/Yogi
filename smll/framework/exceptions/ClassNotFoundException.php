@@ -7,5 +7,5 @@ use \Exception;
  *
  */
 class ClassNotFoundException extends Exception {
-	
+
 }
