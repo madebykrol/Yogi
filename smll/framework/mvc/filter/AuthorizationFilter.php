@@ -5,7 +5,7 @@ use smll\framework\mvc\filter\interfaces\IAuthorizationFilter;
 use smll\framework\security\interfaces\IMembershipProvider;
 use smll\framework\mvc\filter\AuthorizationContext;
 use smll\framework\mvc\ViewResult;
-use smll\framework\mvc\interfaces\IViewResult;
+use smll\framework\mvc\interfaces\IActionResult;
 use smll\framework\utils\HashMap;
 /**
  * Default Authorization filter!

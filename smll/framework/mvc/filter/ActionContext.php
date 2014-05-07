@@ -7,7 +7,7 @@ use smll\framework\IApplication;
 
 use smll\framework\utils\HashMap;
 
-use smll\framework\mvc\interfaces\IViewResult;
+use smll\framework\mvc\interfaces\IActionResult;
 
 use smll\framework\mvc\filter\interfaces\IContext;
 
@@ -77,7 +77,7 @@ class ActionContext implements IContext {
 	 * (non-PHPdoc)
 	 * @see \smll\framework\mvc\filter\interfaces\IContext::setResult()
 	 */
-	public function setResult(IViewResult $result = null) {
+	public function setResult(IActionResult $result = null) {
 		$this->result = $result;
 	}
 	

@@ -21,6 +21,7 @@ $application = $dic->get('smll\framework\IApplication');
 $application->setContainer($dic);
 $application->init();
 $application->run();
+$application->close();
 #
 $end = (float) array_sum(explode(' ',microtime()));
-print "Processing time: ". sprintf("%.4f", ($end-$start))." seconds.";
+//print "Processing time: ". sprintf("%.4f", ($end-$start))." seconds.";

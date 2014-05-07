@@ -5,7 +5,7 @@ use smll\framework\utils\HashMap;
 use smll\framework\mvc\filter\ControllerContext;
 use smll\framework\mvc\interfaces\IController;
 use smll\framework\IApplication;
-use smll\framework\mvc\interfaces\IViewResult;
+use smll\framework\mvc\interfaces\IActionResult;
 
 /**
  * @author Kristoffer "mbk" Olsson

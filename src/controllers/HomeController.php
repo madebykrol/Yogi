@@ -9,7 +9,7 @@ class HomeController extends Controller {
 	public function index() {
 		$this->viewBag['title'] = "Index | My smll site";
 		
-    return $this->view();
+    	return $this->view();
 	}
 	
 }

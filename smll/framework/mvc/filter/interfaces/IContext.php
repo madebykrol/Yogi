@@ -1,6 +1,6 @@
 <?php
 namespace smll\framework\mvc\filter\interfaces;
-use smll\framework\mvc\interfaces\IViewResult;
+use smll\framework\mvc\interfaces\IActionResult;
 
 use smll\framework\utils\HashMap;
 /**
@@ -26,9 +26,9 @@ interface IContext {
 	
 	/**
 	 * Set the result of this context. If any!
-	 * @param IViewResult $result
+	 * @param IActionResult $result
 	 */
-	public function setResult(IViewResult $result);
+	public function setResult(IActionResult $result);
 	
 	/**
 	 * Get the result currently in the context.

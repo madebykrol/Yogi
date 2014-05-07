@@ -1,6 +1,6 @@
 <?php
 namespace smll\framework\mvc\filter;
-use smll\framework\mvc\interfaces\IViewResult;
+use smll\framework\mvc\interfaces\IActionResult;
 
 use smll\framework\utils\HashMap;
 
@@ -13,7 +13,7 @@ class ControllerContext implements IContext {
 	public function setParameters(HashMap $parameters) {}
 	public function getParameters() {}
 	
-	public function setResult(IViewResult $result = null) {
+	public function setResult(IActionResult $result = null) {
 		$this->result = $result;
 	}
 	

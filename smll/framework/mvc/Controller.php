@@ -105,11 +105,7 @@ class Controller implements IController {
 	 */
 	public function view($model = null, $view = null) { 
 		
-		$result = new ViewResult();
-		$result->init();
-		if($model != null) {
-			$result->setModel($model);
-		}
+		$result = new ViewResult($model);
 		
 		if($view != null) {
 			$result->setView($view);

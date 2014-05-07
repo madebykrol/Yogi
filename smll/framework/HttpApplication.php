@@ -28,7 +28,7 @@ use smll\framework\security\Identity;
 use smll\framework\security\interfaces\IIdentity;
 use smll\framework\mvc\filter\AuthorizationContext;
 use smll\framework\exceptions\EmptyResultException;
-use smll\framework\mvc\interfaces\IViewResult;
+use smll\framework\mvc\interfaces\IActionResult;
 use smll\framework\mvc\interfaces\IModelBinder;
 use smll\framework\mvc\interfaces\IViewEngineRepository;
 use smll\framework\mvc\SmllViewEngine;
@@ -44,11 +44,7 @@ abstract class HttpApplication Implements IApplication {
 	private $request;
 	private $router;
 	
-	/**
-	 * [Inject(smll\framework\mvc\interfaces\IModelBinder)]
-	 * @var IModelBinder
-	 */
-	private $modelBinder;
+	private $modelBinders;
 	
 	protected $bundleConfig;
 	protected $filterConfig;
@@ -81,7 +77,8 @@ abstract class HttpApplication Implements IApplication {
 	public function __construct(
 			IRequest $request, 
 			IRouter $router, 
-			IFilterConfig $actionFilters) {
+			IFilterConfig $actionFilters,
+			IModelBinder $defaultModelBinder) {
 		
 		$this->request 	= $request;
 		$this->router 	= $router;
@@ -90,14 +87,12 @@ abstract class HttpApplication Implements IApplication {
 		$this->routerConfig = $router->getRouterConfig();
 		$this->filterConfig = $actionFilters;
 		$this->controllerPaths = new ArrayList();
+		$this->modelBinders = new HashMap();
+		$this->modelBinders->add("default", $defaultModelBinder);
 	}
 	
-	public function setModelBinder(IModelBinder $binder) {
-		if($this->modelBinder == null) {
-			$this->modelBinder = $binder;
-		} else {
-			throw new Exception("Cannot change modelbinder after initialization");
-		}
+	public function addModelBinder($class, IModelBinder $binder) {
+		$this->modelBinders->add($class, $binder);
 	}
 	
 	public function setViewEngines(IViewEngineRepository $engines) {
@@ -107,12 +102,16 @@ abstract class HttpApplication Implements IApplication {
 	/**
 	 * @return IModelBinder
 	 */
-	public function getModelBinder() {
-		return $this->modelBinder;
+	public function getModelBinder($class) {
+		return $this->modelBinder->get($class);
 	}
 	
 	public function install() {
 		$this->applicationInstall();
+	}
+	
+	public function close() {
+		
 	}
 	
 	public function run($request = null) {
@@ -281,7 +280,7 @@ abstract class HttpApplication Implements IApplication {
 	public function renderResult($result, IController $controller, $actionName) {
 		$engines = $this->viewEngines->getEngines();
 		
-		if($result instanceof IViewResult) {
+		if($result instanceof IActionResult) {
 			$controllerName = str_replace("Controller", "", get_class($controller));
 			$controllerName = explode('\\', $controllerName);
 			$controllerName = $controllerName[count($controllerName)-1];
@@ -409,12 +408,17 @@ abstract class HttpApplication Implements IApplication {
 			foreach($method->getParameters() as $parameter) {
 				$name = $parameter->getName();
 				$class = $parameter->getClass();
+				$className = "";
 				if($class != null) {
 					$className = $class->getName();
 				}
 				if((is_object($parameters->get($name)) && $class != null) && $parameters->get($name) instanceof $className) {
 					$args[] = $parameters->get($name);
 				} else if($class != null && $class instanceof ReflectionClass) {
+					$modelBinder = $this->getModelBinder("default");
+					if(($binder = $this->getModelBinder($className)) != null){
+						$modelBinder = $binder;
+					}
 					$args[] = $this->getModelBinder()->bindModel($class, $controller, $parameters);
 				} else {
 					$args[] = $parameters->get($name);
@@ -438,4 +442,8 @@ abstract class HttpApplication Implements IApplication {
 	 * @param ApplicationState $appstate
 	 */
 	protected function applicationResume(ApplicationState $appstate) {}
+	
+	public function checkFirstRun() {
+		
+	}
 }

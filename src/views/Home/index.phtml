@@ -3,9 +3,14 @@ use smll\framework\helpers\Html;
 $layout = "src/views/Share/_layout.phtml";
 
 ?>
-<section name="derp">
+@Region derp
 <h1> My first smll site </h1>
 <div class="row">
 	<div class="span12">Hello, world Smll MVC!</div>
 </div>
-</section>
+@Endregion
+
+@Region Header
+	Header
+@Endregion
+Derp!!

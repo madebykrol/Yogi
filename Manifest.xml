@@ -25,6 +25,6 @@
             </providers>
         </roleManager>
         <applicationState state="Debug"></applicationState>
-        <cookiePath path="/Smll" domain="workspace" />
+        <cookiePath path="" domain="" />
     </web>
 </appSettings>

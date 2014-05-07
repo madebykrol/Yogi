@@ -1,10 +1,12 @@
 <?php
 namespace smll\framework\mvc;
-use smll\framework\mvc\interfaces\IViewResult;
+
+use smll\framework\mvc\interfaces\IActionResult;
 use smll\framework\utils\HashMap;
 use smll\framework\helpers\Html;
+use smll\framework\utils\Regexp;
 
-class ViewResult implements IViewResult {
+class ViewResult implements IActionResult {
 	
 	private $viewFile;
 	private $model;
@@ -15,7 +17,11 @@ class ViewResult implements IViewResult {
 	 */
 	private $viewEngine;
 	
-	public function init() {
+	private $useView = true;
+	private $regions = array();
+	
+	public function __construct($model) {
+		$this->model = $model;
 		$this->headers = new HashMap();
 	}
 	
@@ -59,12 +65,48 @@ class ViewResult implements IViewResult {
 		
 		$model 		= $this->model;
 		$layout 	= null;
-		$viewBag = $this->viewBag;
+		$viewBag 	= $this->viewBag;
 		
 		ob_start();
 		include($this->viewFile);
 		$content = ob_get_clean();
 		
+		$rexp = new Regexp('@Region (.+?)\n(.+?)@Endregion');
+		$rexp->setOption("is");
+		
+		$r = $rexp->find($content);
+		$regions = array();
+		if (count($r) > 0 ) {
+			foreach($r as $index => $region) {
+			    $name = "";
+			    $complete = "";
+			    $rContent = "";
+			    
+			    if(is_array($r)) {
+    			    if(isset($r[0])) {
+    			        if(isset($r[0][$index])) {
+    				        $complete = $r[0][$index];
+    			        }
+    			    }
+    			    if(isset($r[1])) {
+    			        if(isset($r[1][$index])) {
+    				        $name = $r[1][$index];
+    			        }
+    			    }
+    				if(isset($r[2])) {
+    				    if(isset($r[2][$index])) {
+    				        $rContent = $r[2][$index];
+    				    }
+    				}
+			    }
+				
+				$content = str_replace($complete, "", $content);
+				$this->regions[trim($name)] = trim($rContent);
+			}
+			
+		}
+		
+		 
 		if($layout == null) {
 			$output = $content;
 		} else {
@@ -76,11 +118,20 @@ class ViewResult implements IViewResult {
 		return $output;
 	}
 	
-	public function renderSection() {
-		
+	public function renderSection($section) {
+		if(isset($this->regions[$section])) {
+		    return $this->regions[$section];
+		}
 	}
 	
 	public function renderContent() {
 		
+	}
+	
+	public function useView($boolean = null) {
+		if(is_bool($boolean)) {
+			$this->useView = $boolean;
+		}
+		return $this->useView;
 	}
 }

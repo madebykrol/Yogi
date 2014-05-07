@@ -1,7 +1,7 @@
 <?php
 namespace smll\framework\mvc;
 use smll\framework\mvc\interfaces\IViewEngine;
-use smll\framework\mvc\interfaces\IViewResult;
+use smll\framework\mvc\interfaces\IActionResult;
 use smll\framework\utils\ArrayList;
 
 class SmllViewEngine implements IViewEngine {
@@ -38,47 +38,51 @@ class SmllViewEngine implements IViewEngine {
 		return $this->partialViews;
 	}
 	
-	public function renderResult(IViewResult $result, $controller, $action) {
+	public function renderResult(IActionResult $result, $controller, $action) {
 		$viewFileExists = false;
 		$triedViewFiles = new ArrayList();
 		
 		$output = "";
 		
-		foreach($result->getHeaders()->getIterator() as $field => $value) {
-			header($field.": ".$value);
-		}
-		
-		if($result->getViewFile() != null) {
-			if(is_file($result->getViewFile())) {
-				$viewFileExists = true;
-		
-			} else {
-				$triedViewFiles->add($result->getViewFile());
+		if($result->getHeaders() != null) {
+			foreach($result->getHeaders()->getIterator() as $field => $value) {
+				header($field.": ".$value);
 			}
-		} else {
-			// Loop through view file conventions
-		
-			foreach($this->partialViews->getIterator() as $file) {
-				$file = str_replace(array("{0}", "{1}"), array($controller, $action), $file);
-				if(is_file($file)) {
+		}
+		if ($result->useView()) {
+			if ($result->getViewFile() != null) {
+				if(is_file($result->getViewFile())) {
 					$viewFileExists = true;
-					$result->setViewFile($file);
-					break;
+			
 				} else {
-					$triedViewFiles->add($file);
+					$triedViewFiles->add($result->getViewFile());
+				}
+			} else {
+				// Loop through view file conventions
+			
+				foreach($this->partialViews->getIterator() as $file) {
+					$file = str_replace(array("{0}", "{1}"), array($controller, $action), $file);
+					if(is_file($file)) {
+						$viewFileExists = true;
+						$result->setViewFile($file);
+						break;
+					} else {
+						$triedViewFiles->add($file);
+					}
 				}
 			}
-		}
-		
-		if($viewFileExists) {
+			
+			if($viewFileExists) {
+			
+				$output = $result->render();
 				
-			$output = $result->render();
-				
-				
-		} else {
-			foreach($triedViewFiles->getIterator() as $file) {
-				$output .= $file."\n";
+			} else {
+				foreach($triedViewFiles->getIterator() as $file) {
+					$output .= $file."\n";
+				}
 			}
+		} else {
+			$output = $result->render();
 		}
 		
 		return $output;

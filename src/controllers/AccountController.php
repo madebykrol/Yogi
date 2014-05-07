@@ -13,8 +13,12 @@ class AccountController extends Controller {
 	 * @return ViewResult
 	 */
 	public function index() {
-		$this->viewBag['title'] = 'Account';
-		return $this->view();
+	    
+	    $model = new LayoutViewModel();
+	    
+		$model->title = 'Account';
+		
+		return $this->view($model);
 	}
 	
 	/**
@@ -22,8 +26,10 @@ class AccountController extends Controller {
 	 * @return ViewResult
 	 */
 	public function login() {
-		$this->viewBag['title'] = 'Login';
-		$model = new AccountModel();
+		$model = new AccountViewModel();
+	    
+		$model->title = 'Login';
+		$model->accountModel = new AccountModel();
 		
 		return $this->view($model);
 	}

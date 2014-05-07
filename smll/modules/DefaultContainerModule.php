@@ -85,6 +85,11 @@ class DefaultContainerModule implements IContainerModule {
 		 		'smll\framework\mvc\interfaces\IViewEngineRepository');
 		 
 		 $this->register(
+		     	'smll\framework\io\db\ServiceDataStore',
+		 		'smll\framework\io\db\interfaces\IServiceDataStore'
+		 		);
+		 
+		 $this->register(
 		 		'smll\framework\route\Router',
 		 		'smll\framework\route\interfaces\IRouter')
 		 		->set('RouterConfig', new RouterConfig())

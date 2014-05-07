@@ -5,8 +5,8 @@ use smll\framework\mvc\interfaces\IViewEngineRepository;
 use smll\framework\utils\HashMap;
 interface IApplication {
 	
-	public function install();
 	public function run();
+	public function close();
 	
 	/**
 	 * @return IController
@@ -33,5 +33,7 @@ interface IApplication {
 	public function setViewEngines(IViewEngineRepository $repository);
 	
 	public function processAction($controller, $actionName, HashMap $parameters = null);
+	
+	public function checkFirstRun();
 	
 }
