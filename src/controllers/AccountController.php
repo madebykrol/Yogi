@@ -2,6 +2,8 @@
 namespace src\controllers;
 use smll\framework\mvc\Controller;
 use src\models\AccountModel;
+use src\models\AccountViewModel;
+use src\models\LayoutViewModel;
 use src\models\RegisterModel;
 /**
  * [Authorize]

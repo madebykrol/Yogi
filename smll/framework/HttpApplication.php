@@ -102,8 +102,10 @@ abstract class HttpApplication Implements IApplication {
 	/**
 	 * @return IModelBinder
 	 */
-	public function getModelBinder($class) {
-		return $this->modelBinder->get($class);
+	public function getModelBinder($class = "default") {
+		print_r($class);
+		print_r($this->modelBinders);
+		return $this->modelBinders->get($class);
 	}
 	
 	public function install() {
@@ -115,11 +117,6 @@ abstract class HttpApplication Implements IApplication {
 	}
 	
 	public function run($request = null) {
-		
-		
-		if(!$this->checkInstallStatus()) {
-			$this->install();
-		}
 		
 		if($request == null) {
 			$request = $this->request;
@@ -177,7 +174,22 @@ abstract class HttpApplication Implements IApplication {
 		return $this->request->getApplicationRoot();
 	}
 	
+	public function scheduler() {
+		
+	}
+	
 	public function init() {
+		
+		/**
+		 * Perform first request initialization
+		 */
+		if($this->isFirstRequest()) {
+			// If this is first requestion.
+			// Perform install features and init modules.
+			$this->applicationInstall();
+		}
+		
+		
 		$this->configControllerPaths();
 		
 		foreach($this->controllerPaths->getIterator() as $path) {
@@ -200,6 +212,18 @@ abstract class HttpApplication Implements IApplication {
 		$this->setAnnotationHandler($this->container->get('smll\framework\utils\interfaces\IAnnotationHandler'));
 		
 		$this->viewEngines->addEngine(new SmllViewEngine());
+	}
+	
+	/**
+	 * @return boolean;
+	 */
+	protected function isFirstRequest() {
+		
+		$time = time();
+		$fp = fopen("./Manifest.xml", "r");
+		$manifestTime = fstat($fp);
+		
+		return ($time-$manifestTime['mtime'])<20;
 	}
 	
 	/**
@@ -345,7 +369,7 @@ abstract class HttpApplication Implements IApplication {
 					$annotations['Authorize'] = $annotationHandler->getAnnotation('Authorize', $method);
 				}
 			}
-		
+			
 			if($annotationHandler->hasAnnotation('AllowAnonymous', $method)) {
 				$annotations['AllowAnonymous'] = $annotationHandler->getAnnotation('AllowAnonymous', $method);
 			}
@@ -377,9 +401,6 @@ abstract class HttpApplication Implements IApplication {
 		return $passed;
 	}
 	
-	protected function checkInstallStatus() {
-		return true;
-	}
 	
 	protected function attachPrincipal(IController $controller) {
 		$authenticationHandler = $this->container->get('smll\framework\security\interfaces\IAuthenticationProvider');
@@ -430,11 +451,16 @@ abstract class HttpApplication Implements IApplication {
 
 	abstract protected function applicationStart();
 	
-	protected function applicationFinish() {}
-	protected function applicationInstall() {}
+	protected function applicationFinish() {
+	    
+	}
+	
+	public function applicationInstall() {}
+	
 	protected function preStart() {}
 	protected function configControllerPaths() {
 		$this->controllerPaths->add('src/controllers/');
+		$this->controllerPaths->add('smll/framework/system/controllers/');
 	}
 	
 	/**
@@ -442,8 +468,4 @@ abstract class HttpApplication Implements IApplication {
 	 * @param ApplicationState $appstate
 	 */
 	protected function applicationResume(ApplicationState $appstate) {}
-	
-	public function checkFirstRun() {
-		
-	}
 }

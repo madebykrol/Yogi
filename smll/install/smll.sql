@@ -34,12 +34,6 @@ CREATE TABLE `memberships` (
 -- Dumping data for table `memberships`
 --
 
-LOCK TABLES `memberships` WRITE;
-/*!40000 ALTER TABLE `memberships` DISABLE KEYS */;
-INSERT INTO `memberships` VALUES ('7fe9e0ae-674b-46fe-b183-4c613255bcbc','admin','$2a$08$Nn1hIMzyqYOXm.sd5GNgVev0LyyMOV0EHpPxkebLpcgdpfi0zkMdi');
-/*!40000 ALTER TABLE `memberships` ENABLE KEYS */;
-UNLOCK TABLES;
-
 --
 -- Table structure for table `roles`
 --
@@ -84,12 +78,6 @@ CREATE TABLE `users` (
 --
 -- Dumping data for table `users`
 --
-
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('#1','7fe9e0ae-674b-46fe-b183-4c613255bcbc','admin','2013-06-28 14:00:10');
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `users_in_roles`

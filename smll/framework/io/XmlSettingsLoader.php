@@ -1,6 +1,7 @@
 <?php
 namespace smll\framework\io;
 use smll\framework\settings\interfaces\ISettingsLoader;
+use smll\framework\utils\Boolean;
 
 /**
  * XmlSettingsLoader implements ISettingsLoader and loads settings from 
@@ -11,6 +12,9 @@ use smll\framework\settings\interfaces\ISettingsLoader;
  * @author Kristoffer "mbk" Olsson
  *
  */
+
+
+
 class XmlSettingsLoader implements ISettingsLoader {
 	
 	private $file = null;
@@ -81,7 +85,11 @@ class XmlSettingsLoader implements ISettingsLoader {
 					if($attr == "name" && $node->nodeName == "add") {
 						$name = $value->nodeValue;
 					} else {
-						$attributes[$attr] = $value->value;
+						if(Boolean::isBoolean($value->value)) {
+							$attributes[$attr] = Boolean::parseValue($value->value);
+						} else {
+							$attributes[$attr] = $value->value;
+						}
 					}
 				}
 				$settings[$name] = array();

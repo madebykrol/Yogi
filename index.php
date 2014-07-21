@@ -6,8 +6,6 @@ use smll\SmllClassLoader;
 
 
 $start = (float) array_sum(explode(' ',microtime()));
-#
-// PHP code whose execution time you want to measure
 
 $autoloader = new SmllClassLoader();
 $autoloader->register();

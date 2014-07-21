@@ -137,7 +137,7 @@ class Definition {
 	}
 	
 	const SCOPE_DEFAULT 		= 0;
-	const SCOPE_SINGELTON 	= 1;
+	const SCOPE_SINGELTON 		= 1;
 	const SCOPE_REQUEST 		= 2;
 	
 }

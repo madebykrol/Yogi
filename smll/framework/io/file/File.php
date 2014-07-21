@@ -6,12 +6,18 @@ class File {
 	
 	public function __construct($file) {
 		$this->filepath = $file;
-		
+	}
+	
+	public function readFileStream() {
+		$fileContent = file_get_contents($this->filepath);
+
+		return $fileContent;
+	}
+	
+	public function readBytes($bytes, $offset = 0) {
 		
 	}
 	
-	public function readFileStream() {}
-	public function readBytes($bytes, $offset = 0) {}
 	public function writeFile() {}
 	
 	public function getPath() {}

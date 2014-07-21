@@ -17,6 +17,10 @@ class DefaultContainerModule implements IContainerModule {
 	
 	public function init() {
 		
+		
+		$this->register('smll\framework\system\SystemModelFactory', 
+				'smll\framework\system\ISystemModelFactory');
+		
 		 $this->register('smll\framework\io\file\FileUploadManager',
 				'smll\framework\io\file\interfaces\IFileUploadManager')
 				->addArgument($_FILES);

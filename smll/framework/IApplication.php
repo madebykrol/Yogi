@@ -34,6 +34,8 @@ interface IApplication {
 	
 	public function processAction($controller, $actionName, HashMap $parameters = null);
 	
-	public function checkFirstRun();
+	public function scheduler();
+	
+	public function install();
 	
 }

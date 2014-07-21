@@ -16,11 +16,8 @@ class Controller implements IController {
 	protected $viewBag = array(
 		'title' => '',		
 	);
-	/**
-	 * [Inject(IApplication)]
-	 * @var IApplication
-	 */
-	private $application = null;
+	
+	protected $application = null;
 	
 	/**
 	 * [Inject(smll\framework\http\interfaces\IHeaderRepository)]
@@ -108,7 +105,7 @@ class Controller implements IController {
 		$result = new ViewResult($model);
 		
 		if($view != null) {
-			$result->setView($view);
+			$result->setViewFile($view);
 		}
 		
 		$result->setViewBag($this->viewBag);
@@ -120,7 +117,6 @@ class Controller implements IController {
 
 	
 	/**
-	 * 
 	 * Overloaded HttpRedirect
 	 * redirectToAction($action)
 	 * redirectToAction($action, $controller)
@@ -133,7 +129,6 @@ class Controller implements IController {
 	public function redirectToAction($action, $controller = null, HashMap $parameters = null) {
 		
 		$result = new ViewResult();
-		$result->init();
 		if($controller == null) {
 			$controller = str_replace("Controller", "", get_class($this));
 		}

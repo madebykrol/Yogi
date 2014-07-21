@@ -1,11 +1,11 @@
 <?php
 use smll\framework\helpers\Html;
-$layout = "src/views/Share/_admin.phtml";
+$layout = "src/views/Share/_layout.phtml";
 
 ?>
 <h1> Login </h1>
 <div class="row">
-	<?php print Html::beginFormFor($model);?>
+	<?php print Html::beginFormFor($model->accountModel);?>
 		<input class="btn" type="submit" value="sign in">
 		<?php print Html::actionLink("Register", "register", 'Account'); ?>
 	<?php print Html::closeForm();?>

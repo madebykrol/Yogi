@@ -71,7 +71,7 @@ class SqlMembershipProvider implements IMembershipProvider {
 	 * @param unknown $providerUserKey
 	 * @return MembershipUser
 	 */
-	public function createUser($username, $password, $approved = false, $providerUserKey = null) {
+	public function createUser($username, $password, $approved = false, $providerUserKey = null, $application = "#1") {
 		$user = null;
 		
 		if($providerUserKey == null) {
@@ -84,7 +84,7 @@ class SqlMembershipProvider implements IMembershipProvider {
 				$user->setProviderIdent($providerUserKey);
 				$user->setProviderName($username);
 				
-				$this->datastore->insert('users', array('application' => '#1', 'ident' => $providerUserKey, 'username' => $username, 'last_active_date' => date('Y-m-d H:i:s')));
+				$this->datastore->insert('users', array('application' => $application, 'ident' => $providerUserKey, 'username' => $username, 'last_active_date' => date('Y-m-d H:i:s')));
 			}
 		} else {
 			throw new MembershipUserExistsException();

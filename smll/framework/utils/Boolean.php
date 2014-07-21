@@ -7,4 +7,8 @@ class Boolean {
 		}
 		return false;
 	}
+	
+	public static function isBoolean($val) {
+		return (($val === true || $val === false) || ($val == "yes" || $val == "no") || ($val == "true" || $val == "false"));
+	}
 }
