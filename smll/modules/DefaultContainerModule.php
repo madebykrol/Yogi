@@ -100,6 +100,11 @@ class DefaultContainerModule implements IContainerModule {
 		 		->addMethodCall('init');
 		 
 		 $this->register(
+		 		'smll\framework\io\file\FileManager',
+		 		'smll\framework\io\file\interfaces\IFileManager'
+		 );
+		 
+		 $this->register(
 		 		'src\Application',
 		 		'smll\framework\IApplication')
 		 		->addArgument(null)

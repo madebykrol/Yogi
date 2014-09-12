@@ -12,6 +12,15 @@ use smll\framework\utils\Guid;
  *
  */
 interface IFileReference {
+	
+	public function setCreated($created);
+	
+	public function getCreated();
+	
+	public function setUpdated($updated);
+	
+	public function getUpdated();
+	
 	/**
 	 * Get a complete set of information regarding the file
 	 */
@@ -43,13 +52,13 @@ interface IFileReference {
 	 * Pass a Guid as a identifier for the file
 	 * @param Guid $ident
 	 */
-	public function setIdent(Guid $ident);
+	public function setReference(Guid $reference);
 	
 	/**
 	 * Return the identifier Guid for the file
 	 * @return Guid
 	 */
-	public function getIdent();
+	public function getReference();
 	
 	/**
 	 * Set the file mime
@@ -75,4 +84,13 @@ interface IFileReference {
 	 * A id is a automatically generated auto increment value, created by the datastore
 	 */
 	public function getId();
+	
+	/**
+	 * Get the file referenced by this reference
+	 */
+	public function getFile();
+	
+	public function getPath();
+	
+	public function setPath($path);
 }

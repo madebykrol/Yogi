@@ -19,13 +19,31 @@ class FileReference implements IFileReference {
 	private $filename;
 	private $path;
 	private $filesize;
-	private $ident;
+	private $reference;
 	private $id;
 	private $mime;
+	private $created;
+	private $updated;
+	
+	public function setCreated($created) {
+		$this->created = $created;
+	}
+	
+	public function getCreated() {
+		return $this->created;
+	}
+	
+	public function setUpdated($updated) {
+		$this->updated = $updated;
+	}
+	
+	public function getUpdated() {
+		return $this->updated;
+	}
 	
 	
 	public function getFileInfo() {
-		return array("Filename" => '', 'Filesize' => '', 'Mime' => '', 'Ident' => '');
+		return array("Filename" => '', 'Filesize' => '', 'Mime' => '', 'Reference' => '', 'Created' => '', 'Updated' => '');
 	}
 	
 	public function setFilename($filename) {
@@ -48,11 +66,11 @@ class FileReference implements IFileReference {
 		return $this->filesize;
 	}
 	
-	public function setIdent(Guid $ident) {
-		$this->ident = $ident;
+	public function setReference(Guid $reference) {
+		$this->reference = $reference;
 	}
 	
-	public function getIdent() {
+	public function getReference() {
 		return $this->ident;
 	}
 	
@@ -70,6 +88,22 @@ class FileReference implements IFileReference {
 	
 	public function getId() {
 		return $this->id;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see \smll\framework\io\file\interfaces\IFileReference::getFile()
+	 */
+	public function getFile() {
+		return new File($this->filename);
+	}
+	
+	public function setPath($path) {
+		$this->path = $path;
+	}
+	
+	public function getPath() {
+		return $this->path;
 	}
 	
 	public function __toString() {

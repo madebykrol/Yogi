@@ -1,30 +1,28 @@
-<?php 
+<?php
 use smll\framework\helpers\Html;
 ?>
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title><?php print $model->title?></title>
+<title><?php print $model->pageTitle;?></title>
 	<link href="/Smll/src/assets/bootstrap/css/bootstrap.css" rel="stylesheet">
 	<link href="/Smll/src/assets/prettify.css" rel="stylesheet">
 	<link href="/Smll/src/assets/main.css" rel="stylesheet">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 </head>
-<body>
-	<div class="container" id="main-wrapper">
-		<?php 
-			print $this->renderSection('header');
+<body class="base-layout">
+
+	<div class="container">
+		<?php
+			print $this->renderSection('Header');
 		?>
 		<?php print Html::renderAction("topNav", "Nav"); ?>
 		<?php
-		
 			print $content;
 		?>
-		<div class="col-md-4">
-		<?php 
-			print $this->renderSection('derp');
-		?>
-		</div>
 	</div>
+
 	<script src="/Smll/src/scripts/jquery.js"></script>
 	<script src="/Smll/src/scripts/bootstrap/js/bootstrap.js"></script>
 	<script src="/Smll/src/scripts/prettify.js"></script>

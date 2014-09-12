@@ -5,7 +5,7 @@ use smll\framework\utils\ArrayList;
 use smll\framework\security\interfaces\IMembershipProvider;
 use smll\framework\security\interfaces\ICryptographer;
 use smll\framework\settings\interfaces\ISettingsRepository;
-use smll\framework\io\db\DB;
+use smll\framework\io\db\PDOOrm;
 use smll\framework\security\MembershipUser;
 use smll\framework\utils\Guid;
 class SqlMembershipProvider implements IMembershipProvider {
@@ -26,7 +26,7 @@ class SqlMembershipProvider implements IMembershipProvider {
 	public function __construct(ISettingsRepository $settings) {
 		$this->settings = $settings;
 		$connectionStrings = $settings->get('connectionStrings');
-		$this->datastore = new DB($connectionStrings['Default']['connectionString']);
+		$this->datastore = new PDOOrm($connectionStrings['Default']['connectionString']);
 	}
 	
 	public function getAllUsers() {
@@ -98,13 +98,14 @@ class SqlMembershipProvider implements IMembershipProvider {
 		$userObject = null;
 		$this->datastore->clearCache();
 		
-		
-		
 		if($user instanceof Guid) {
-			
 			$this->datastore->where(array('ident', '=', $user));
 		} else if(is_string($user)) {
-			$this->datastore->where(array('username', '=', $user));
+			if(Guid::parse($user) != null) {
+				$this->datastore->where(array('ident', '=', $user));
+			} else {
+				$this->datastore->where(array('username', '=', $user));
+			}
 		}
 		if(($users = $this->datastore->get('memberships')) != false) {
 			if(isset($users)) {

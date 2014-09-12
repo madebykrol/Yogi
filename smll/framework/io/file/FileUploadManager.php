@@ -6,6 +6,7 @@ use smll\framework\settings\interfaces\ISettingsRepository;
 use smll\framework\io\interfaces\IFileSaveListener;
 use smll\framework\utils\ArrayList;
 use smll\framework\io\file\interfaces\IFileUploadManager;
+use smll\framework\io\file\interfaces\IFileManager;
 /**
  * A Basic file upload manager
  * It requests a setter injection of ISettingsRepository to get information about 
@@ -24,12 +25,21 @@ class FileUploadManager implements IFileUploadManager {
 	 */
 	private $settingsRepository;
 	
+	/**
+	 * [Inject(smll\framework\io\file\interfaces\IFileManager)]
+	 */
+	private $fileManager;
+	
 	public function __construct($files) {
 		$this->files = $files;
 	}
 	
 	public function setSettingsRepository(ISettingsRepository $settings) {
 		$this->settingsRepository = $settings;
+	}
+	
+	public function setFileManager(IFileManager $manager) {
+		$this->fileManager = $manager;
 	}
 	
 	public function getUploadedFiles($fieldName) {
