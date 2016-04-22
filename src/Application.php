@@ -25,7 +25,7 @@ class Application extends HttpApplication {
 	}
 
 	protected function applicationStart() {
-
+		
 		$authorizationFilter = new AuthorizationFilter(
 				$this->container->get('smll\framework\utils\interfaces\IAnnotationHandler'));
 		$authorizationFilter->setMembership(

@@ -8,7 +8,7 @@
     </encryption>
     <connectionStrings>
         <add name="Default" 
-            connectionString="Driver=MySQL;Server=localhost;Database=smll_example;User=user;Password=pass123" />
+            connectionString="Driver=MySQL;Server=localhost;Database=dbSmll;User=dbSmllUser;Password=pass123" />
     </connectionStrings>
     <authentication>
           <add name="Provider" provider="FormAuthentication" />

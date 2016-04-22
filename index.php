@@ -1,5 +1,6 @@
 <?php
 include('smll/SmllClassLoader.php');
+use smll\framework\utils\AnnotationHandler;
 use smll\framework\di\ContainerBuilder;
 use smll\modules\DefaultContainerModule;
 use smll\SmllClassLoader;
@@ -11,7 +12,7 @@ $autoloader = new SmllClassLoader();
 $autoloader->register();
 
 
-$dic = new ContainerBuilder();
+$dic = new ContainerBuilder(new AnnotationHandler());
 $dic->loadModule(new DefaultContainerModule());
 
 
