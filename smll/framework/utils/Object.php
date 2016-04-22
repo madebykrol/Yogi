@@ -2,7 +2,6 @@
 namespace smll\framework\utils;
 
 class Object {
-	
 	/**
 	 * @return \ReflectionClass;
 	 */

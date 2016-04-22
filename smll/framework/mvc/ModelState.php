@@ -7,9 +7,11 @@ class ModelState implements IModelState {
 	
 	private $modelState = true;
 	private $errorMessages = null;
+	private $invalidFields = null;
 	
 	public function __construct() {
 		$this->errorMessages = new HashMap();
+		$this->invalidFields = array();
 	}
 	
 	public function isValid($state = null) {
@@ -17,6 +19,14 @@ class ModelState implements IModelState {
 			$this->modelState = $state;
 		}
 		return $this->modelState;
+	}
+	
+	public function setIsInValid($name) {
+		$this->invalidFields[] = $name;
+	}
+	
+	public function getIsInValid($name) {
+		return in_array($name, $this->invalidFields);
 	}
 	
 	public function setErrorMessageFor($name, $message) {

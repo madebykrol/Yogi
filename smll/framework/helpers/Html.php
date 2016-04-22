@@ -44,7 +44,6 @@ class Html {
 			if($annotationHandler->hasAnnotation('FormField', $rProp)) {
 				
 				$annotations = self::getFormFieldAnnotations($rProp);
-				print_r($annotations);
 				
 			}
 		}
@@ -236,50 +235,74 @@ class Html {
 				
 				
 			if($annotationHandler->hasAnnotation('FormField', $property)) {
-		
-				$name = $property->getName();
 				$structuredAnnotations = self::getFormFieldAnnotations($property);
-		
+				
+				$name = $property->getName();
+				$type = $structuredAnnotations->get('InputType');
+				
 				if($property->isPublic() && $property->getValue($object) != null) {
 					$defaultValue = $property->getValue($object);
 				} else {
 					$defaultValue = $structuredAnnotations->get('DefaultValue');;
 				}
-		
+				
+				$customTag = $structuredAnnotations->get('CustomTag') ?: "div";
+				$customClass = $structuredAnnotations->get('CustomClass') ?: $type."-controller";
+				$customId = $structuredAnnotations->get('CustomId') ?: "form".self::$currentForm."-".$name;
+				$customTemplate = $structuredAnnotations->get('CustomTemplate') ?: "{label}{error}{field}{required}";
+				
+				$output .= "<".$customTag." id=\"".$customId."\" class=\"".$customClass."\">\n";
+				$output .= $customTemplate;
 				if($structuredAnnotations->get('Label')) {
-					$output .= self::label($structuredAnnotations->get('Label'), $name);
+					$output = str_replace("{label}", self::label($structuredAnnotations->get('Label'), $name), $output);
 				}
-		
-				$type = $structuredAnnotations->get('InputType');
-		
-				$output .= self::validationMessageFor($name);
+				
+				if($structuredAnnotations->get('Required')) {
+				$output = str_replace("{required}", 
+						(!self::fieldIsValid($name)) 
+						? "<span class=\"required-error\">*</span>" 
+						: "<span class=\"required\">*</span>", 
+						$output);
+				} else {
+					$output = str_replace("{required}", "", $output);
+				}
+				
+				$output = str_replace("{error}", self::validationMessageFor($name), $output);
 		
 				if($type == 'text') {
-					$output .= self::textfieldFor($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
+					$output = str_replace("{field}", 
+							self::textfieldFor($name, $defaultValue, $structuredAnnotations->get('Placeholder')), $output);
 				} else if($type == 'password') {
-					$output .= self::passwordFor($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
+					$output = str_replace("{field}", 
+							self::passwordFor($name, $defaultValue, $structuredAnnotations->get('Placeholder')), $output);
 				} else if($type == 'textarea') {
-					$output .= self::textareaFor($name, $defaultValue, $structuredAnnotations->get('Placeholder'));
+					$output = str_replace("{field}", 
+							self::textareaFor($name, $defaultValue, $structuredAnnotations->get('Placeholder')), $output);
 				} else if($type == 'boolean' || $type == 'checkbox') {
-					$output .= self::checkboxFor($name, Boolean::parseValue($defaultValue));
+					$output = str_replace("{field}", 
+							self::checkboxFor($name, Boolean::parseValue($defaultValue)), $output);
 				} else if($type == 'radiobutton') {
 					if($defaultValue instanceof HashMap || is_array($defaultValue)) {
 						if(is_array($defaultValue)) {
 							
 						} else {
+							$field = "";
 							foreach($defaultValue->getIterator() as $partName => $value) {
 								$nameLabel = explode("|", $partName);
-								$output .= self::checkboxFor($name."[".$nameLabel[0]."]", $value);
+								
+								$field .= self::checkboxFor($name."[".$nameLabel[0]."]", $value);
 								if(isset($nameLabel[1])) {
-									$output .= self::label($nameLabel[1], $name."[".$nameLabel[0]."]");
+									$field .= self::label($nameLabel[1], $name."[".$nameLabel[0]."]");
 								}
 							}
+							$output = str_replace("{field}", $field, $output);
 						}
 					}
 					
 				} else if($type == 'hidden') {
-					$output .= self::hiddenFor($name, $defaultValue);
+					$output = str_replace("{field}", self::hiddenFor($name, $defaultValue), $output);
 				}
+				$output .= "\n</".$customTag.">";
 			}
 		}
 		
@@ -346,6 +369,20 @@ class Html {
 		return $structuredAnnotations;
 	}
 	
+	public static function fieldIsValid($field) {
+
+		global $application;
+		if(!$application instanceof IApplication) {
+			throw new Exception();
+		}
+		
+		$currentController = $application->getCurrentExecutingController();
+		
+		$modelState = $currentController->getModelState();
+		
+		return !$modelState->getIsInValid($field);
+	}
+	
 	public static function validationMessageFor($field) {
 		
 		global $application;
@@ -360,7 +397,7 @@ class Html {
 		$msg = $modelState->getErrorMessageFor($field);
 		
 		if($msg != null) {
-			return "<div class=\"validate-error\">".$msg."</div>";
+			return "<span class=\"validate-error\">".$msg."</span>";
 		}
 		
 		return null;

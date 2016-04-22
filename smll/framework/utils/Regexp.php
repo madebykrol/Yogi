@@ -4,16 +4,18 @@ class Regexp {
 	
 	private $pattern;
 	private $options;
-	private $delimiter = '#';
+	private $delimiter;
 	
 	/**
 	 * 
 	 * regexp pattern do not use delimiters here, just expressions.
 	 * @param string $pattern
+	 * @param string $delimiter
 	 * @return array of matches
 	 */
-	public function __construct($pattern) {
+	public function __construct($pattern, $delimiter = "#") {
 		$this->pattern = $pattern;
+		$this->delimiter = $delimiter;
 	}
 	
 	public function setOption($string) {

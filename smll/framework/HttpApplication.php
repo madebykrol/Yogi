@@ -103,8 +103,6 @@ abstract class HttpApplication Implements IApplication {
 	 * @return IModelBinder
 	 */
 	public function getModelBinder($class = "default") {
-		print_r($class);
-		print_r($this->modelBinders);
 		return $this->modelBinders->get($class);
 	}
 	
@@ -178,7 +176,13 @@ abstract class HttpApplication Implements IApplication {
 		
 	}
 	
+	public function onError($errno, $errstr, $errfile = "", $errline = 0, $errcontext = array() ) {
+		
+	}
+	
 	public function init() {
+		
+		set_error_handler(array($this, "onError"));
 		
 		/**
 		 * Perform first request initialization
@@ -186,9 +190,8 @@ abstract class HttpApplication Implements IApplication {
 		if($this->isFirstRequest()) {
 			// If this is first requestion.
 			// Perform install features and init modules.
-			$this->applicationInstall();
+			$this->install();
 		}
-		
 		
 		$this->configControllerPaths();
 		
@@ -276,8 +279,6 @@ abstract class HttpApplication Implements IApplication {
 				return "Access denied!";
 			}
 			if($result == null) {
-				
-
 				// Run Action filters
 				try {
 					$result = $this->processActionFilters($method, $controller, $parameters);
@@ -298,7 +299,7 @@ abstract class HttpApplication Implements IApplication {
 			throw new Exception();
 		}
 		
-		return $output;
+		return str_replace("~/src/", $this->getApplicationRoot()."/src/", $output);
 	}
 	
 	public function renderResult($result, IController $controller, $actionName) {

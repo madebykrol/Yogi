@@ -103,9 +103,8 @@ class AuthorizationFilter extends FilterAttribute implements IAuthorizationFilte
 		 
 		$headers = new HashMap();
 		$headers->add("Location", $location);
-		 
 		$result->setHeaders($headers);
-		 
+		
 		$context->setResult($result);
 	}
 }

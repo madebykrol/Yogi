@@ -1,5 +1,7 @@
 <?php
 namespace smll\framework\security\interfaces;
+use smll\framework\security\MembershipUser;
+
 interface IMembershipProvider {
 	public function setEncrypter(ICryptographer $encrypter);
 	public function validateUser($user, $password);
@@ -9,6 +11,7 @@ interface IMembershipProvider {
 	 * Either get user by username
 	 * or by Guid
 	 * @param mixed $user
+	 * @return MembershipUser
 	 */
 	public function getUser($user);
 	public function getAllUsers();

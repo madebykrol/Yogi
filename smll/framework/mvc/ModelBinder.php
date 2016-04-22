@@ -50,6 +50,7 @@ class ModelBinder implements IModelBinder {
 				if(!$this->validateProperty($prop, $value, $errorMsg)) {
 					$modelState->isValid(false);
 					$modelState->setErrorMessageFor($name, $errorMsg);
+					$modelState->setIsInValid($name);
 				}
 				
 				if($prop->isPublic()) {
@@ -76,16 +77,16 @@ class ModelBinder implements IModelBinder {
 			
 		}
 		$passed = true;
+		$errorMsg = "";
 		foreach($annotations as $annotation) {
 			$annotation = $this->annotationHandler->parseAnnotation($annotation);
-			$errorMsg = "";
+			
 			
 			if($annotation[0] == DataAnnotations::ErrorMessage) {
 				$errorMsg = $annotation[1];
 			} 
 			
 			if($annotation[0] == DataAnnotations::Required && empty($value)) {
-				$errorMsg = "*";
 				$passed = false;
 				
 			} else if($annotation[0] == DataAnnotations::ValidationPattern) {
@@ -118,13 +119,12 @@ class ModelBinder implements IModelBinder {
 					}
 				}
 			} else if($annotation[0] == DataAnnotations::MatchField) {
-				
 				if($value != $this->currentFields[$annotation[1][0]]) {
-					$errorMsg = "*";
 					$passed = false;
 				}
 			}
 		}
+		
 		return $passed;
 	}
 }

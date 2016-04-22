@@ -59,7 +59,6 @@ class SmllViewEngine implements IViewEngine {
 				}
 			} else {
 				// Loop through view file conventions
-			
 				foreach($this->partialViews->getIterator() as $file) {
 					$file = str_replace(array("{0}", "{1}"), array($controller, $action), $file);
 					if(is_file($file)) {
@@ -73,9 +72,7 @@ class SmllViewEngine implements IViewEngine {
 			}
 			
 			if($viewFileExists) {
-			
 				$output = $result->render();
-				
 			} else {
 				foreach($triedViewFiles->getIterator() as $file) {
 					$output .= $file."\n";

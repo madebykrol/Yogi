@@ -5,7 +5,6 @@ use smll\framework\di\interfaces\IDependencyContainer;
 use smll\framework\di\interfaces\IContainerModule;
 use smll\framework\utils\HashMap;
 use smll\framework\utils\ArrayList;
-use smll\framework\utils\AnnotationHandler;
 use smll\framework\utils\interfaces\IAnnotationHandler;
 use smll\framework\di\Service;
 use smll\framework\di\interfaces\IService;
@@ -48,10 +47,10 @@ class ContainerBuilder implements IDependencyContainer {
 		'request' 		=> array(),	
 	);
 	
-	public function __construct() {
+	public function __construct(IAnnotationHandler $annotationHandler) {
 		$this->register = new HashMap();
 		$this->parameters = new HashMap();
-		$this->annotationHandler = new AnnotationHandler();
+		$this->annotationHandler = $annotationHandler;
 	}
 	
 	public function setParameter($ident, $value) {

@@ -7,6 +7,7 @@ use \PDORow;
 use \Exception;
 use smll\framework\io\db\interfaces\IOrm;
 use smll\framework\settings\interfaces\ISettingsRepository;
+use smll\framework\exceptions\QueryException;
 // $Id;
 /**
  * 
@@ -103,8 +104,7 @@ class PDOOrm implements IOrm {
 			
 			return $this->getResult();
 		} else {
-			$errorInfo = $statement->errorInfo();
-			throw new Exception("State: ".$errorInfo[0]." Code: ".$errorInfo[1]." Message: ".$errorInfo[2]);
+			throw new QueryException($statement);
 			return false;
 		}
 		
@@ -159,8 +159,7 @@ class PDOOrm implements IOrm {
 			
 			return $this->getResult();
 		} else {
-			$errorInfo = $statement->errorInfo();
-			throw new Exception("State: ".$errorInfo[0]." Code: ".$errorInfo[1]." Message: ".$errorInfo[2]);
+			throw new QueryException($statement);
 			return false;
 		}
 	}
@@ -181,8 +180,7 @@ class PDOOrm implements IOrm {
 			
 			return true;
 		} else {
-			$errorInfo = $statement->errorInfo();
-			throw new Exception("State: ".$errorInfo[0]." Code: ".$errorInfo[1]." Message: ".$errorInfo[2]);
+			throw new QueryException($statement);
 			return false;
 		}
 	}
@@ -204,8 +202,7 @@ class PDOOrm implements IOrm {
 			
 			return true;
 		} else {
-			$errorInfo = $statement->errorInfo();
-			throw new Exception("State: ".$errorInfo[0]." Code: ".$errorInfo[1]." Message: ".$errorInfo[2]);
+			throw new QueryException($statement);
 			return false;
 		}
 	}
@@ -234,8 +231,7 @@ class PDOOrm implements IOrm {
 			
 			return true;
 		} else {
-			$errorInfo = $statement->errorInfo();
-			throw new Exception("State: ".$errorInfo[0]." Code: ".$errorInfo[1]." Message: ".$errorInfo[2]);
+			throw new QueryException($statement);
 			return false;
 		}
 	}
@@ -277,8 +273,7 @@ class PDOOrm implements IOrm {
 		if ($this->execute($statement) ){
 			return true;
 		} else {
-			$errorInfo = $statement->errorInfo();
-			throw new Exception("State: ".$errorInfo[0]." Code: ".$errorInfo[1]." Message: ".$errorInfo[2]);
+			throw new QueryException($statement);
 			return false;
 		}
 	}
@@ -312,8 +307,7 @@ class PDOOrm implements IOrm {
 			
 			return true;
 		} else {
-			$errorInfo = $statement->errorInfo();
-			throw new Exception("State: ".$errorInfo[0]." Code: ".$errorInfo[1]." Message: ".$errorInfo[2]);
+			throw new QueryException($statement);
 			return false;
 		}
 	}
@@ -347,8 +341,7 @@ class PDOOrm implements IOrm {
 		if ($this->execute($statement) ){
 			return true;
 		} else {
-			$errorInfo = $statement->errorInfo();
-			throw new Exception("State: ".$errorInfo[0]." Code: ".$errorInfo[1]." Message: ".$errorInfo[2]);
+			throw new QueryException($statement);
 			return false;
 		}
 	}
@@ -384,8 +377,7 @@ class PDOOrm implements IOrm {
 			
 			return true;
 		} else {
-			$errorInfo = $statement->errorInfo();
-			throw new Exception("State: ".$errorInfo[0]." Code: ".$errorInfo[1]." Message: ".$errorInfo[2]);
+			throw new QueryException($statement);
 			return false;
 		}
 	}

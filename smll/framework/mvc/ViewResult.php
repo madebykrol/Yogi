@@ -20,7 +20,7 @@ class ViewResult implements IActionResult {
 	private $useView = true;
 	private $regions = array();
 	
-	public function __construct($model) {
+	public function __construct($model = null) {
 		$this->model = $model;
 		$this->headers = new HashMap();
 	}
