@@ -20,6 +20,7 @@ It has
 - A built in Role and Membership providers
 - Actionfilters 
 And alot more features which will aid your development
+
 Quick guide
 ===
 Download the zip/tarball unpack in your project folder.
