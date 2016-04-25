@@ -12,6 +12,14 @@ for examples and docs see: http://madebykrol.github.io/Smll/
 
 Getting Started
 ====
+Smll is follows a fairly straightforward and common MVC pattern.
+It has
+- Custom Routing
+- Model binding
+- Partial views
+- A built in Role and Membership providers
+- Actionfilters 
+And alot more features which will aid your development
 Quick guide
 ===
 Download the zip/tarball unpack in your project folder.
