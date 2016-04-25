@@ -91,9 +91,8 @@ class ModelBinder implements IModelBinder {
 				
 			} else if($annotation[0] == DataAnnotations::ValidationPattern) {
 				$pattern = "";
-				
-				if(isset($annotation[1]['Pattern'])) {
-					$pattern = $annotation[1]['Pattern'];
+				if(isset($annotation[1])) {
+					$pattern = $annotation[1];
 				}
 				$regexp = new Regexp($pattern);
 				if(!$regexp->match($value) ) {

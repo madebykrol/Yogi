@@ -17,7 +17,7 @@ class DataAnnotations {
 	/**
 	 * @var [ValidationPattern]
 	 */
-	const ValidationPattern = 'ValidationPattern';
+	const ValidationPattern = 'Pattern';
 	
 	/**
 	 * @var [StringLength]
