@@ -17,8 +17,9 @@ It has
 - Custom Routing
 - Model binding
 - Partial views
-- A built in Role and Membership providers
+- Built in Role and Membership providers
 - Actionfilters 
+
 And alot more features which will aid your development
 
 Quick guide
