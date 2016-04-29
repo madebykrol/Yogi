@@ -39,13 +39,13 @@ class ModelBinder implements IModelBinder {
 		
 		$obj = $class->newInstance();
 		$modelState = &$controller->getModelState();
-		
+	
 		$this->currentFields = $parameters->getIterator();
-		
 		foreach($this->currentFields as $name => $value) {
 			if($class->hasProperty($name)) {
+				
 				$prop = $class->getProperty($name);
-		
+				
 				// Validate property through Annotation
 				if(!$this->validateProperty($prop, $value, $errorMsg)) {
 					$modelState->isValid(false);
@@ -73,14 +73,12 @@ class ModelBinder implements IModelBinder {
 		
 		if($this->annotationHandler->hasAnnotation('FormField', $prop)) {
 			
-			
-			
 		}
+		
 		$passed = true;
 		$errorMsg = "";
 		foreach($annotations as $annotation) {
 			$annotation = $this->annotationHandler->parseAnnotation($annotation);
-			
 			
 			if($annotation[0] == DataAnnotations::ErrorMessage) {
 				$errorMsg = $annotation[1];

@@ -26,13 +26,18 @@ interface IRequest {
 	public function getAccept();
 	
 	/**
+	 * Get request content type.
+	 */
+	public function getContentType();
+	
+	/**
 	 * Get the query string
 	 * @param unknown $var
 	 */
 	public function getQueryString($var);
 	
 	/**
-	 * Get post data
+	 * Get Post data
 	 */
 	public function getPostData();
 	
@@ -40,6 +45,13 @@ interface IRequest {
 	 * Get "Get" data
 	 */
 	public function getGetData();
+	
+	/**
+	 * Get Raw Data
+	 * This does not contain data normally found in $_POST | $_GET
+	 * Just raw payload
+	 */
+	public function getRawContent();
 	
 	/**
 	 * Get the application root of execution ie, if your application runs on 

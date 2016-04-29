@@ -67,6 +67,9 @@ class AccountController extends Controller {
 			}
 		} 
 		
+		$viewModel = new AccountViewModel();
+		$viewModel->model = $model;
+		
 		return $this->view($model);
 	}
 	

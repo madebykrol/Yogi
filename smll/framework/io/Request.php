@@ -14,14 +14,15 @@ class Request implements IRequest {
 	private $post = array();
 	private $path;
 	private $requestMethod = Request::METHOD_GET;
+	private $contentType;
+	private $rawData;
 	
 	public function __construct($requestArr = null, $get = null, $post = null, $files = null) {
 		
 		if(!isset($requestArr)) {
 			$this->requestArr = $_SERVER;
 		} else {
-			$this->requestArr = $requestArr;
-			
+			$this->requestArr = $requestArr;	
 		}
 		
 		$this->parseRequestArr($this->requestArr);
@@ -38,6 +39,7 @@ class Request implements IRequest {
 			$this->post = $post;
 		}
 		
+		$this->rawData = file_get_contents("php://input");
 		
 		if(!isset($files)) {
 			$files = $_FILES;
@@ -88,6 +90,15 @@ class Request implements IRequest {
 	}
 	
 	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see \smll\framework\io\interfaces\IRequest::getContentType()
+	 */
+	public function getContentType() {
+		return $this->requestArr['CONTENT_TYPE'];
+	}
+	
+	/**
 	 * (non-PHPdoc)
 	 * @see \smll\framework\io\interfaces\IRequest::getQueryString()
 	 */
@@ -113,6 +124,21 @@ class Request implements IRequest {
 	 */
 	public function getGetData() {
 		return $this->get;
+	}
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see \smll\framework\io\interfaces\IRequest::getRawContent()
+	 */
+	public function getRawContent() {
+		$content = null;
+		
+		if($this->getContentType() === Request::CONTENT_TYPE_APPLICATION_JSON) {
+			$content = json_decode(trim($this->rawData));
+		}
+		
+		return $content;
 	}
 	
 	/**
@@ -162,7 +188,8 @@ class Request implements IRequest {
 	}
 	
 	private function parseRequestArr($requestArr) {
-		$this->parseRequestMethod($requestArr['REQUEST_METHOD']);
+		$this->requestMethod = strtolower($requestArr['REQUEST_METHOD']);
+		//$this->parseRequestMethod($requestArr['REQUEST_METHOD']);
 	}
 	
 	private function parseRequestMethod ($method) {
@@ -172,15 +199,40 @@ class Request implements IRequest {
 			$this->requestMethod = self::METHOD_PUT;
 		} else if($method == "DELETE") {
 			$this->requestMethod = self::METHOD_DELETE;
-		} else {
+		} else if($method == "GET") {
 			$this->requestMethod = self::METHOD_GET;
+		} else if($method == "PATCH") {
+			$this->requestMethod = self::METHOD_PATCH;
+		} else if($method == "HEAD") {
+			$this->requestMethod = self::METHOD_HEAD;
+		} else if($method == "OPTIONS") {
+			$this->requestMethod = self::METHOD_OPTIONS;
+		} else if($method == "CONNECT") {
+			$this->requestMethod = self::METHOD_CONNECT;
+		} else if($method == "TRACE") {
+			$this->requestMethod = self::METHOD_TRACE;
+		} else {
+			$this->requestMethod = $method;
 		}
+		
 		
 	}
 	
-	const METHOD_GET = 0;
-	const METHOD_POST = 1;
-	const METHOD_PUT = 2;
-	const METHOD_DELETE = 3;
+	const METHOD_GET = "get";
+	const METHOD_POST = "post";
+	const METHOD_PUT = "put";
+	const METHOD_DELETE = "delete";
+	const METHOD_PATCH = "patch";
+	const METHOD_HEAD = "head";
+	const METHOD_OPTIONS = "options";
+	const METHOD_CONNECT = "connect";
+	const METHOD_TRACE = "trace";	
+	
+	const CONTENT_TYPE_TEXT_PLAIN 		= "text/plain";
+	const CONTENT_TYPE_TEXT_CSS 		= "text/css";
+	const CONTENT_TYPE_TEXT_HTML 		= "text/html";
+	const CONTENT_TYPE_APPLICATION_JSON = "application/json";
+	const CONTENT_TYPE_APPLICATION_XML 	= "application/xml";
+	const CONTENT_TYPE_APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
 	
 }

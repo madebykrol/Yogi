@@ -89,6 +89,7 @@ abstract class HttpApplication Implements IApplication {
 		$this->controllerPaths = new ArrayList();
 		$this->modelBinders = new HashMap();
 		$this->modelBinders->add("default", $defaultModelBinder);
+		set_error_handler(array($this, "onError"));
 	}
 	
 	public function addModelBinder($class, IModelBinder $binder) {
@@ -182,16 +183,6 @@ abstract class HttpApplication Implements IApplication {
 	
 	public function init() {
 		
-		set_error_handler(array($this, "onError"));
-		
-		/**
-		 * Perform first request initialization
-		 */
-		if($this->isFirstRequest()) {
-			// If this is first requestion.
-			// Perform install features and init modules.
-			$this->install();
-		}
 		
 		$this->configControllerPaths();
 		
@@ -245,12 +236,18 @@ abstract class HttpApplication Implements IApplication {
 		return true;
 	}
 	
-	public function processAction($controller, $actionName, HashMap $parameters = null) {
+	public function processAction($controller, $actionName, HashMap $parameters = null, IRequest $request = null) {
 	
 		$controller = $this->container->get('controllers-'.$controller);
 		
+		if(!isset($request)) {
+			$request = $this->request;
+		}
+		
 		if($controller instanceof IController) {
 			$class = get_class($controller);
+			
+			
 			
 			$this->attachPrincipal($controller);
 			
@@ -264,12 +261,36 @@ abstract class HttpApplication Implements IApplication {
 			$output = "";
 			$result = null;
 			
-			if($this->request->getRequestMethod() == Request::METHOD_POST 
+			$requestMethod = $request->getRequestMethod();
+			
+			// POST
+			if($requestMethod == Request::METHOD_POST 
 					&& $class->hasMethod("post_".$actionName)) {
 				$method = $class->getMethod("post_".$actionName);
-				$this->request->setRequestMethod(Request::METHOD_GET);
+			// PUT	
+			} else if ($requestMethod == Request::METHOD_GET
+					&& $class->hasMethod($actionName) || $requestMethod == "") {
+						$method = $class->getMethod($actionName);
+						
+			} else if ($requestMethod == Request::METHOD_PUT
+					&& $class->hasMethod("put_".$actionName)) {
+						$method = $class->getMethod("put_".$actionName);
+						
+			// DELETE			
+			} else if ($requestMethod == Request::METHOD_DELETE
+					&& $class->hasMethod("delete_".$actionName)) {
+						$method = $class->getMethod("delete_".$actionName);
+			// TRACE			
+			} else if ($requestMethod == Request::METHOD_TRACE
+					&& $class->hasMethod("trace_".$actionName)) {
+						$method = $class->getMethod("trace_".$actionName);
+			// PATCH			
+			} else if ($requestMethod == Request::METHOD_PATCH
+					&& $class->hasMethod("patch_".$actionName)) {
+						$method = $class->getMethod("patch_".$actionName);
+						
 			} else {
-				$method = $class->getMethod($actionName);
+				$method = $class->getMethod($requestMethod."_".$actionName);
 			}
 			
 			try {
@@ -296,7 +317,7 @@ abstract class HttpApplication Implements IApplication {
 			$output = $this->renderResult($result, $controller, $actionName);
 				// Output Action.
 		} else {
-			throw new Exception();
+			throw new Exception("");
 		}
 		
 		return str_replace("~/src/", $this->getApplicationRoot()."/src/", $output);
@@ -426,6 +447,8 @@ abstract class HttpApplication Implements IApplication {
 	
 	protected function callAction(ReflectionMethod $method, IController &$controller, HashMap $parameters = null) {
 		$args = array();
+	
+		
 		if(isset($parameters)) {
 			foreach($method->getParameters() as $parameter) {
 				$name = $parameter->getName();
@@ -437,11 +460,19 @@ abstract class HttpApplication Implements IApplication {
 				if((is_object($parameters->get($name)) && $class != null) && $parameters->get($name) instanceof $className) {
 					$args[] = $parameters->get($name);
 				} else if($class != null && $class instanceof ReflectionClass) {
+					$params = $parameters;
+					$rawContent = $this->request->getRawContent();
+
+					if(!empty($rawContent)) {
+						$params = new HashMap((array)$rawContent);
+					}
+					
 					$modelBinder = $this->getModelBinder("default");
-					if(($binder = $this->getModelBinder($className)) != null){
+					if(($binder = $this->getModelBinder($className)) != null) {
 						$modelBinder = $binder;
 					}
-					$args[] = $this->getModelBinder()->bindModel($class, $controller, $parameters);
+					
+					$args[] = $this->getModelBinder()->bindModel($class, $controller, $params);
 				} else {
 					$args[] = $parameters->get($name);
 				}
@@ -461,7 +492,6 @@ abstract class HttpApplication Implements IApplication {
 	protected function preStart() {}
 	protected function configControllerPaths() {
 		$this->controllerPaths->add('src/controllers/');
-		$this->controllerPaths->add('smll/framework/system/controllers/');
 	}
 	
 	/**

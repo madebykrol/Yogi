@@ -29,8 +29,8 @@ class Html {
 			$controller .= "Controller";
 		}
 		
-		$request = new Request(null, array('q' => $controller."/".$action), null);
-		return $application->processAction($controller, $action, $extras);
+		$request = new Request(array(), array('q' => $controller."/".$action), null);
+		return $application->processAction($controller, $action, $extras, $request);
 	}
 	
 	public static function propertyFor($model, $property) {
@@ -230,62 +230,64 @@ class Html {
 		$output = "<form method=\"POST\" action=\"".$postBack.$params."\">";
 		
 		$annotationHandler = new AnnotationHandler();
-		$rClass = new \ReflectionClass(get_class($object));
-		foreach($rClass->getProperties() as $property) {
-				
-				
-			if($annotationHandler->hasAnnotation('FormField', $property)) {
-				$structuredAnnotations = self::getFormFieldAnnotations($property);
-				
-				$name = $property->getName();
-				$type = $structuredAnnotations->get('InputType');
-				
-				if($property->isPublic() && $property->getValue($object) != null) {
-					$defaultValue = $property->getValue($object);
-				} else {
-					$defaultValue = $structuredAnnotations->get('DefaultValue');;
-				}
-				
-				$customTag = $structuredAnnotations->get('CustomTag') ?: "div";
-				$customClass = $structuredAnnotations->get('CustomClass') ?: $type."-controller";
-				$customId = $structuredAnnotations->get('CustomId') ?: "form".self::$currentForm."-".$name;
-				$customTemplate = $structuredAnnotations->get('CustomTemplate') ?: "{label}{error}{field}{required}";
-				
-				$output .= "<".$customTag." id=\"".$customId."\" class=\"".$customClass."\">\n";
-				$output .= $customTemplate;
-				if($structuredAnnotations->get('Label')) {
-					$output = str_replace("{label}", self::label($structuredAnnotations->get('Label'), $name), $output);
-				}
-				
-				if($structuredAnnotations->get('Required')) {
-				$output = str_replace("{required}", 
-						(!self::fieldIsValid($name)) 
-						? "<span class=\"required-error\">*</span>" 
-						: "<span class=\"required\">*</span>", 
-						$output);
-				} else {
-					$output = str_replace("{required}", "", $output);
-				}
-				
-				$output = str_replace("{error}", self::validationMessageFor($name), $output);
-		
-				if($type == 'text') {
-					$output = str_replace("{field}", 
-							self::textfieldFor($name, $defaultValue, $structuredAnnotations->get('Placeholder')), $output);
-				} else if($type == 'password') {
-					$output = str_replace("{field}", 
-							self::passwordFor($name, $defaultValue, $structuredAnnotations->get('Placeholder')), $output);
-				} else if($type == 'textarea') {
-					$output = str_replace("{field}", 
-							self::textareaFor($name, $defaultValue, $structuredAnnotations->get('Placeholder')), $output);
-				} else if($type == 'boolean' || $type == 'checkbox') {
-					$output = str_replace("{field}", 
-							self::checkboxFor($name, Boolean::parseValue($defaultValue)), $output);
-				} else if($type == 'radiobutton') {
-					if($defaultValue instanceof HashMap || is_array($defaultValue)) {
-						if(is_array($defaultValue)) {
+		try {
+			$rClass = new \ReflectionClass(get_class($object));
+			foreach($rClass->getProperties() as $property) {
+					
+					
+				if($annotationHandler->hasAnnotation('FormField', $property)) {
+					$structuredAnnotations = self::getFormFieldAnnotations($property);
+					
+					$name = $property->getName();
+					$type = $structuredAnnotations->get('InputType');
+					
+					if($property->isPublic() && $property->getValue($object) != null) {
+						$defaultValue = $property->getValue($object);
+					} else {
+						$defaultValue = $structuredAnnotations->get('DefaultValue');;
+					}
+					
+					$customTag = $structuredAnnotations->get('CustomTag') ?: "div";
+					$customClass = $structuredAnnotations->get('CustomClass') ?: $type."-controller";
+					$customId = $structuredAnnotations->get('CustomId') ?: "form".self::$currentForm."-".$name;
+					$customTemplate = $structuredAnnotations->get('CustomTemplate') ?: "{label}{error}{field}{required}";
+					
+					$output .= "<".$customTag." id=\"".$customId."\" class=\"".$customClass."\">\n";
+					$output .= $customTemplate;
+					if($structuredAnnotations->get('Label')) {
+						$output = str_replace("{label}", self::label($structuredAnnotations->get('Label'), $name), $output);
+					}
+					
+					if($structuredAnnotations->get('Required')) {
+					$output = str_replace("{required}", 
+							(!self::fieldIsValid($name)) 
+							? "<span class=\"required-error\">*</span>" 
+							: "<span class=\"required\">*</span>", 
+							$output);
+					} else {
+						$output = str_replace("{required}", "", $output);
+					}
+					
+					$output = str_replace("{error}", self::validationMessageFor($name), $output);
+			
+					if($type == 'text') {
+						$output = str_replace("{field}", 
+								self::textfieldFor($name, $defaultValue, $structuredAnnotations->get('Placeholder')), $output);
+					} else if($type == 'password') {
+						$output = str_replace("{field}", 
+								self::passwordFor($name, $defaultValue, $structuredAnnotations->get('Placeholder')), $output);
+					} else if($type == 'textarea') {
+						$output = str_replace("{field}", 
+								self::textareaFor($name, $defaultValue, $structuredAnnotations->get('Placeholder')), $output);
+					} else if($type == 'boolean' || $type == 'checkbox') {
+						$output = str_replace("{field}", 
+								self::checkboxFor($name, Boolean::parseValue($defaultValue)), $output);
+					} else if($type == 'radiobutton') {
+						if($defaultValue instanceof HashMap || is_array($defaultValue)) {
+							if(is_array($defaultValue)) {
+								$defaultValue = new HashMap($defaultValue);
+							}
 							
-						} else {
 							$field = "";
 							foreach($defaultValue->getIterator() as $partName => $value) {
 								$nameLabel = explode("|", $partName);
@@ -296,14 +298,17 @@ class Html {
 								}
 							}
 							$output = str_replace("{field}", $field, $output);
+														
 						}
+						
+					} else if($type == 'hidden') {
+						$output = str_replace("{field}", self::hiddenFor($name, $defaultValue), $output);
 					}
-					
-				} else if($type == 'hidden') {
-					$output = str_replace("{field}", self::hiddenFor($name, $defaultValue), $output);
+					$output .= "\n</".$customTag.">";
 				}
-				$output .= "\n</".$customTag.">";
 			}
+		} catch(Exception $e) {
+			
 		}
 		
 		return $output;
