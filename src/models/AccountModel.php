@@ -7,10 +7,11 @@ class AccountModel {
 	 * [InputType=text]
 	 * [Required]
 	 * [ErrorMessage=You need to input a valid user]
+	 * [Pattern=^[A-Za-z0-9_.]+$]
 	 * @var unknown
 	 */
 	public $username;
-	
+
 	/**
 	 * [FormField]
 	 * [Label=Password]

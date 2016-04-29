@@ -1,6 +1,6 @@
 <?php
 namespace src\controllers;
-use smll\framework\mvc\Controller;
+use yogi\framework\mvc\Controller;
 class NavController extends Controller {
 	
 	public function topNav() {

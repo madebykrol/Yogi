@@ -1,14 +1,14 @@
 <?php
-include('smll/SmllClassLoader.php');
-use smll\framework\utils\AnnotationHandler;
-use smll\framework\di\ContainerBuilder;
-use smll\modules\DefaultContainerModule;
-use smll\SmllClassLoader;
+include('yogi/YogiClassLoader.php');
+use yogi\framework\utils\AnnotationHandler;
+use yogi\framework\di\ContainerBuilder;
+use yogi\modules\DefaultContainerModule;
+use yogi\YogiClassLoader;
 
 
 $start = (float) array_sum(explode(' ',microtime()));
 
-$autoloader = new SmllClassLoader();
+$autoloader = new YogiClassLoader();
 $autoloader->register();
 
 
@@ -16,7 +16,7 @@ $dic = new ContainerBuilder(new AnnotationHandler());
 $dic->loadModule(new DefaultContainerModule());
 
 
-$application = $dic->get('smll\framework\IApplication');
+$application = $dic->get('yogi\framework\IApplication');
 $application->setContainer($dic);
 $application->init();
 $application->run();

@@ -1,21 +1,21 @@
 <?php
 namespace src;
-use smll\framework\HttpApplication;
-use smll\framework\mvc\filter\AuthorizationFilter;
-use smll\framework\route\Route;
-use smll\framework\security\interfaces\IRoleProvider;
-use smll\framework\security\interfaces\IMembershipProvider;
+use yogi\framework\HttpApplication;
+use yogi\framework\mvc\filter\AuthorizationFilter;
+use yogi\framework\route\Route;
+use yogi\framework\security\interfaces\IRoleProvider;
+use yogi\framework\security\interfaces\IMembershipProvider;
 
 class Application extends HttpApplication {
 
 	/**
-	 * [Inject(smll\framework\security\interfaces\IMembershipProvider)]
+	 * [Inject(yogi\framework\security\interfaces\IMembershipProvider)]
 	 * @var IMembershipProvider
 	 */
 	public $membershipProvider;
 
 	/**
-	 * [Inject(smll\framework\security\interfaces\IMembershipProvider)]
+	 * [Inject(yogi\framework\security\interfaces\IMembershipProvider)]
 	 * @var IRoleProvider
 	 */
 	public $roleProvider;
@@ -27,10 +27,10 @@ class Application extends HttpApplication {
 	protected function applicationStart() {
 		
 		$authorizationFilter = new AuthorizationFilter(
-				$this->container->get('smll\framework\utils\interfaces\IAnnotationHandler'));
+				$this->container->get('yogi\framework\utils\interfaces\IAnnotationHandler'));
 		$authorizationFilter->setMembership(
 				$this->container->get(
-						'smll\framework\security\interfaces\IMembershipProvider'));
+						'yogi\framework\security\interfaces\IMembershipProvider'));
 
 		$this->filterConfig->addAuthorizationFilter($authorizationFilter);
 

@@ -1,9 +1,9 @@
 <?php
 namespace src\controllers;
 
-use smll\framework\mvc\ServiceController;
-use smll\framework\mvc\JsonResult;
-use smll\framework\io\db\interfaces\IServiceDataStore;
+use yogi\framework\mvc\ServiceController;
+use yogi\framework\mvc\JsonResult;
+use yogi\framework\io\db\interfaces\IServiceDataStore;
 
 class ApiController extends ServiceController {
 	

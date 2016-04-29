@@ -1,6 +1,6 @@
 <?php
 namespace src\controllers;
-use smll\framework\mvc\Controller;
+use yogi\framework\mvc\Controller;
 use src\models\AccountModel;
 use src\models\AccountViewModel;
 use src\models\LayoutViewModel;
@@ -68,9 +68,9 @@ class AccountController extends Controller {
 		} 
 		
 		$viewModel = new AccountViewModel();
-		$viewModel->model = $model;
+		$viewModel->accountModel = $model;
 		
-		return $this->view($model);
+		return $this->view($viewModel);
 	}
 	
 	/**

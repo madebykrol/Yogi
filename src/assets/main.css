@@ -1,10 +1,20 @@
 @CHARSET "ISO-8859-1";
-
+body {
+    padding-top: 50px;
+}
 #main-wrapper {
-	margin-top: 50px;
+    margin-top: 50px;
 }
 
 .validate-error {
-  color: #ff0000;
-  font-weight: bold;
+    color: #ff0000;
+    font-weight: bold;
+    clear:both;
+    display: block;
+}
+
+.required-error {
+    color: #ff0000;
+    font-weight: bold;
+    clear:both;
 }

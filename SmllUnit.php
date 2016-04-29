@@ -4,7 +4,7 @@
  * 
  */
 
-include('Smll/AutoLoader.php');
+include('yogi/AutoLoader.php');
 $shortopts  = "t:";
 $shortopts .= "R:"; 
 $shortopts .= "v"; 
@@ -26,7 +26,7 @@ $errors = 0;
 $errf = array();
 
 // set to the user defined error handler
-$old_error_handler = set_error_handler("_smllUnitErrorHandler");
+$old_error_handler = set_error_handler("_yogiUnitErrorHandler");
 
 // Call main method.. why? BECAUSE!
 main($options);
@@ -70,7 +70,7 @@ function main($args) {
 		if($verbose) {
 			print "preparing to run unit test for: ".$test."\n";
 		}
-		$testReport[$test] = _smllUnit($test);
+		$testReport[$test] = _yogiUnit($test);
 		$testReport[$test]['errors'] = $errors;
 		$errors = 0;
 		
@@ -84,7 +84,7 @@ function main($args) {
 		/* This is the correct way to loop over the directory. */
 		while (false !== ($entry = readdir($handle))) {
 			if($entry != "." && $entry != ".." && strpos($entry, "Test") !== false) {
-				$testReport[$entry] = _smllUnit($test.$entry);
+				$testReport[$entry] = _yogiUnit($test.$entry);
 				$testReport[$entry]['errors'] = $errors;
 				$errors = 0;
 				
@@ -98,7 +98,7 @@ function main($args) {
 	_generateReport($testReport);
 	
 	if($error || $help) {
-		die("Usage: -t|test <Unit testfile|Directory>\tA unittest class or a directory with UnitTest classes..\n [-R|report <filename>]\tWhen specifying a report file, SmllUnit will generate a HTML file with the test report\n [-v|verbose]");
+		die("Usage: -t|test <Unit testfile|Directory>\tA unittest class or a directory with UnitTest classes..\n [-R|report <filename>]\tWhen specifying a report file, YogiUnit will generate a HTML file with the test report\n [-v|verbose]");
 	}
 }
 
@@ -125,7 +125,7 @@ function _generateHTMLReport($testReport) {
 	
 	$output = "<html>\n";
 	$output .= "\t<head>\n";
-		 $output .= "\t\t<title>Smll framework Unit test report ".date("Y-m-d", time())."</title>\n";
+		 $output .= "\t\t<title>Yogi framework Unit test report ".date("Y-m-d", time())."</title>\n";
 		 $output .= "\t\t<link rel=\"stylesheet\" href=\"http://twitter.github.io/bootstrap/assets/css/bootstrap.css\">";
 
 	$output .= '<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>';
@@ -162,7 +162,7 @@ function _generateHTMLReport($testReport) {
 	
 	$output .= "<div class=\"row\"><div class=\"span6\">
 				<div class=\"well\">
-					<h1>Smll unit test report</h1> <br/>
+					<h1>Yogi unit test report</h1> <br/>
 					<strong>Start time: </strong>".date("Y-m-d H:i:s", $starttime)."<br />
 					<strong>Duration: </strong>".sprintf("%.4f", ($endtime-$starttime))." seconds <br />
 					<strong>Report: </strong> Passed: ".$totPassed." Failed: ".$totFailed." Errors: ".$totErrors."
@@ -307,7 +307,7 @@ function _getClass($test) {
 	return $class;
 }
 
-function _smllUnit($test) {
+function _yogiUnit($test) {
 	include($test);
 	// strip .php and parse out from path
 	
@@ -332,7 +332,7 @@ function _smllUnit($test) {
 	return $obj->report();
 } 
 
-function _smllUnitErrorHandler($errno, $errstr, $errfile, $errline) {
+function _yogiUnitErrorHandler($errno, $errstr, $errfile, $errline) {
 	global $errors;
 	global $errf;
 	$errors++;
