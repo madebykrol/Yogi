@@ -12,6 +12,16 @@ for examples and docs see: http://madebykrol.github.io/Smll/
 
 Getting Started
 ====
+Smll is follows a fairly straightforward and common MVC pattern.
+It has
+- Custom Routing
+- Model binding
+- Partial views
+- Built in Role and Membership providers
+- Actionfilters 
+
+And alot more features which will aid your development
+
 Quick guide
 ===
 Download the zip/tarball unpack in your project folder.
@@ -20,3 +30,8 @@ After that you are clear to go. remove any controllers models and views which yo
 
 The framework will handle the routing to your controllers for most of your usecases, for custom routing
 consult the manual.
+
+
+Want to use Smll for enterprise solutions?
+====
+I develop this framework on my sparetime currently and it will take some time for me to get bugs fixed and add more features. But if you wish to use it for your enterprise software then I can offer to help with what ever custom solutions you have in exchange for a fee.. As Smll is open source you are free to do what ever changes you like and if you wish you can make a pull request back to this repo.
