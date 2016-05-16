@@ -1,0 +1,15 @@
+<?php
+use yogi\framework\helpers\Html;
+$layout = "src/views/Share/_layout.phtml";
+
+?>
+<h1> My account </h1>
+<div class="row">
+	<div class="span4">
+		<ul class="nav nav-list bs-docs-sidenav affix">
+          <li class=""><?php print Html::actionLink('<i class="icon-chevron-right"></i>Log out', 'logout', 'Account');?></li>
+          <li><?php print Html::actionLink('<i class="icon-chevron-right"></i>Edit my account', 'edit', 'Account');?></li>
+          <li><?php print Html::actionLink('<i class="icon-chevron-right"></i>Delete my account', 'delete', 'Account');?></li>
+        </ul>
+	</div>
+</div>

@@ -5,20 +5,20 @@ use \PDOStatement;
 use \PDOException;
 use \PDORow;
 use \Exception;
-use yogi\framework\io\db\interfaces\IOrm;
+use yogi\framework\io\db\interfaces\IDal;
 use yogi\framework\settings\interfaces\ISettingsRepository;
 use yogi\framework\exceptions\QueryException;
 // $Id;
 /**
  * 
- * This is an implementation of the ORM pattern.
+ * PDO Database abstraction layer.
  * @author Kristoffer "krol" Olsson - kristoffer.olsson@madebykrol.com
  * @version 1.0 - Stable
  * @license new bsd-license
  * @example  
  *
  */
-class PDOOrm implements IOrm {
+class PDODal implements IDal {
 	
 	protected /* PDO */ $pdo = null;
 	protected /* String */ $driver = "";

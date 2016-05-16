@@ -2,7 +2,7 @@
 namespace yogi\framework\security;
 use yogi\framework\security\interfaces\IRoleProvider;
 use yogi\framework\settings\interfaces\ISettingsRepository;
-use yogi\framework\io\db\DB;
+use yogi\framework\io\db\PDODal;
 class SqlRoleProvider implements IRoleProvider {
 	
 	/**
@@ -17,7 +17,7 @@ class SqlRoleProvider implements IRoleProvider {
 	
 	public function getRoles() {
 		$connectionStrings = $this->settings->get('connectionStrings');
-		$dbContext = new DB($connectionStrings['Default']['connectionString']);
+		$dbContext = new PDODal($connectionStrings['Default']['connectionString']);
 		
 		$roles = array();
 		foreach($dbContext->query('SELECT role_id, role_name FROM roles AS r') as $role) {
@@ -27,7 +27,7 @@ class SqlRoleProvider implements IRoleProvider {
 	}
 	public function findUserInRole($user, $role) {
 		$connectionStrings = $this->settings->get('connectionStrings');
-		$dbContext = new DB($connectionStrings['Default']['connectionString']);
+		$dbContext = new PDODal($connectionStrings['Default']['connectionString']);
 		$user = $dbContext->query('SELECT role_id FROM users_in_roles WHERE user_ident = ? AND role_id = ?', $user, $role);
 		if(is_array($user) && count($user) > 0) {
 			return true;
@@ -36,7 +36,7 @@ class SqlRoleProvider implements IRoleProvider {
 	}
 	public function getRolesForUser($user) {
 		$connectionStrings = $this->settings->get('connectionStrings');
-		$dbContext = new DB($connectionStrings['Default']['connectionString']);
+		$dbContext = new PDODal($connectionStrings['Default']['connectionString']);
 		
 		$roles = array();
 		
@@ -53,7 +53,7 @@ class SqlRoleProvider implements IRoleProvider {
 	
 	public function addUserInRole($role, $user) {
 		$connectionStrings = $this->settings->get('connectionStrings');
-		$dbContext = new DB($connectionStrings['Default']['connectionString']);
+		$dbContext = new PDODal($connectionStrings['Default']['connectionString']);
 		
 		if(!$this->findUserInRole($user, $role)) {
 			$dbContext->insert('users_in_roles', array('user_ident' => $user, 'role_id' => $role));
@@ -62,7 +62,7 @@ class SqlRoleProvider implements IRoleProvider {
 	
 	public function removeUserFromRole($role, $user) {
 		$connectionStrings = $this->settings->get('connectionStrings');
-		$dbContext = new DB($connectionStrings['Default']['connectionString']);
+		$dbContext = new PDODal($connectionStrings['Default']['connectionString']);
 		if($this->findUserInRole($user, $role)) {
 			$dbContext->where(array('user_ident', '=', $user));
 			$dbContext->where(array('role_id', '=', $role));

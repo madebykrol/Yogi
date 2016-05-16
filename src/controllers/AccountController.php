@@ -24,6 +24,19 @@ class AccountController extends Controller {
 	}
 	
 	/**
+	 * [Authorize]
+	 * @return ViewResult
+	 */
+	public function edit() {
+		 
+		$model = new LayoutViewModel();
+		 
+		$model->title = 'Account';
+	
+		return $this->view($model);
+	}
+	
+	/**
 	 * [AllowAnonymous]
 	 * @return ViewResult
 	 */

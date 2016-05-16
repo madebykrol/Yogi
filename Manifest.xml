@@ -8,7 +8,7 @@
     </encryption>
     <connectionStrings>
         <add name="Default" 
-            connectionString="Driver=MySQL;Server=localhost;Database=dbYogi;User=dbYogiUser;Password=pass123" />
+            connectionString="Driver=MySQL;Server=localhost;Database=dbYogi;User=root;Password=" />
     </connectionStrings>
     <authentication>
           <add name="Provider" provider="FormAuthentication" />

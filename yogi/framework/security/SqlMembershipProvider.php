@@ -5,7 +5,7 @@ use yogi\framework\utils\ArrayList;
 use yogi\framework\security\interfaces\IMembershipProvider;
 use yogi\framework\security\interfaces\ICryptographer;
 use yogi\framework\settings\interfaces\ISettingsRepository;
-use yogi\framework\io\db\PDOOrm;
+use yogi\framework\io\db\PDODal;
 use yogi\framework\security\MembershipUser;
 use yogi\framework\utils\Guid;
 class SqlMembershipProvider implements IMembershipProvider {
@@ -26,7 +26,7 @@ class SqlMembershipProvider implements IMembershipProvider {
 	public function __construct(ISettingsRepository $settings) {
 		$this->settings = $settings;
 		$connectionStrings = $settings->get('connectionStrings');
-		$this->datastore = new PDOOrm($connectionStrings['Default']['connectionString']);
+		$this->datastore = new PDODal($connectionStrings['Default']['connectionString']);
 	}
 	
 	public function getAllUsers() {

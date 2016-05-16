@@ -1,7 +1,7 @@
 <?php
 namespace yogi\framework\io\db\interfaces; 
 
-interface IOrm {
+interface IDal {
 	public function getColumns($table = null);
 	
 	public /* boolean */ function get($table = null, $limit = null, $offset = null);

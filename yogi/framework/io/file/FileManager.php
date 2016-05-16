@@ -4,7 +4,7 @@ namespace yogi\framework\io\file;
 use yogi\framework\io\file\interfaces\IFileManager;
 use yogi\framework\utils\Guid;
 use yogi\framework\settings\interfaces\ISettingsRepository;
-use yogi\framework\io\db\PDOOrm;
+use yogi\framework\io\db\PDODal;
 
 class FileManager implements IFileManager {
 	
@@ -12,7 +12,7 @@ class FileManager implements IFileManager {
 	
 	public function __construct(ISettingsRepository $settingsRepo) {
 		$connectionStrings = $settingsRepo->get('connectionStrings');
-		$this->datastore = new PDOOrm($connectionStrings['Default']['connectionString']);
+		$this->datastore = new PDODal($connectionStrings['Default']['connectionString']);
 	}
 	/**
 	 * (non-PHPdoc)
