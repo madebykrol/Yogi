@@ -5,6 +5,7 @@ use yogi\framework\mvc\filter\AuthorizationFilter;
 use yogi\framework\route\Route;
 use yogi\framework\security\interfaces\IRoleProvider;
 use yogi\framework\security\interfaces\IMembershipProvider;
+use yogi\framework\utils\interfaces\IAnnotationHandler;
 
 class Application extends HttpApplication {
 
@@ -15,10 +16,16 @@ class Application extends HttpApplication {
 	public $membershipProvider;
 
 	/**
-	 * [Inject(yogi\framework\security\interfaces\IMembershipProvider)]
+	 * [Inject(yogi\framework\security\interfaces\IRoleProvider)]
 	 * @var IRoleProvider
 	 */
 	public $roleProvider;
+	
+	/**
+	 * [Inject(yogi\framework\utils\interfaces\IAnnotationHandler)]
+	 * @var IAnnotationHandler
+	 */
+	public $annotationHandler;
 
 	public function applicationInstall() {
 		$this->membershipProvider->createUser("superadmin", "password", true);
@@ -27,10 +34,9 @@ class Application extends HttpApplication {
 	protected function applicationStart() {
 		
 		$authorizationFilter = new AuthorizationFilter(
-				$this->container->get('yogi\framework\utils\interfaces\IAnnotationHandler'));
+				$this->annotationHandler);
 		$authorizationFilter->setMembership(
-				$this->container->get(
-						'yogi\framework\security\interfaces\IMembershipProvider'));
+				$this->membershipProvider);
 
 		$this->filterConfig->addAuthorizationFilter($authorizationFilter);
 

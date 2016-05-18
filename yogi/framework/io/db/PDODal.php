@@ -805,6 +805,8 @@ class PDODal implements IDal {
 		} else {
 			$this->revertBoundCounter();
 		}
+		$statement->closeCursor();
+		$statement = null;
 		
 		return $returnVal;
 	}

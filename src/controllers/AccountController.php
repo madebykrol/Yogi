@@ -28,7 +28,6 @@ class AccountController extends Controller {
 	 * @return ViewResult
 	 */
 	public function edit() {
-		 
 		$model = new LayoutViewModel();
 		 
 		$model->title = 'Account';

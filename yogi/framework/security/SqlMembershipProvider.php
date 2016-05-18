@@ -8,6 +8,7 @@ use yogi\framework\settings\interfaces\ISettingsRepository;
 use yogi\framework\io\db\PDODal;
 use yogi\framework\security\MembershipUser;
 use yogi\framework\utils\Guid;
+use yogi\framework\io\db\interfaces\IDal;
 class SqlMembershipProvider implements IMembershipProvider {
 	
 	private $datastore = null;
