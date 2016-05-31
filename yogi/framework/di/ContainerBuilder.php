@@ -40,30 +40,36 @@ class ContainerBuilder implements IDependencyContainer {
 	 * A Annotation handler, this annotationhandler is used to scan 
 	 * classes for requested injections.
 	 * 
-	 * @var unknown
+	 * @var IAnnotationHandler
 	 */
 	protected $annotationHandler;
+
+	/**
+	 * Scopes
+	 * @var array
+	 */
 	protected $scopes = array(
 		'request' 		=> array(),	
 	);
-	
+
+	/**
+	 * ContainerBuilder constructor.
+	 * @param IAnnotationHandler $annotationHandler
+	 */
 	public function __construct(IAnnotationHandler $annotationHandler) {
 		$this->register = new HashMap();
 		$this->parameters = new HashMap();
 		$this->annotationHandler = $annotationHandler;
 	}
-	
+
+	/**
+	 * @param string $ident
+	 * @param mixed $value
+	 */
 	public function setParameter($ident, $value) {
-		/**
-		 * @Todo Implement method body
-		 */
+		$this->parameters->add($ident, $value);
 	}
-	
-	public function setParameterForIdent($ident, $value) {
-		/**
-		 * @Todo Implement method body
-		 */
-	}
+
 	/**
 	 * (non-PHPdoc)
 	 * @see IDependencyContainer::register()
@@ -143,7 +149,7 @@ class ContainerBuilder implements IDependencyContainer {
 					}
 				}
 				
-				// Instanciate from reflection class and inject parameters
+				// Instantiate from reflection class and inject parameters
 				$service = $reflectClass->newInstanceArgs($args->toArray());
 			} else {
 				// Otherwise just return a instance of the service without any constructor
@@ -156,11 +162,9 @@ class ContainerBuilder implements IDependencyContainer {
 			
 			foreach($properties as $property) {
 				if($property instanceof ReflectionProperty) {
-					$doc = $property->getDocComment();
-					
+
 					if($this->annotationHandler->hasAnnotation("Inject", $property)) {
-						$name = $property->getName();
-						
+
 						$prop = $this->annotationHandler->getAnnotation("Inject", $property);
 						
 						if($property->isPublic()) {
@@ -192,14 +196,10 @@ class ContainerBuilder implements IDependencyContainer {
 			}
 			
 			foreach($definition->getMethodCalls() as $method => $method) {
-				
 				if($reflectClass->hasMethod($method)) {
 					$reflectMethod = $reflectClass->getMethod($method);
-					
-					$args = array();
 					$reflectMethod->invoke($service);
 				}
-				
 			}
 			
 			if($definition->getScope() == Definition::SCOPE_REQUEST) {

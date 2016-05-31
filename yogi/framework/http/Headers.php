@@ -37,7 +37,6 @@ class Headers implements IHeaderRepository {
 	}
 	
 	public function setCookie($name, $data, $expire, $path, $domain) {
-		
 		setcookie($name, $data, $expire, $path, null);
 	}
 } 

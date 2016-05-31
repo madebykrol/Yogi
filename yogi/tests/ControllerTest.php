@@ -13,17 +13,16 @@ class ControllerTest extends UnitTest {
 	}
 	
 	public function testInternalRedirect() {
-		
 		$this->assert($this->controller->redirectToAction('index') instanceof ViewResult);
 	}
 	
 }
 
 class MockApplication implements IApplication {
+
 	public function run() {
 		
 	}
-	
 	
 	/**
 	 * @return IController

@@ -103,7 +103,7 @@ class Definition {
 	
 	/**
 	 * Set a property injection value
-	 * @param unknown $var
+	 * @param unknown $property
 	 * @param unknown $val
 	 * @return \yogi\framework\di\Definition
 	 */

@@ -3,17 +3,17 @@ namespace yogi\framework\io\db;
 class DBField {
 	protected $name;
 	protected $type;
-	protected $lenght;
+	protected $length;
 	protected $unique;
 	protected $primary;
 	protected $autoIncrement;
 	
-	public function __construct($name, $type, $lenght = null, $unique = false, $primary = false, $autoIncrement = false) {
+	public function __construct($name, $type, $length = null, $unique = false, $primary = false, $autoIncrement = false) {
 		$this->name = $name;
 		$this->type = $type;
 		
-		if(is_numeric($lenght)) {
-			$this->lenght = $lenght;
+		if(is_numeric($length)) {
+			$this->lenght = $length;
 		}
 		if(is_boolean($unique)) {
 			$this->unique = $unique;

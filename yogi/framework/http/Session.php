@@ -11,7 +11,8 @@ use yogi\framework\http\interfaces\ISession;
  */
 class Session implements ISession {
 	
-	protected $token = "smll_";
+	protected $token = "yogi_";
+	protected $status = null;
 	protected $defaults = array(
 			'authenticated' => false,
 			'membershipkey' => null);

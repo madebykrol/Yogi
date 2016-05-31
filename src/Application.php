@@ -27,10 +27,6 @@ class Application extends HttpApplication {
 	 */
 	public $annotationHandler;
 
-	public function applicationInstall() {
-		$this->membershipProvider->createUser("superadmin", "password", true);
-	}
-
 	protected function applicationStart() {
 		
 		$authorizationFilter = new AuthorizationFilter(

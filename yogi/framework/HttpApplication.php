@@ -82,7 +82,6 @@ abstract class HttpApplication Implements IApplication {
 		
 		$this->request 	= $request;
 		$this->router 	= $router;
-		$this->actionFilters = $actionFilters;
 
 		$this->routerConfig = $router->getRouterConfig();
 		$this->filterConfig = $actionFilters;
@@ -105,10 +104,6 @@ abstract class HttpApplication Implements IApplication {
 	 */
 	public function getModelBinder($class = "default") {
 		return $this->modelBinders->get($class);
-	}
-	
-	public function install() {
-		$this->applicationInstall();
 	}
 	
 	public function close() {
@@ -182,8 +177,6 @@ abstract class HttpApplication Implements IApplication {
 	}
 	
 	public function init() {
-		
-		
 		$this->configControllerPaths();
 		
 		foreach($this->controllerPaths->getIterator() as $path) {
@@ -212,7 +205,6 @@ abstract class HttpApplication Implements IApplication {
 	 * @return boolean;
 	 */
 	protected function isFirstRequest() {
-		
 		$time = time();
 		$fp = fopen("./Manifest.xml", "r");
 		$manifestTime = fstat($fp);
@@ -230,7 +222,7 @@ abstract class HttpApplication Implements IApplication {
 		return false;
 	}
 	
-	protected function verifyRequest($request) {
+	protected function verifyRequest(IRequest $request) {
 		// Perform some verification and first hint of tinkered requests.
 		
 		return true;
@@ -271,24 +263,6 @@ abstract class HttpApplication Implements IApplication {
 			} else if ($requestMethod == Request::METHOD_GET
 					&& $class->hasMethod($actionName) || $requestMethod == "") {
 						$method = $class->getMethod($actionName);
-						
-			} else if ($requestMethod == Request::METHOD_PUT
-					&& $class->hasMethod("put_".$actionName)) {
-						$method = $class->getMethod("put_".$actionName);
-						
-			// DELETE			
-			} else if ($requestMethod == Request::METHOD_DELETE
-					&& $class->hasMethod("delete_".$actionName)) {
-						$method = $class->getMethod("delete_".$actionName);
-			// TRACE			
-			} else if ($requestMethod == Request::METHOD_TRACE
-					&& $class->hasMethod("trace_".$actionName)) {
-						$method = $class->getMethod("trace_".$actionName);
-			// PATCH			
-			} else if ($requestMethod == Request::METHOD_PATCH
-					&& $class->hasMethod("patch_".$actionName)) {
-						$method = $class->getMethod("patch_".$actionName);
-						
 			} else {
 				$method = $class->getMethod($requestMethod."_".$actionName);
 			}
@@ -296,8 +270,8 @@ abstract class HttpApplication Implements IApplication {
 			try {
 				$result = $this->processAuthorizationFilters($method, $class, $controller,$parameters);
 			} catch (AccessDeniedException $e) {
-				$result = new ViewResult();
-				return "Access denied!";
+				$result = new ViewResult("Access denied!");
+				return $result;
 			}
 			if($result == null) {
 				// Run Action filters
@@ -312,10 +286,9 @@ abstract class HttpApplication Implements IApplication {
 					$result = $this->callAction($method, $controller, $parameters);
 				}
 			}
-		
-			
+
 			$output = $this->renderResult($result, $controller, $actionName);
-				// Output Action.
+			// Output Action.
 		} else {
 			throw new Exception("");
 		}
@@ -486,8 +459,6 @@ abstract class HttpApplication Implements IApplication {
 	protected function applicationFinish() {
 	    
 	}
-	
-	public function applicationInstall() {}
 	
 	protected function preStart() {}
 	protected function configControllerPaths() {

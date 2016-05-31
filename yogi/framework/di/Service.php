@@ -8,12 +8,23 @@ use yogi\framework\di\interfaces\IService;
  *
  */
 class Service implements IService {
-	protected $serviceReference;
 	
+	/**
+	 * @var
+	 */
+	protected $serviceReference;
+
+	/**
+	 * Service constructor.
+	 * @param $serviceReference
+	 */
 	public function __construct($serviceReference) {
 		$this->serviceReference = $serviceReference;
 	}
- 	
+
+	/**
+	 * @return mixed
+	 */
 	public function getServiceReference() {
 		return $this->serviceReference;
 	}

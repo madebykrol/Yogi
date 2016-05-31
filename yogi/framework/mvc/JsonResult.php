@@ -8,10 +8,8 @@ class JsonResult extends ActionResult {
 	}
 	
 	protected function init() {
-		
 		$headers = $this->getHeaders();
 		$headers->add("Content-type", "application/json; charset=utf-8");
-		
 	}
 	
 	public function render() {
