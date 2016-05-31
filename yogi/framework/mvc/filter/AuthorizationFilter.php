@@ -13,10 +13,10 @@ use yogi\framework\utils\HashMap;
  * Denies access to controllers and or actions based on if current user is
  * authorized and or in a specific role or roles
  * 
- * By annoting Controllers or Actions with the
+ * By annotating Controllers or Actions with the
  * [Authorize] Annotation you force authorization to access it's function
  * 
- * By annoting with [InRole(Role=Editor)]
+ * By annotating with [InRole(Role=Editor)]
  * You force the user to be inside the "Editor" Role to access the functionallity
  * of your controller and or action.
  * 

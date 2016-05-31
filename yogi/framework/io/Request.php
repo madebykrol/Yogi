@@ -50,11 +50,6 @@ class Request implements IRequest {
 			}
 		}
 		
-		if(count($this->post) > 0) {
-			//print_r($this->post);
-			//die();
-		}
-		
 		$path = "";
 		
 		if(isset($this->get['q'])) {

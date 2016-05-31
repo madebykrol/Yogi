@@ -1,9 +1,6 @@
 <?php
 namespace yogi\framework\mvc;
 class DataAnnotations {
-	
-	
-	
 	/** 
 	 * @var [Required]
 	 */

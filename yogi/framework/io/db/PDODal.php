@@ -720,9 +720,7 @@ class PDODal implements IDal {
 	}
 	
 	protected /* string */ function getSelectQuery () {
-		if(strpos($this->where, "WHERE") === FALSE && $this->where != "") {
-			$this->where = "WHERE ".$this->where;
-		}
+		$this->setWhere();
 		
 		$query = str_replace("{table}", $this->table ,"SELECT $this->distinct $this->select FROM $this->table $this->join $this->where $this->group $this->order $this->limit");
 		
@@ -731,18 +729,13 @@ class PDODal implements IDal {
 	}
 	
 	protected /* string */ function getUpdateQuery () {
-		if(strpos($this->where, "WHERE") === FALSE) {
-			$this->where = "WHERE ".$this->where;
-		}
+		$this->setWhere();
 		
 		return "UPDATE $this->table SET $this->update $this->where";
 	}
 	
 	protected /* string */ function getDeleteQuery () {
-		if(strpos($this->where, "WHERE") === FALSE) {
-			$this->where = "WHERE ".$this->where;
-		}
-		
+		$this->setWhere();
 		return "DELETE FROM $this->table $this->where";
 	}
 	
@@ -865,5 +858,11 @@ class PDODal implements IDal {
 	protected /* void */ function revertBoundCounter() {
 		$this->bindFieldCounter = 1;
 	}
-	
+
+
+	protected /* void */ function setWhere() {
+		if(strpos($this->where, "WHERE") === FALSE  && $this->where != "") {
+			$this->where = "WHERE ".$this->where;
+		}
+	}
 }

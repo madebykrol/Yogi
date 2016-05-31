@@ -55,13 +55,9 @@ class FileUploadManager implements IFileUploadManager {
 	}
 	
 	public function processFile($fieldName, $fileIndex = 0) {
-		
-		$appPoolSettings = $this->settingsRepository->get('applicationPool');
-		$appPoolPath = $appPoolSettings['Default']['path'];
+		$appPoolPath = $this->getAppPoolPath();
 		
 		$targetDir = $appPoolPath.$fieldName.'/';
-		
-		$file = new File();
 
 		$temp = $this->files[$fieldName]['tmp_name'][$fileIndex];
 		$target = $this->files[$fieldName]['name'][$fileIndex];
@@ -70,9 +66,6 @@ class FileUploadManager implements IFileUploadManager {
 	}
 	
 	private function validateAndMoveFile($temp, $target, $targetDir) {
-		$appPoolSettings = $this->settingsRepository->get('applicationPool');
-		$appPoolPath = $appPoolSettings['Default']['path'];
-		
 		$appSettings = $this->settingsRepository->get('web');
 		
 		$allowedFileTypes = $appSettings['formUpload']['allowedFileTypes'];
@@ -117,6 +110,11 @@ class FileUploadManager implements IFileUploadManager {
 			throw new \Exception('File '.$this->files[$fieldName]['name'].' could not be uploaded');
 		}
 		
+	}
+
+	private function getAppPoolPath() {
+		$appPoolSettings = $this->settingsRepository->get('applicationPool');
+		return $appPoolSettings['Default']['path'];
 	}
 	
 }
