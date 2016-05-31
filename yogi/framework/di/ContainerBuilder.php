@@ -7,10 +7,9 @@ use yogi\framework\utils\HashMap;
 use yogi\framework\utils\ArrayList;
 use yogi\framework\utils\interfaces\IAnnotationHandler;
 use yogi\framework\di\Service;
-use yogi\framework\di\interfaces\IService;
 use \ReflectionProperty;
 use \ReflectionClass;
-use \ReflectionMethod;
+
 /**
  * Yogi's default implementation of the IContainerModule
  * 

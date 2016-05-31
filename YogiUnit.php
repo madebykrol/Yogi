@@ -3,8 +3,14 @@
  * Very very very basic implementation of a unit test framework.
  * 
  */
+include('yogi/YogiClassLoader.php');
 
-include('yogi/AutoLoader.php');
+use yogi\YogiClassLoader;
+use yogi\framework\unittest\UnitTest;
+
+$autoloader = new YogiClassLoader();
+$autoloader->register();
+
 $shortopts  = "t:";
 $shortopts .= "R:"; 
 $shortopts .= "v"; 
@@ -81,10 +87,11 @@ function main($args) {
 			print "preparing to run unit tests in directory: ".$test."\n";
 		}
 		$handle = opendir($test);
+		
 		/* This is the correct way to loop over the directory. */
 		while (false !== ($entry = readdir($handle))) {
 			if($entry != "." && $entry != ".." && strpos($entry, "Test") !== false) {
-				$testReport[$entry] = _yogiUnit($test.$entry);
+				$testReport[$entry] = _yogiUnit($test."/".$entry);
 				$testReport[$entry]['errors'] = $errors;
 				$errors = 0;
 				
@@ -126,9 +133,9 @@ function _generateHTMLReport($testReport) {
 	$output = "<html>\n";
 	$output .= "\t<head>\n";
 		 $output .= "\t\t<title>Yogi framework Unit test report ".date("Y-m-d", time())."</title>\n";
-		 $output .= "\t\t<link rel=\"stylesheet\" href=\"http://twitter.github.io/bootstrap/assets/css/bootstrap.css\">";
+		 $output .= "\t\t<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\">";
 
-	$output .= '<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>';
+	$output .= '<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>';
 	$output .= '<script>';
 		$output .= '
 				$(document).ready(function() {
@@ -197,7 +204,7 @@ function _generateHTMLReport($testReport) {
 		
 		$output .= "<thead>";
 		$output .= "<tr>";
-			$output .= "<th>Test</th><th>Passed</th><th>Failed</th><th>Errors</th>";
+			$output .= "<th width=\"75%\">Test</th><th>Passed</th><th>Failed</th><th>Errors</th>";
 		$output .= "</tr>";
 		$output .= "</thead><tbody>";
 		$class="success";
@@ -205,7 +212,7 @@ function _generateHTMLReport($testReport) {
 			$class = "warning";
 		}
 		if($passed == 0) {
-			$class = "error";
+			$class = "danger";
 		}
 		$output .= "<tr class=\"".$class."\">";
 		
@@ -244,13 +251,13 @@ function _generateHTMLReport($testReport) {
 		
 		$output .= "<table class=\"table\"><thead>";
 		$output .= "<tr>";
-			$output .= '<th>'.$test.'</th><th>Status</th>';
+			$output .= '<th width="100%" colspan=\"2\">'.$test.'</th><th width="50px">Status</th>';
 		$output .= "</tr>";
 		$output .= "</thead>";
 		$output .= "<tbody>";
 		
 		foreach($summary as $d) {
-			$class="error";
+			$class="danger";
 			if($d['status'] == "Passed") {
 				$class = "success";
 			}

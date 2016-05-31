@@ -21,9 +21,6 @@ class DefaultContainerModule implements IContainerModule {
 				'yogi\framework\io\file\interfaces\IFileUploadManager')
 				->addArgument($_FILES);
 		 
-		 $this->register('yogi\framework\utils\AnnotationHandler', 
-		 		'yogi\framework\utils\interfaces\IAnnotationHandler');
-		 
 		 $this->register('yogi\framework\security\SqlMembershipProvider', 
 		 		'yogi\framework\security\interfaces\IMembershipProvider')
 		 	->inRequestScope();
@@ -84,10 +81,6 @@ class DefaultContainerModule implements IContainerModule {
 		 		'yogi\framework\mvc\ViewEngineRepository',
 		 		'yogi\framework\mvc\interfaces\IViewEngineRepository');
 		 
-		 $this->register(
-		     	'yogi\framework\io\db\ServiceDataStore',
-		 		'yogi\framework\io\db\interfaces\IServiceDataStore'
-		 		);
 		 
 		 $this->register(
 		 		'yogi\framework\route\Router',

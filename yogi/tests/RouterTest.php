@@ -1,4 +1,13 @@
 <?php
+use yogi\framework\unittest\UnitTest;
+use yogi\framework\route\Router;
+use yogi\framework\route\interfaces\IRouterConfig;
+use yogi\framework\route\interfaces\IRoute;
+use yogi\framework\utils\HashMap;
+use yogi\framework\io\interfaces\IRequest;
+use yogi\framework\route\Route;
+
+
 class RouterTest extends UnitTest {
 	
 	private $routerConfig;
@@ -70,20 +79,32 @@ class MockDefaultsRequest implements IRequest {
 	public function getPath() {
 		return array('Home', 'about', '1');
 	}
+	public function setPath(array $path) {}
 	public function getAccept() {}
 	public function getQueryString($var) {}
 	public function getPostData() { return array(); }
 	public function getGetData() { return array(); }
 	public function getApplicationRoot() { }
+	public function getRawContent() {return "";}
+	public function setRequestMethod($method) {}
+	public function getRequestMethod(){return null;}
+	public function getCurrentUri() {return "";}
+	public function getContentType() {return "";}
 }
 
 class MockRequest implements IRequest {
 	public function getPath() {
 		return array('Home', 'about', '1', 'foo');
 	}
+	public function setPath(array $path) {}
 	public function getAccept() {}
 	public function getQueryString($var) {}
 	public function getPostData() { return array(); }
 	public function getGetData() { return array(); }
 	public function getApplicationRoot() { }
+	public function getRawContent() {return "";}
+	public function setRequestMethod($method) {}
+	public function getRequestMethod(){return null;}
+	public function getCurrentUri() {return "";}
+	public function getContentType() {return "";}
 }

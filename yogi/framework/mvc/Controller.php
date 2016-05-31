@@ -109,7 +109,9 @@ class Controller implements IController {
 		}
 		
 		$result->setViewBag($this->viewBag);
-		$result->setHeaders($this->headers->getHeaders());
+		if($this->headers != null) {
+			$result->setHeaders($this->headers->getHeaders());
+		}
 		
 		return $result;
 		
@@ -155,10 +157,11 @@ class Controller implements IController {
 				}
 			}
 		}
+		if($this->headers != null) {
+			$this->headers->add("Location", $this->application->getApplicationRoot().$controller.$action.$params);
 		
-		$this->headers->add("Location", $this->application->getApplicationRoot().$controller.$action.$params);
-		
-		$result->setHeaders($this->headers->getHeaders());
+			$result->setHeaders($this->headers->getHeaders());
+		}
 		return $result;
 	}
 	

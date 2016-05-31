@@ -22,9 +22,7 @@ class YogiClassLoader {
 	
 	
 	public function loadClass($className) {
-		
 		$classPath = str_replace($this->namespaceSeparator, DIRECTORY_SEPARATOR, $className);
-		
 		require(str_replace("_", DIRECTORY_SEPARATOR, $classPath).".php");
 	}
 	

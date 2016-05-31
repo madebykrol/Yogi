@@ -34,4 +34,16 @@ class HashMap implements IList {
 	public function remove($ident) {
 		unset($this->dataList[$ident]);
 	}
+	
+	
+	public function find($value, $func) {
+		foreach($this->dataList as $data) {
+			if($func != null) {
+				if($func($value, $data)) {
+					return $data;
+				}
+			}
+		}
+		return null;
+	}
 }

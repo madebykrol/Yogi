@@ -50,4 +50,15 @@ class ArrayList implements IList {
 		return count($this->listData);
 	}
 	
+	public function find($value, $func) {
+		foreach($this->listData as $data) {
+			if($func != null) {
+				if($func($value, $data)) {
+					return $data;
+				}
+			}
+		}
+		return null;
+	}
+	
 }

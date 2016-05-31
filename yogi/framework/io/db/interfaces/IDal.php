@@ -31,6 +31,14 @@ interface IDal {
 	
 	public /* boolean */ function updateBatch ($table = null, $dataSet);
 	
+	/**
+	 * @param string $table
+	 * @return boolean
+	 */
+	public /* boolean */ function tableExists($table);
+	
+	public /* boolean */ function createTable($table, array $definition);
+	
 	public /* void */ function select ($select);
 	
 	public /* void */ function selectMax($field, $as = null);

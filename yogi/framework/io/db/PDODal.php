@@ -20,6 +20,9 @@ use yogi\framework\exceptions\QueryException;
  */
 class PDODal implements IDal {
 	
+	/**
+	 * @var \PDO
+	 */
 	protected /* PDO */ $pdo = null;
 	protected /* String */ $driver = "";
 	protected /* db */ $database = "";
@@ -631,6 +634,22 @@ class PDODal implements IDal {
 		}
 	}
 	
+	public function tableExists($table) {
+		$statement = $this->pdo->prepare("SHOW TABLES LIKE :table");
+		$statement->bindParam(":table", $table);
+		if($statement->execute()) {
+			return ($statement->rowCount() > 0);
+		}
+		
+		return false;
+	}
+	
+	public /* boolean */ function createTable($table, array $definition) {		
+		$statement = $this->pdo->prepare("CREATE TABLE ".$this->sanitize($table)." (ID INT(11) AUTO_INCREMENT UNIQUE)");
+		
+		return $statement->execute();
+	}
+	
 	public /* void */ function useQueryCache () {
 		$this->useQueryCache = true;
 	} 
@@ -756,8 +775,40 @@ class PDODal implements IDal {
 	}
 
 	protected function sanitize($input) {
-		$input = $input;
-		return $input;
+		$output = "";
+		
+		for($i = 0; $i < strlen($input); $i++) {
+			$c = substr($input, $i, 1);
+			switch ($c) {
+				case '0':
+					$output .= "\\0";					
+					break;
+				case '\n':
+					$output .= "\\n";
+					break;
+				case '\r':
+					$output .= "\\r";
+					break;
+				case '\\' :
+					$output .= "\\\\";
+					break;
+				case '\'' :
+					$output .= "\\\'";
+					break;
+				case '"' :
+					$output .= '\\"';
+					break;
+				case '\u00a5' :
+				case '\u20a9' :
+					break;
+				case '\032' :
+					$output .= '\\Z';
+					break;
+				default:
+					$output .= $c;
+			}
+		}
+		return $output;
 	}
 	
 	protected /* boolean */ function execute(PDOStatement &$statement, $doBinding = true) {

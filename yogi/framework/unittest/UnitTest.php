@@ -27,6 +27,10 @@ abstract class UnitTest {
 		
 	}
 	
+	protected function assertFalse($boolean) {
+		
+	}
+	
 	public function report () {
 		$this->tests['passed'] = $this->passed;
 		$this->tests['failed'] = $this->failed;
