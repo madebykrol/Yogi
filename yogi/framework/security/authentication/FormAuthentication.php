@@ -14,11 +14,13 @@ use yogi\framework\utils\Boolean;
 class FormAuthentication implements IAuthenticationProvider {
 	
 	/**
+	 * [Inject(yogi\framework\settings\interfaces\ISettingsRepository)]
 	 * @var ISettingsRepository
 	 */
 	private $settings;
 	
 	/**
+	 * [Inject(yogi\framework\security\interfaces\ICryptographer)]
 	 * @var ICryptographer
 	 */
 	private $encryptor;
@@ -35,15 +37,7 @@ class FormAuthentication implements IAuthenticationProvider {
 	 */
 	private $roleProvider;
 	
-	public function __construct(ISettingsRepository $settingsRepository, ICryptographer $cryptographer) {
-		$this->settings = $settingsRepository;
-		$this->encryptor = $cryptographer;
-
-		$encryption = $this->settings->get('encryption');
-		$key = $encryption['Default']['key'];
-		$this->encryptor->setEncryptionKey($key);
-	}
-
+	
 	public function setRoleProvider(IRoleProvider $provider) {
 		$this->roleProvider = $provider;
 	}
@@ -66,6 +60,10 @@ class FormAuthentication implements IAuthenticationProvider {
 	 * @return string
 	 */
 	private function encrypt(AuthenticationTicket $ticket) {
+		
+		$encryption = $this->settings->get('encryption');
+		$key = $encryption['Default']['key'];
+		$this->encryptor->setEncryptionKey($key);
 		return $this->encryptor->encrypt($ticket, Crypt::ENCRYPTION_METHOD_AES);
 		
 	}
@@ -76,6 +74,10 @@ class FormAuthentication implements IAuthenticationProvider {
 	 * @return AuthenticationTicket
 	 */
 	private function decrypt($string) {
+		
+		$encryption = $this->settings->get('encryption');
+		$key = $encryption['Default']['key'];
+		$this->encryptor->setEncryptionKey($key);
 		$string = $this->encryptor->decrypt($string, Crypt::ENCRYPTION_METHOD_AES);
 		if($string != FALSE) {
 			list($username, $valid, $issued, $roles, $cookiePath, $expire) = explode(";", $string);
@@ -95,8 +97,11 @@ class FormAuthentication implements IAuthenticationProvider {
 	public function signout() {
 		$webSettings = $this->settings->get('web');
 		$path = $webSettings['cookiePath']['path'];
+		$domain = $webSettings['cookiePath']['domain'];
 
+		
 		$this->headers->setCookie('AuthenticationTicket', '', -3600*1000, $path."/", null);
+		
 	}
 	
 	public function signin($user, $updateLastLogin = false) {
@@ -107,8 +112,15 @@ class FormAuthentication implements IAuthenticationProvider {
 	 * Sets a authentication cookie that contains an encrypted AuthenticationTicket
 	 */
 	private function setAuthCookie($user) {
+		$encryption = $this->settings->get('encryption');
+		$key = $encryption['Default']['key'];
+		$this->encryptor->setEncryptionKey($key);
+		
 		$webSettings = $this->settings->get('web');
+		
 		$path = $webSettings['cookiePath']['path'];
+		$domain = $webSettings['cookiePath']['domain'];
+		
 		
 		$string = $this->encryptor->encrypt(new AuthenticationTicket($user, true, time(), $this->roleProvider->getRolesForUser($user), "", time()+250), Crypt::ENCRYPTION_METHOD_AES);
 		$this->headers->setCookie('AuthenticationTicket', $string, time()+(3600*24*365), $path."/",null);
@@ -129,6 +141,7 @@ class FormAuthentication implements IAuthenticationProvider {
 		$cookie = $this->getAuthCookie();
 		if($cookie != null) {
 			$ticket = $this->decrypt($cookie);
+			
 			if($ticket != null) {
 				$p = new Principal();
 				

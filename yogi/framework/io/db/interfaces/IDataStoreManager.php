@@ -2,6 +2,6 @@
 namespace yogi\framework\io\db\interfaces;
 
 interface IDataStoreManager {
-	public function createStore(string $class);
-	public function truncateStore(string $class);
+	public function createStore($class);
+	public function truncateStore($class);
 }

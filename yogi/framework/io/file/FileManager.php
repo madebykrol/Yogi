@@ -19,7 +19,6 @@ class FileManager implements IFileManager {
 	 * @see \smll\framework\io\file\interfaces\IFileManager::getFileReference()
 	 */
 	public function getFileReference(Guid $reference) {
-		
 		$this->datastore->where(array('reference', '=', $reference->getString()));
 		$file = $this->datastore->get('file');
 		

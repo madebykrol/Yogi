@@ -11,7 +11,7 @@ use yogi\framework\http\interfaces\IHeaderRepository;
 use yogi\framework\utils\HashMap;
 
 
-abstract class Controller implements IController {
+class Controller implements IController {
 	
 	protected $viewBag = array(
 		'title' => '',		

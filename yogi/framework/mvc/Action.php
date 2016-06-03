@@ -6,11 +6,6 @@
  */
 namespace yogi\framework\mvc;
 use yogi\framework\utils\HashMap;
-
-/**
- * Class Action
- * @package yogi\framework\mvc
- */
 class Action {
 	
 	private $controller = null;

@@ -49,7 +49,7 @@ class Regexp {
 				$this->delimiter.str_replace($this->delimiter, "\\".$this->delimiter, $this->pattern).$this->delimiter.$this->options, 
 				$heystack, 
 				$matches
-			) == 1) {
+				) == 1) {
 			return true;
 		}
 		

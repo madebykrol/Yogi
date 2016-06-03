@@ -33,6 +33,22 @@ class Html {
 		return $application->processAction($controller, $action, $extras, $request);
 	}
 	
+	public static function propertyFor($model, $property) {
+		
+		$rModel = new ReflectionClass(get_class($model));
+		
+		if($rModel->hasProperty($property)) {
+			$rProp = $rModel->getProperty($property);
+			$annotationHandler = new AnnotationHandler();
+			
+			if($annotationHandler->hasAnnotation('FormField', $rProp)) {
+				
+				$annotations = self::getFormFieldAnnotations($rProp);
+				
+			}
+		}
+	}
+	
 	public static function renderPartial($view, $model) {
 		$output = "";
 		
@@ -128,23 +144,6 @@ class Html {
 		$output = "<form method=\"POST\" action=\"\">";
 			
 		return $output;
-	}
-	
-
-	public static function propertyFor($model, $property) {
-	
-		$rModel = new ReflectionClass(get_class($model));
-	
-		if($rModel->hasProperty($property)) {
-			$rProp = $rModel->getProperty($property);
-			$annotationHandler = new AnnotationHandler();
-				
-			if($annotationHandler->hasAnnotation('FormField', $rProp)) {
-	
-				$annotations = self::getFormFieldAnnotations($rProp);
-	
-			}
-		}
 	}
 	
 	public function textBoxFor($object, $name) {
@@ -321,15 +320,15 @@ class Html {
 	}
 	
 	public static function label($label, $for = null, HashMap $extras = null) {
-		return "<label for=\"".$for."\" ".self::renderExtras($extras).">".$label."</label>";
+		return "<label for=\"".$for."\">".$label."</label>";
 	}
 	
 	public static function textfieldFor($name, $value = null, $placeholder = null, HashMap $extras = null) {
-		return "<input type=\"text\" value=\"".$value."\" name=\"".$name."\" placeholder=\"".$placeholder."\" ".self::renderExtras($extras).">";
+		return "<input type=\"text\" value=\"".$value."\" name=\"".$name."\" placeholder=\"".$placeholder."\">";
 	}
 	
 	public static function hiddenFor($name, $value = null) {
-		return "<input type=\"hidden\" value=\"".$value."\" name=\"".$name."\" ".self::renderExtras($extras).">";
+		return "<input type=\"hidden\" value=\"".$value."\" name=\"".$name."\">";
 	}
 	
 	public static function radioFor($name, $value = null, HashMap $extras = null) {
@@ -338,15 +337,15 @@ class Html {
 			$checked = "CHECKED";
 		} 
 		
-		return "<input name=\"".$name."\" type=\"radio\" $checked value=\"1\" ".self::renderExtras($extras)."/>";
+		return "<input name=\"".$name."\" type=\"radio\" $checked value=\"1\"/>";
 	}
 	
 	public static function passwordFor($name, $value = null, $placeholder = null, HashMap $extras = null) {
-		return "<input type=\"password\" value=\"".$value."\" name=\"".$name."\" placeholder=\"".$placeholder."\" ".self::renderExtras($extras).">";
+		return "<input type=\"password\" value=\"".$value."\" name=\"".$name."\" placeholder=\"".$placeholder."\">";
 	}
 	
 	public static function textareaFor($name, $value = null, HashMap $extras = null) {
-		return "<textarea name=\"".$name."\" ".self::renderExtras($extras).">".$value."</textarea>";
+		return "<textarea name=\"".$name."\">".$value."</textarea>";
 	}
 	
 	public static function checkboxFor($name, $value) {
@@ -408,19 +407,6 @@ class Html {
 		
 		return null;
 	}
-	
-	public static function renderExtras(HashMap $extras) {
-		$output = "";
-		if($extras != null) {
-			$it = $extras->getIterator();
-			while ($it->valid()) {
-				$output .= " " . $it->key() . "=\"" . $it->current() . "\"";
-				$it->next();
-			}
-		}
-		return $output;
-	}
-	
 	const UI_STATE_VIEW = 'view';
 	const UI_STATE_EDIT = 'edit';
 	const UI_STATE_PREVIEW = 'preview';

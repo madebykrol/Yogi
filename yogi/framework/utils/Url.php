@@ -1,8 +1,6 @@
 <?php
 namespace yogi\framework\utils;
-
 class Url {
-
 	private $url = null;
 	public function __construct($url) {
 		$this->url = $url;
@@ -15,6 +13,8 @@ class Url {
 		
 		return new Url($applicationRoot."/".$url);
 	}
+	
+	
 	
 	public function __toString() {
 		return $this->url;
