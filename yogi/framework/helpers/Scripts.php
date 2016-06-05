@@ -2,7 +2,7 @@
 namespace yogi\framework\helpers;
 class Scripts {
 	
-	public static function bundle($bundle) {
+	public static function bundle($pund) {
 		
 	}
 	

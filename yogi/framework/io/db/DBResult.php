@@ -43,7 +43,7 @@ abstract class DBResult implements Iterator, Countable {
 	 */
 	public function setResult($result) {
 		$this->result 	= $result; // Result
-		$this->count 	= count($result); // count the result
+		$this->count 		= count($result); // count the result
 	}
 	
 	/**
@@ -91,7 +91,7 @@ abstract class DBResult implements Iterator, Countable {
 	 * @see Countable::count()
 	 */
 	public function count() {
-		return $this->count;
+		return $count;
 	}
 	
 }

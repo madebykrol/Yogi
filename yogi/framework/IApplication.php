@@ -36,4 +36,6 @@ interface IApplication {
 	
 	public function scheduler();
 	
+	public function install();
+	
 }

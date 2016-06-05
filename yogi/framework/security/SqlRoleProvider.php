@@ -10,14 +10,15 @@ class SqlRoleProvider implements IRoleProvider {
 	 * @var unknown
 	 */
 	private $settings;
-	private $dbContext = null;
 	
 	public function setSettings(ISettingsRepository $settings) {
 		$this->settings = $settings;
 	}
 	
 	public function getRoles() {
-		$dbContext = $this->getDbContext();
+		$connectionStrings = $this->settings->get('connectionStrings');
+		$dbContext = new PDODal($connectionStrings['Default']['connectionString']);
+		
 		$roles = array();
 		foreach($dbContext->query('SELECT role_id, role_name FROM roles AS r') as $role) {
 				$roles[$role->role_id] = $role->role_name;
@@ -25,7 +26,8 @@ class SqlRoleProvider implements IRoleProvider {
 		return $roles;
 	}
 	public function findUserInRole($user, $role) {
-		$dbContext = $this->getDbContext();
+		$connectionStrings = $this->settings->get('connectionStrings');
+		$dbContext = new PDODal($connectionStrings['Default']['connectionString']);
 		$user = $dbContext->query('SELECT role_id FROM users_in_roles WHERE user_ident = ? AND role_id = ?', $user, $role);
 		if(is_array($user) && count($user) > 0) {
 			return true;
@@ -33,8 +35,11 @@ class SqlRoleProvider implements IRoleProvider {
 		return false;
 	}
 	public function getRolesForUser($user) {
-		$dbContext = $this->getDbContext();
+		$connectionStrings = $this->settings->get('connectionStrings');
+		$dbContext = new PDODal($connectionStrings['Default']['connectionString']);
+		
 		$roles = array();
+		
 		$userRoles = $dbContext->query('SELECT role_name FROM roles AS r 
 				LEFT JOIN users_in_roles AS uir ON (r.role_id = uir.role_id) 
 				LEFT JOIN memberships AS u ON (uir.user_ident = u.ident) WHERE u.username = ?', $user);
@@ -47,26 +52,21 @@ class SqlRoleProvider implements IRoleProvider {
 	}
 	
 	public function addUserInRole($role, $user) {
-		$dbContext = $this->getDbContext();
+		$connectionStrings = $this->settings->get('connectionStrings');
+		$dbContext = new PDODal($connectionStrings['Default']['connectionString']);
+		
 		if(!$this->findUserInRole($user, $role)) {
 			$dbContext->insert('users_in_roles', array('user_ident' => $user, 'role_id' => $role));
 		}
 	}
 	
 	public function removeUserFromRole($role, $user) {
-		$dbContext = $this->getDbContext();
+		$connectionStrings = $this->settings->get('connectionStrings');
+		$dbContext = new PDODal($connectionStrings['Default']['connectionString']);
 		if($this->findUserInRole($user, $role)) {
 			$dbContext->where(array('user_ident', '=', $user));
 			$dbContext->where(array('role_id', '=', $role));
 			$dbContext->delete('users_in_roles');
 		}
-	}
-
-	private function getDbContext() {
-		if($this->dbContext == null) {
-			$connectionStrings = $this->settings->get('connectionStrings');
-			$this->dbContext = new PDODal($connectionStrings['Default']['connectionString']);
-		}
-		return $this->dbContext;
 	}
 }

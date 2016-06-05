@@ -9,7 +9,7 @@ class Identity implements IIdentity {
 	public function __construct($name, $authenticated, $type) {
 		$this->authenticated = $authenticated;
 		$this->name = $name;
-		$this->authenticationType = $type;
+		$this->type = $type;
 	}
 	
 	public function isAuthenticated() {
@@ -18,7 +18,6 @@ class Identity implements IIdentity {
 	public function getName() {
 		return $this->name;
 	}
-	
 	public function getAuthenticationType() {
 		return $this->authenticationType;
 	}

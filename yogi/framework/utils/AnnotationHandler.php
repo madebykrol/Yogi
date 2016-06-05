@@ -16,16 +16,17 @@ class AnnotationHandler implements IAnnotationHandler {
 			
 			$commentLines = explode("\n", $comment);
 			$matches = array();
-
-			// Get all annotation lines.
 			foreach($commentLines as $commentLine) {
+				
 				$regexp = new Regexp('^.+?\[(.+?)\]$');
 				$regexp->setOption("m");
 				$match = $regexp->find(trim($commentLine));
 				if(isset($match[1][0])) {
+					
 					$matches[] = $match[1][0];
 				}
 			}
+			
 			return $matches;
 		}
 		return null;
@@ -64,9 +65,12 @@ class AnnotationHandler implements IAnnotationHandler {
 	}
 	
 	public function parseAnnotation($annotation) {
+		$innerDeclarations = array();
 		
 		$regexp = new Regexp('(.+?)[=|\(|\]]');
 		$find = $regexp->find($annotation);
+		
+		$tAnnotation = array();
 		
 		if(isset($find[1]) && count($find[1]) > 0) {
 			$regexp = new Regexp('\((.+?)\)$');
@@ -76,8 +80,10 @@ class AnnotationHandler implements IAnnotationHandler {
 			if(isset($innerDeclarations[1]) && count($innerDeclarations[1]) > 0) {
 					
 				$innerDeclaration = $innerDeclarations[1][0];
-
+				
+				
 				$annotation = explode("(", $annotation);
+				
 				$annotation = $annotation[0];
 				
 				$innerDeclaration = explode(",", $innerDeclaration);
@@ -90,6 +96,7 @@ class AnnotationHandler implements IAnnotationHandler {
 					} else {
 						$tmp[trim($declaration[0])] = $declaration[1];
 					}
+					
 				} 
 				
 				if(count($tmp) > 0) {
@@ -97,9 +104,13 @@ class AnnotationHandler implements IAnnotationHandler {
 				}
 				
 				$tAnnotation = array($annotation, $innerDeclaration);
-
+				
+				
+					
 			} else {
+				
 				$tAnnotation = explode("=", $annotation);
+				
 			}
 		} else {
 			$tAnnotation = array($annotation, true);

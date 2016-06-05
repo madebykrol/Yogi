@@ -5,8 +5,10 @@ use yogi\framework\io\db\interfaces\IDataStoreManager;
 use yogi\framework\io\db\interfaces\IDal;
 use yogi\framework\settings\interfaces\ISettingsRepository;
 use yogi\framework\io\db\DataStore;
+use yogi\framework\io\db\DBField;
 use \ReflectionClass;
 use yogi\framework\utils\ArrayList;
+use yogi\framework\io\db\interfaces\IDBFieldFactory;
 
 class DataStoreManager implements IDataStoreManager {
 
@@ -16,12 +18,19 @@ class DataStoreManager implements IDataStoreManager {
 	 */
 	private $_dal;
 	
-	public function __construct(ISettingsRepository $settings) {
+	/**
+	 * Field factory
+	 * @var IDBFieldFactory
+	 */
+	private $_dbFieldFactory;
+	
+	public function __construct(ISettingsRepository $settings, IDBFieldFactory $dbFieldFactory) {
 		$connectionStrings = $settings->get('connectionStrings');
 		$this->_dal = new PDODal($connectionStrings['Default']['connectionString']);
+		$this->_dbFieldFactory = $dbFieldFactory;
 	}
 	
-	public function createStore(string $className) {
+	public function createStore($className) {
 		$class = new \ReflectionClass($className);
 		// Check if store exists
 		if($this->_dal->tableExists($class->getShortName())) {
@@ -29,13 +38,17 @@ class DataStoreManager implements IDataStoreManager {
 			
 			// get all fields.
 			$columns = new ArrayList($this->_dal->getColumns($class->getShortName()));
-			
 			foreach($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
 				// match them against table columns
-				if(!$columns->find($property->getName(), function ($search, $entry) {
+				if(($column = $columns->find($property->getName(), function ($search, $entry) {
 					return (strtolower($entry->Field) == strtolower($search));
-				})) {
-					print $property->getName()."Does not exist";
+				})) == null) {
+					
+					$dbColumn = $this->_dbFieldFactory->fromObjProperty($property);
+					//print $property->getName()."Does not exist";
+				} else {
+					// Else check if we need to change the field.
+					$dbColumn = $this->_dbFieldFactory->fromDbColumn($column);
 				}
  			}
 			
@@ -46,10 +59,10 @@ class DataStoreManager implements IDataStoreManager {
 		}
 	
 		// 
-		return new DataStore($class);
+		return new DataStore($class, $this->_dal);
 	}
 	
-	public function truncateStore(string $className) {
+	public function truncateStore($className) {
 		
 	}
 }

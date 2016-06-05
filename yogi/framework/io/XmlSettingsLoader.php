@@ -61,11 +61,9 @@ class XmlSettingsLoader implements ISettingsLoader {
 	private function traverseNodeChildren($node, &$settings) {
 		$nodes = $node->childNodes;
 		$name = $node->nodeName;
-
 		
 		// Get xml attributes, and add them to the setting
 		if($node->hasAttributes()) {
-			$attributes = array();
 			foreach($node->attributes as $attr => $value) {
 				if($attr == "name") {
 					$name = $value->nodeValue;
@@ -73,19 +71,19 @@ class XmlSettingsLoader implements ISettingsLoader {
 					$attributes[$attr] = $value->value;
 				}
 			}
-
+			
 			$settings[$name] = array();
 			$settings[$name] = $attributes;
 		}
 		
 		foreach($nodes as $node) {
-			$currentName = $node->nodeName;
+			$name = $node->nodeName;
 			if(!($node->nodeType instanceof DOMText) && $node->nodeName != "#text") {
 					
 				$attributes = array();
 				foreach($node->attributes as $attr => $value) {
 					if($attr == "name" && $node->nodeName == "add") {
-						$currentName = $value->nodeValue;
+						$name = $value->nodeValue;
 					} else {
 						if(Boolean::isBoolean($value->value)) {
 							$attributes[$attr] = Boolean::parseValue($value->value);
@@ -94,8 +92,8 @@ class XmlSettingsLoader implements ISettingsLoader {
 						}
 					}
 				}
-				$settings[$currentName] = array();
-				$settings[$currentName] = $attributes;
+				$settings[$name] = array();
+				$settings[$name] = $attributes;
 					
 				// Keep traversing, just kee-eep traversing
 				if($node->hasChildNodes()) {
