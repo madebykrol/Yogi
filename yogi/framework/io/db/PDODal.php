@@ -619,6 +619,9 @@ class PDODal implements IDal {
 		$args = func_get_args();
 		$query = array_shift($args);
 		
+		$this->flushResult();
+		$this->clearCache();
+		
 		$statement = $this->pdo->prepare($query);
 		
 		$i = 1;

@@ -35,7 +35,6 @@ class DataStoreManager implements IDataStoreManager {
 		// Check if store exists
 		if($this->_dal->tableExists($class->getShortName())) {
 			// Check if it needs to be updated.
-			
 			// get all fields.
 			$columns = new ArrayList($this->_dal->getColumns($class->getShortName()));
 			foreach($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
@@ -51,8 +50,6 @@ class DataStoreManager implements IDataStoreManager {
 					$dbColumn = $this->_dbFieldFactory->fromDbColumn($column);
 				}
  			}
-			
-			
 		} else {
 			// Create table
 			$this->_dal->createTable($class->getShortName(), array());
